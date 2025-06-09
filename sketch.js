@@ -7,7 +7,7 @@ function preload() {
 }
 
 function setup() {
-  createCanvas(800, 400);
+  createCanvas(1000, 500);
   frameRate(10);
   cat.setupAnimations();
 
