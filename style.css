@@ -1,7 +1,15 @@
 html, body {
   margin: 0;
   padding: 0;
+  height: 100%;
+  background-color: #111; /* 背景黑色 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
+
 canvas {
   display: block;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
 }
