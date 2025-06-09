@@ -44,7 +44,7 @@ class Cat {
     this.setupAnimation('run', this.runSheet, 8);
     this.setupAnimation('sit', this.sitSheet, 8);
     this.setupAnimation('sleeping', this.sleepRightSheet, 2, false);
-    this.animations['sleep-left'] = this.sliceFrames(this.sleepLeftSheet, 2);
+    this.animations['sleeping-left'] = this.sliceFrames(this.sleepLeftSheet, 2);
   }
 
   setupAnimation(name, sheet, frameCount, flip = true) {
@@ -140,7 +140,7 @@ class Cat {
   display() {
     // 💤 顯示睡覺動畫（優先）
     if (this.isSleeping) {
-      const key = this.direction === 'right' ? 'sleep-right' : 'sleep-left';
+      const key = this.direction === 'right' ? 'sleeping-right' : 'sleeping-left';
       const frames = this.animations[key];
       if (frames) {
         const speedDivider = 30;
