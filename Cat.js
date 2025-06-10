@@ -58,9 +58,9 @@ class Cat {
   update() {
     this.currentFrame++;
     
-    const movingRight = keyIsDown(RIGHT_ARROW);
-    const movingLeft = keyIsDown(LEFT_ARROW);
-    const running = keyIsDown(SHIFT);
+    let movingRight = keyIsDown(RIGHT_ARROW) || this.movingRight;
+    let movingLeft  = keyIsDown(LEFT_ARROW)  || this.movingLeft;
+    let running     = keyIsDown(SHIFT)       || this.running;
 
     // ✅ 如果正在播放坐下/起來動畫，優先處理並跳出 update
     if (this.isSittingDown) {
