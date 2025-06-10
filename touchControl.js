@@ -38,26 +38,10 @@ function drawTouchButtons() {
       imageMode(CENTER);                    // 置中畫
       image(img, btn.x, btn.y, 28, 28);     // 建議比圓小
       imageMode(CORNER);                    // ← 畫完立刻還原！
-    } else {
-      // 備用顯示文字（如果沒對應圖）
-      fill(0, 150);
-      textSize(16);
-      textAlign(CENTER, CENTER);
-      let label = getButtonLabel(btn.code);
-      text(label, btn.x, btn.y);
     }
   }
 }
 
-  
-// 顯示按鈕標籤（對應 keyCode）
-function getButtonLabel(code) {
-  if (code === 1001) return "←";
-  if (code === 1002) return "→";
-  if (code === 1003) return ">>";
-  if (code === 88) return "X";
-  return "?";
-}
 
 // 檢查觸控並模擬鍵盤輸入
 function checkTouchControls() {
