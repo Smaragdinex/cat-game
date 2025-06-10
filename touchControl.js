@@ -1,40 +1,60 @@
 // 紀錄目前有哪些按鈕被觸控中
 let touchKeys = new Set();
 let TOUCH_BINDINGS = [];
+let buttonImages = {};
 
 // 初始化按鈕位置（在 setup() 裡呼叫）
 function initTouchBindings() {
   TOUCH_BINDINGS = [
     { code: 1001, x: 60, y: height - 70 },             // ← LEFT
     { code: 1002, x: 160, y: height - 70 },            // → RIGHT
-    { code: 1003, x: width - 60, y: height - 80 }, // 🏃 SHIFT (跑步)
+    { code: 1003, x: width - 60, y: height - 80 }, // >> SHIFT (跑步)
     { code: 88, x: width - 140, y: height - 60 }// X 坐下 / 起身
     // 你可以加入更多：如對話鍵、暫停鍵
   ];
 }
 
+function preloadTouchButtonImages() {
+  buttonImages[1001] = loadImage('data/Icon/cursor_left.png');
+  buttonImages[1002] = loadImage('data/Icon/cursor_right.png');
+  buttonImages[1003] = loadImage('data/Icon/fast_forward.png');
+  buttonImages[88] = loadImage('data/Icon/cross.png');
+}
+
 // 每一幀畫出按鈕
 function drawTouchButtons() {
   for (let btn of TOUCH_BINDINGS) {
+    // 半透明底色
     if (touchKeys.has(btn.code)) {
       fill(180, 180, 180, 180); // 按下時較不透明
     } else {
-      fill(220, 220, 220, 80); // 未按下時比較淡
+      fill(220, 220, 220, 80);  // 沒按下時更透明
     }
-    ellipse(btn.x, btn.y, 60);
+    ellipse(btn.x, btn.y, 50);
 
-    fill(0, 150); // 字也可以淡一點
-    textSize(16);
-    textAlign(CENTER, CENTER);
-    let label = getButtonLabel(btn.code);
-    text(label, btn.x, btn.y);
+    // 畫按鈕圖片（置中縮放）
+    let img = buttonImages[btn.code];
+    if (img) {
+      imageMode(CENTER);                    // 置中畫
+      image(img, btn.x, btn.y, 28, 28);     // 建議比圓小
+      imageMode(CORNER);                    // ← 畫完立刻還原！
+    } else {
+      // 備用顯示文字（如果沒對應圖）
+      fill(0, 150);
+      textSize(16);
+      textAlign(CENTER, CENTER);
+      let label = getButtonLabel(btn.code);
+      text(label, btn.x, btn.y);
+    }
   }
 }
+
+  
 // 顯示按鈕標籤（對應 keyCode）
 function getButtonLabel(code) {
   if (code === 1001) return "←";
   if (code === 1002) return "→";
-  if (code === 1003) return "🏃";
+  if (code === 1003) return ">>";
   if (code === 88) return "X";
   return "?";
 }
