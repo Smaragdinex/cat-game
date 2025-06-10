@@ -189,27 +189,27 @@ class Cat {
       return;
     }
 
-    if ((keyCode === RIGHT_ARROW || keyCode === LEFT_ARROW) && this.isSitting) {
+    if ((keyCode === 39 || keyCode === 37) && this.isSitting) {
       this.isSittingDown = true;
       this.sitDirection = -1;
       return;
     }
-    if (keyCode === RIGHT_ARROW) {
+    if (keyCode === 39) {
         this.direction = 'right';
         this.isMoving = true;
-      } else if (keyCode === LEFT_ARROW) {
+      } else if (keyCode === 37) {
         this.direction = 'left';
         this.isMoving = true;
-      } else if (keyCode === SHIFT) {
+      } else if (keyCode === 16) {
         this.isRunning = true;
       }
 }
 
   keyReleased(keyCode) {
-    if (keyCode === RIGHT_ARROW || keyCode === LEFT_ARROW) {
+    if (keyCode === 39 || keyCode === 37) {
       this.isMoving = false;
     }
-    if (keyCode === SHIFT) {
+    if (keyCode === 16) {
     this.isRunning = false; 
     }
   }

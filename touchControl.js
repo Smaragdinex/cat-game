@@ -5,10 +5,10 @@ let TOUCH_BINDINGS = [];
 // 初始化按鈕位置（在 setup() 裡呼叫）
 function initTouchBindings() {
   TOUCH_BINDINGS = [
-    { code: 37, x: 60, y: height - 100 },             // ← LEFT
-    { code: 39, x: 160, y: height - 100 },            // → RIGHT
-    { code: 16, x: width - 140, y: height - 160 },    // 🏃 SHIFT (跑步)
-    { code: 88, x: width - 60, y: height - 220 }      // X 坐下 / 起身
+    { code: 37, x: 60, y: height - 70 },             // ← LEFT
+    { code: 39, x: 160, y: height - 70 },            // → RIGHT
+    { code: 16, x: width - 140, y: height - 60 },    // 🏃 SHIFT (跑步)
+    { code: 88, x: width - 60, y: height - 80 }      // X 坐下 / 起身
     // 你可以加入更多：如對話鍵、暫停鍵
   ];
 }
@@ -38,9 +38,26 @@ function getButtonLabel(code) {
 
 // 檢查觸控並模擬鍵盤輸入
 function checkTouchControls() {
+  
   let currentTouchKeys = new Set();
+  
+  if (mouseIsPressed && touches.length === 0) {
+    const t = { x: mouseX, y: mouseY }; // 模擬一個 touch 點
+
+    for (let btn of TOUCH_BINDINGS) {
+      if (dist(t.x, t.y, btn.x, btn.y) < 30) {
+        if (!touchKeys.has(btn.code)) {
+          cat.keyPressed(btn.code);
+        }
+        currentTouchKeys.add(btn.code);
+      }
+    }
+  }
 
   for (let t of touches) {
+    
+    if (typeof t.x !== 'number' || typeof t.y !== 'number') continue;
+    
     for (let btn of TOUCH_BINDINGS) {
       if (dist(t.x, t.y, btn.x, btn.y) < 30) {
         currentTouchKeys.add(btn.code);
