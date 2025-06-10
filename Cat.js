@@ -93,7 +93,6 @@ class Cat {
     } else {
       this.sleepStartTime = 0; // 沒有坐著就不要計時
     }
-
   
     if (this.isSitting) {
       this.isMoving = false;
@@ -110,9 +109,9 @@ class Cat {
     } else {
       this.isMoving = false;
     }
-
+    
     this.isRunning = running;
-
+    
     if (this.isMoving) {
       const moveSpeed = this.isRunning ? this.speed * 2 : this.speed;
       this.x += this.direction === 'right' ? moveSpeed : -moveSpeed;
@@ -135,7 +134,6 @@ class Cat {
     };
 
   }
-
 
   display() {   
     

@@ -41,27 +41,15 @@ function checkTouchControls() {
   
   let currentTouchKeys = new Set();
   
-  if (mouseIsPressed && touches.length === 0) {
-    const t = { x: mouseX, y: mouseY }; // 模擬一個 touch 點
-
-    for (let btn of TOUCH_BINDINGS) {
-      if (dist(t.x, t.y, btn.x, btn.y) < 30) {
-        if (!touchKeys.has(btn.code)) {
-          cat.keyPressed(btn.code);
-        }
-        currentTouchKeys.add(btn.code);
-      }
-    }
-  }
+   const points = (touches.length > 0)
+    ? touches
+    : (mouseIsPressed ? [{ x: mouseX, y: mouseY }] : []);
 
   for (let t of touches) {
-    
-    if (typeof t.x !== 'number' || typeof t.y !== 'number') continue;
-    
+    if (typeof t.x !== 'number' || typeof t.y !== 'number') continue; 
     for (let btn of TOUCH_BINDINGS) {
       if (dist(t.x, t.y, btn.x, btn.y) < 30) {
         currentTouchKeys.add(btn.code);
-
         if (!touchKeys.has(btn.code)) {
           cat.keyPressed(btn.code);
         }
@@ -75,6 +63,5 @@ function checkTouchControls() {
       cat.keyReleased(code);
     }
   }
-
   touchKeys = currentTouchKeys; // 更新狀態
 }
