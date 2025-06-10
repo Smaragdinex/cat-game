@@ -7,7 +7,7 @@ function initTouchBindings() {
   TOUCH_BINDINGS = [
     { code: 1001, x: 60, y: height - 70 },             // ← LEFT
     { code: 1002, x: 160, y: height - 70 },            // → RIGHT
-    { code: 1003, x: width - 140, y: height - 60 },    // 🏃 SHIFT (跑步)
+    { code: 16, x: width - 140, y: height - 60 },    // 🏃 SHIFT (跑步)
     { code: 88, x: width - 60, y: height - 80 }      // X 坐下 / 起身
     // 你可以加入更多：如對話鍵、暫停鍵
   ];
@@ -16,22 +16,25 @@ function initTouchBindings() {
 // 每一幀畫出按鈕
 function drawTouchButtons() {
   for (let btn of TOUCH_BINDINGS) {
-    fill(touchKeys.has(btn.code) ? 150 : 220); // 按下時變色
+    if (touchKeys.has(btn.code)) {
+      fill(180, 180, 180, 180); // 按下時較不透明
+    } else {
+      fill(220, 220, 220, 80); // 未按下時比較淡
+    }
     ellipse(btn.x, btn.y, 60);
 
-    fill(0);
+    fill(0, 150); // 字也可以淡一點
     textSize(16);
     textAlign(CENTER, CENTER);
     let label = getButtonLabel(btn.code);
     text(label, btn.x, btn.y);
   }
 }
-
 // 顯示按鈕標籤（對應 keyCode）
 function getButtonLabel(code) {
   if (code === 1001) return "←";
   if (code === 1002) return "→";
-  if (code === 1003) return "🏃";
+  if (code === 16) return "🏃";
   if (code === 88) return "X";
   return "?";
 }
