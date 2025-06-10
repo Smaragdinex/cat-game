@@ -2,14 +2,23 @@
 let touchKeys = new Set();
 let TOUCH_BINDINGS = [];
 
+// 初始化按鈕位置（在 setup() 裡呼叫）
+function initTouchBindings() {
+  TOUCH_BINDINGS = [
+    { code: 37, x: 60, y: height - 100 },             // ← LEFT
+    { code: 39, x: 160, y: height - 100 },            // → RIGHT
+    { code: 16, x: width - 140, y: height - 160 },    // 🏃 SHIFT (跑步)
+    { code: 88, x: width - 60, y: height - 220 }      // X 坐下 / 起身
+    // 你可以加入更多：如對話鍵、暫停鍵
+  ];
+}
 
+// 每一幀畫出按鈕
 function drawTouchButtons() {
-  console.log("🎮 drawTouchButtons 被呼叫");
-  
   for (let btn of TOUCH_BINDINGS) {
-    fill(touchKeys.has(btn.code) ? 150 : 220);
+    fill(touchKeys.has(btn.code) ? 150 : 220); // 按下時變色
     ellipse(btn.x, btn.y, 60);
-    
+
     fill(0);
     textSize(16);
     textAlign(CENTER, CENTER);
@@ -18,6 +27,7 @@ function drawTouchButtons() {
   }
 }
 
+// 顯示按鈕標籤（對應 keyCode）
 function getButtonLabel(code) {
   if (code === 37) return "←";
   if (code === 39) return "→";
@@ -26,25 +36,28 @@ function getButtonLabel(code) {
   return "?";
 }
 
+// 檢查觸控並模擬鍵盤輸入
 function checkTouchControls() {
-  let activeNow = new Set();
+  let currentTouchKeys = new Set();
+
   for (let t of touches) {
     for (let btn of TOUCH_BINDINGS) {
       if (dist(t.x, t.y, btn.x, btn.y) < 30) {
-        activeNow.add(btn.code);
+        currentTouchKeys.add(btn.code);
+
         if (!touchKeys.has(btn.code)) {
-          player.keyPressed(btn.code); // 模擬 keyPressed
+          player.keyPressed(btn.code);
         }
       }
     }
   }
 
-  // 檢查有沒有放開的按鈕（模擬 keyReleased）
+  // 判斷釋放的按鈕
   for (let code of touchKeys) {
-    if (!activeNow.has(code)) {
+    if (!currentTouchKeys.has(code)) {
       player.keyReleased(code);
     }
   }
 
-  touchKeys = activeNow;
+  touchKeys = currentTouchKeys; // 更新狀態
 }

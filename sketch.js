@@ -14,17 +14,11 @@ function setup() {
   createCanvas(1000, 500);
   frameRate(10);
   cat.setupAnimations();
+  initTouchBindings();
   
   gearX = width - gearSize - 10;
   gearY = 10;
   
-  TOUCH_BINDINGS = [
-    { code: 37,  x: 60, y: height - 100 },
-    { code: 39,  x: 160, y: height - 100 },
-    { code: 16,  x: width - 140, y: height - 160 }, // 跑步
-    { code: 88,  x: width - 60,  y: height - 220 }, // 'X'
-  ];
-
 }
 
 function isMobileDevice() {
