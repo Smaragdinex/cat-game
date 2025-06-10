@@ -1,14 +1,7 @@
 // 紀錄目前有哪些按鈕被觸控中
 let touchKeys = new Set();
+let TOUCH_BINDINGS = [];
 
-// 模擬 keyCode 對應按鈕區域
-const TOUCH_BINDINGS = [
-  { code: LEFT_ARROW,  x: 40,  y: height - 140 },
-  { code: RIGHT_ARROW, x: 140, y: height - 140 },
-  { code: SHIFT,       x: width - 140, y: height - 180 }, // 🏃 跑步
-  { code: 88,          x: width - 60,  y: height - 240 }, // 'X' 坐下
-  // 你還可以加：對話鍵、取消鍵...
-];
 
 function drawTouchButtons() {
   // 畫方向鍵與功能鍵

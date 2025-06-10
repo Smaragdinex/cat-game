@@ -17,7 +17,7 @@ function setup() {
   
   gearX = width - gearSize - 10;
   gearY = 10;
-
+  
   TOUCH_BINDINGS = [
     { code: LEFT_ARROW,  x: 60, y: height - 100 },
     { code: RIGHT_ARROW, x: 160, y: height - 100 },
@@ -30,6 +30,7 @@ function setup() {
 function isMobileDevice() {
   return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 }
+
 
 function draw() {
   background(30);
@@ -44,7 +45,7 @@ function draw() {
 
   cat.update();
   cat.display();
-
+  
   if (!activePanel && isMobileDevice()) {
     checkTouchControls();  
   }
