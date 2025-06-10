@@ -2,6 +2,7 @@
 let showMenu = false;
 let activePanel = null; // 'control', 'language'
 let currentLang = 'zh';
+let gearIcon;
 
 // 語言對照文字
 const langText = {
@@ -22,6 +23,10 @@ const langText = {
     btn_en: "English"
   }
 };
+
+function preloadMenuImages() {
+  gearIcon = loadImage('data/Icon/settings_3.png');
+}
 
 function drawMenu() {
   if (!showMenu) return;

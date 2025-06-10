@@ -1,5 +1,4 @@
 let cat;
-let gearIcon;
 let gearX, gearY, gearSize = 40;
 let showControls = false;
 let showLanguage = false;
@@ -7,7 +6,7 @@ let showLanguage = false;
 function preload() {
   cat = new Cat();
   cat.preload();
-  gearIcon = loadImage('data/Icon/settings_3.png');
+  preloadMenuImages();
 }
 
 function setup() {
