@@ -19,9 +19,9 @@ function drawTouchButtons() {
 }
 
 function getButtonLabel(code) {
-  if (code === LEFT_ARROW) return "←";
-  if (code === RIGHT_ARROW) return "→";
-  if (code === SHIFT) return "🏃";
+  if (code === 37) return "←";
+  if (code === 39) return "→";
+  if (code === 16) return "🏃";
   if (code === 88) return "X";
   return "?";
 }
