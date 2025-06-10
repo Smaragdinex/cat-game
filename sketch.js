@@ -15,7 +15,7 @@ function setup() {
   frameRate(10);
   cat.setupAnimations();
   initTouchBindings();
-  
+  cat.y = height - 220;
   gearX = width - gearSize - 10;
   gearY = 10;
   

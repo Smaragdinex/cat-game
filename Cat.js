@@ -129,7 +129,7 @@ class Cat {
     // 更新 hitbox
     this.hitbox = {
       x: this.x + this.hitboxOffsetX,
-      y: height - 150 + this.hitboxOffsetY,
+      y: this.y + this.hitboxOffsetY,
       w: this.hitboxWidth,
       h: this.hitboxHeight
     };
@@ -137,15 +137,14 @@ class Cat {
   }
 
 
-  display() {
-    // 💤 顯示睡覺動畫（優先）
+  display() {   
+    
     if (this.isSleeping) {
       const key = this.direction === 'right' ? 'sleeping-right' : 'sleeping-left';
       const frames = this.animations[key];
       if (frames) {
-        const speedDivider = 30;
-        const index = Math.floor(this.currentFrame / speedDivider) % frames.length;
-        image(frames[index], this.x, height - 150, 100, 100);
+        const index = Math.floor(this.currentFrame / 30) % frames.length;
+        image(frames[index], this.x, this.y, 100, 100);
       } else {
         console.warn('Missing sleep frames:', key);
       }
@@ -158,7 +157,7 @@ class Cat {
       const sitFrames = this.animations[sitKey];
       if (sitFrames) {
         const index = this.sitFrameIndex % sitFrames.length;
-        image(sitFrames[index], this.x, height - 150, 100, 100);
+        image(sitFrames[index], this.x, this.y, 100, 100);
       } else {
         console.warn('Missing sit frames:', sitKey);
       }
@@ -171,7 +170,7 @@ class Cat {
     if (frames) {
       const index = this.currentFrame % frames.length;
       const img = frames[index];
-      image(img, this.x, height - 150, 100, 100);
+      image(img, this.x, this.y, 100, 100);
     } else {
       console.warn('Missing animation:', key);
     }
