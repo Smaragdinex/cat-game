@@ -46,7 +46,7 @@ function checkTouchControls() {
         currentTouchKeys.add(btn.code);
 
         if (!touchKeys.has(btn.code)) {
-          player.keyPressed(btn.code);
+          cat.keyPressed(btn.code);
         }
       }
     }
@@ -55,7 +55,7 @@ function checkTouchControls() {
   // 判斷釋放的按鈕
   for (let code of touchKeys) {
     if (!currentTouchKeys.has(code)) {
-      player.keyReleased(code);
+      cat.keyReleased(code);
     }
   }
 
