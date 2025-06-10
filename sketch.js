@@ -18,6 +18,17 @@ function setup() {
   gearX = width - gearSize - 10;
   gearY = 10;
 
+  TOUCH_BINDINGS = [
+    { code: LEFT_ARROW,  x: 60, y: height - 100 },
+    { code: RIGHT_ARROW, x: 160, y: height - 100 },
+    { code: SHIFT,       x: width - 140, y: height - 160 }, // 跑步
+    { code: 88,          x: width - 60,  y: height - 220 }, // 'X'
+  ];
+
+}
+
+function isMobileDevice() {
+  return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 }
 
 function draw() {
