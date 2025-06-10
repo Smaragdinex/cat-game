@@ -40,13 +40,10 @@ function draw() {
   cat.update();
   cat.display();
   
-  if (!activePanel && isMobileDevice()) {
-    checkTouchControls();  
-  }
-
-  if (isMobileDevice()) {
+  
+    checkTouchControls();    
     drawTouchButtons();    
-  }
+  
   console.log("isMobileDevice =", isMobileDevice());
 
 }
