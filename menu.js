@@ -33,8 +33,8 @@ function drawMenu() {
   fill(0);
   textSize(16);
   textAlign(LEFT, TOP);
-  text(langText[currentLang].btn_control, width - 180, 60);
-  text(langText[currentLang].btn_lang, width - 180, 100);
+  text(langText[currentLang].btn_control, width - 180, 70);
+  text(langText[currentLang].btn_lang, width - 180, 110);
 }
 
 function drawPanel() {
