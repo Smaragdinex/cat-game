@@ -210,6 +210,7 @@ class Cat {
     
     if (keyCode === 1001) this.touchMovingLeft = true;
     if (keyCode === 1002) this.touchMovingRight = true;
+    if (keyCode === 1003) this.touchRunning = true;
 }
   keyReleased(keyCode) {
     if (keyCode === 39 || keyCode === 37) {
@@ -221,6 +222,7 @@ class Cat {
     
     if (keyCode === 1001) this.touchMovingLeft = false;
     if (keyCode === 1002) this.touchMovingRight = false;
+    if (keyCode === 1003) this.touchRunning = false;
   }
   
   /** 🔧 通用切割器 */
