@@ -58,9 +58,9 @@ class Cat {
   update() {
     this.currentFrame++;
     
-    let movingRight = keyIsDown(RIGHT_ARROW) || this.movingRight;
-    let movingLeft  = keyIsDown(LEFT_ARROW)  || this.movingLeft;
-    let running     = keyIsDown(SHIFT)       || this.running;
+    const movingRight = keyIsDown(RIGHT_ARROW) || this.touchMovingRight;
+    const movingLeft = keyIsDown(LEFT_ARROW) || this.touchMovingLeft;
+    const running = keyIsDown(SHIFT) || this.touchRunning;
 
     // ✅ 如果正在播放坐下/起來動畫，優先處理並跳出 update
     if (this.isSittingDown) {
@@ -192,6 +192,12 @@ class Cat {
       this.sitDirection = -1;
       return;
     }
+    if ((keyCode === 1001 || keyCode === 1002) && this.isSitting) {
+      this.isSittingDown = true;
+      this.sitDirection = -1;
+      return;
+    }
+    
     if (keyCode === 39) {
         this.direction = 'right';
         this.isMoving = true;
@@ -201,8 +207,10 @@ class Cat {
       } else if (keyCode === 16) {
         this.isRunning = true;
       }
+    
+    if (keyCode === 1001) this.touchMovingLeft = true;
+    if (keyCode === 1002) this.touchMovingRight = true;
 }
-
   keyReleased(keyCode) {
     if (keyCode === 39 || keyCode === 37) {
       this.isMoving = false;
@@ -210,6 +218,9 @@ class Cat {
     if (keyCode === 16) {
     this.isRunning = false; 
     }
+    
+    if (keyCode === 1001) this.touchMovingLeft = false;
+    if (keyCode === 1002) this.touchMovingRight = false;
   }
   
   /** 🔧 通用切割器 */
