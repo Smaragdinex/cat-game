@@ -45,10 +45,10 @@ function checkTouchControls() {
     ? touches
     : (mouseIsPressed ? [{ x: mouseX, y: mouseY }] : []);
 
-  for (let t of touches) {
-    if (typeof t.x !== 'number' || typeof t.y !== 'number') continue; 
+  for (let p of points) {
+    if (typeof p.x !== 'number' || typeof p.y !== 'number') continue; 
     for (let btn of TOUCH_BINDINGS) {
-      if (dist(t.x, t.y, btn.x, btn.y) < 30) {
+      if (dist(p.x, p.y, btn.x, btn.y) < 30) {
         currentTouchKeys.add(btn.code);
         if (!touchKeys.has(btn.code)) {
           cat.keyPressed(btn.code);
