@@ -7,7 +7,7 @@ function initTouchBindings() {
   TOUCH_BINDINGS = [
     { code: 1001, x: 60, y: height - 70 },             // ← LEFT
     { code: 1002, x: 160, y: height - 70 },            // → RIGHT
-    { code: 16, x: width - 140, y: height - 60 },    // 🏃 SHIFT (跑步)
+    { code: 1003, x: width - 140, y: height - 60 },    // 🏃 SHIFT (跑步)
     { code: 88, x: width - 60, y: height - 80 }      // X 坐下 / 起身
     // 你可以加入更多：如對話鍵、暫停鍵
   ];
@@ -31,7 +31,7 @@ function drawTouchButtons() {
 function getButtonLabel(code) {
   if (code === 1001) return "←";
   if (code === 1002) return "→";
-  if (code === 16) return "🏃";
+  if (code === 1003) return "🏃";
   if (code === 88) return "X";
   return "?";
 }
