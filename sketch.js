@@ -19,10 +19,10 @@ function setup() {
   gearY = 10;
   
   TOUCH_BINDINGS = [
-    { code: LEFT_ARROW,  x: 60, y: height - 100 },
-    { code: RIGHT_ARROW, x: 160, y: height - 100 },
-    { code: SHIFT,       x: width - 140, y: height - 160 }, // 跑步
-    { code: 88,          x: width - 60,  y: height - 220 }, // 'X'
+    { code: 37,  x: 60, y: height - 100 },
+    { code: 39,  x: 160, y: height - 100 },
+    { code: 16,  x: width - 140, y: height - 160 }, // 跑步
+    { code: 88,  x: width - 60,  y: height - 220 }, // 'X'
   ];
 
 }
