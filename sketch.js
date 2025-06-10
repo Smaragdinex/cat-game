@@ -53,7 +53,8 @@ function draw() {
   if (isMobileDevice()) {
     drawTouchButtons();    
   }
-  
+  console.log("isMobileDevice =", isMobileDevice());
+
 }
 
 function keyPressed() {

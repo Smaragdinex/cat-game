@@ -4,7 +4,8 @@ let TOUCH_BINDINGS = [];
 
 
 function drawTouchButtons() {
-  // 畫方向鍵與功能鍵
+  console.log("🎮 drawTouchButtons 被呼叫");
+  
   for (let btn of TOUCH_BINDINGS) {
     fill(touchKeys.has(btn.code) ? 150 : 220);
     ellipse(btn.x, btn.y, 60);
