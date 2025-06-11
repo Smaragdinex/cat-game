@@ -1,6 +1,7 @@
 // 物件形式（推薦）——如果每關還有不同前景、地板、物件可一併管理
 let backgrounds = [];
 let currentBgIndex = 0;
+let railingImg;
 
 function preloadBackgroundImages() {
   // 多背景載入
@@ -28,15 +29,32 @@ function preloadBackgroundImages() {
     bg: loadImage('data/background/web3.png'),
     name: "web3"
   });
-  // ...如果每關還有其他物件也可放進這個物件
+  railingImg = loadImage('data/background/railing.png');
 }
 
 function drawBackground() {
-  if (backgrounds[currentBgIndex] && backgrounds[currentBgIndex].bg) {
-    image(backgrounds[currentBgIndex].bg, 0, 0, width, height);
+  let bgObj = backgrounds[currentBgIndex];
+  if (bgObj && bgObj.bg) {
+    let bgOriginalW = 320;
+    let bgOriginalH = 180;
+    let scale = width / bgOriginalW;
+    let bgW = width;
+    let bgH = bgOriginalH * scale;
+    let bgY = height - bgH;
+    image(bgObj.bg, 0, bgY, bgW, bgH);
+
+    if (railingImg) {
+      let railingOriginalW = 293;
+      let railingOriginalH = 64;
+      let railingW = railingOriginalW * scale;
+      let railingH = railingOriginalH * scale;
+      let railingX = 15 * scale;
+      let railingY = bgY + bgH - railingH * 1.77;
+      image(railingImg, railingX, railingY, railingW, railingH);
+    }
   }
-  // 你也可以根據每關資料結構畫不同欄杆、前景等
 }
+
 
 function nextScene() {
   currentBgIndex = (currentBgIndex + 1) % backgrounds.length;

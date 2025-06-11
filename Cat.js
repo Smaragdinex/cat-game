@@ -245,4 +245,11 @@ class Cat {
     flipped.pop();
     return flipped.get(); // 回傳作為 PImage
   }
+  updateYByBackground(bgY, scale) {
+    let catY_in_design = 142;  // 設計稿上腳底y
+    let catOriginalH = 32;     // 角色原圖高
+    let catScaledH = catOriginalH * scale;
+    this.y = bgY + (catY_in_design * scale) - catScaledH;
+  }
 }
+

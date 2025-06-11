@@ -2,6 +2,9 @@
 let touchKeys = new Set();
 let TOUCH_BINDINGS = [];
 let buttonImages = {};
+let inputTarget = null;
+function setInputTarget(obj) { inputTarget = obj; }
+
 
 // 初始化按鈕位置（在 setup() 裡呼叫）
 function initTouchBindings() {
@@ -58,7 +61,7 @@ function checkTouchControls() {
       if (dist(p.x, p.y, btn.x, btn.y) < 30) {
         currentTouchKeys.add(btn.code);
         if (!touchKeys.has(btn.code)) {
-          cat.keyPressed(btn.code);
+          if (inputTarget) inputTarget.keyPressed(btn.code);
         }
       }
     }
@@ -67,7 +70,7 @@ function checkTouchControls() {
   // 判斷釋放的按鈕
   for (let code of touchKeys) {
     if (!currentTouchKeys.has(code)) {
-      cat.keyReleased(code);
+      if (inputTarget) inputTarget.keyReleased(code);
     }
   }
   touchKeys = currentTouchKeys; // 更新狀態
