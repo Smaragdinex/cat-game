@@ -26,10 +26,6 @@ function keyReleased() {
 }
 
 function mousePressed() {
-  game.mousePressed(mouseX, mouseY);
-}
-
-function mousePressed() {
   if (!bgmStarted) {
     playBgm();
     bgmStarted = true;
