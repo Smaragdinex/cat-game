@@ -10,6 +10,8 @@ const langText = {
     btn_lang: "語言",
     btn_volume: "音量",
     btn_close: "關閉",
+    dialog_locked: "這裡不能過去喵！鎖住了！！",
+    system: "系統",
     btn_zh: "中文",
     btn_en: "英文"
   },
@@ -20,6 +22,8 @@ const langText = {
     btn_lang: "Language",
     btn_volume: "Volume",
     btn_close: "Close",
+    dialog_locked: "You can't go through meow! It's locked!",
+    system: "System",
     btn_zh: "Chinese",
     btn_en: "English"
   }
