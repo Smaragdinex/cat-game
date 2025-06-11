@@ -44,5 +44,8 @@ function touchStarted() {
     playBgm();
     bgmStarted = true;
   }
+  let x = touches[0]?.x ?? mouseX;
+  let y = touches[0]?.y ?? mouseY;
+  if (game) game.mousePressed(x, y);
 }
 
