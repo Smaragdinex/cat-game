@@ -186,7 +186,7 @@ class Cat {
     
     if (keyCode === 88) { // 'X'
       if (this.isNearEdge()) {
-      showDialog("這裡不能過去喵！鎖住了！！\n", "系統");
+      showDialog(langText[game.currentLang].dialog_locked, langText[game.currentLang].system);
       } else if (!this.isSittingDown) {
         this.isSittingDown = true;
         this.sitDirection = this.isSitting ? -1 : 1;
