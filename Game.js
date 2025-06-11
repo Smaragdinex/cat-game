@@ -215,6 +215,7 @@ class Game {
         this.activePanel = null;
       }
     }
+    console.log("check gear click:", mx, my, this.gearX, this.gearY, this.gearSize);
 
     // MAIN MENU
     if (this.showMenu) {
@@ -235,6 +236,7 @@ class Game {
     } else {
       // 齒輪
       if (dist(mx, my, this.gearX + this.gearSize / 2, this.gearY + this.gearSize / 2) < this.gearSize / 2) {
+        console.log("齒輪被點中了！");
         this.showMenu = true;
       }
     }
