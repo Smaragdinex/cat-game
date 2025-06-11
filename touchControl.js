@@ -6,8 +6,8 @@ let buttonImages = {};
 // 初始化按鈕位置（在 setup() 裡呼叫）
 function initTouchBindings() {
   TOUCH_BINDINGS = [
-    { code: 1001, x: 60, y: height - 70 },             // ← LEFT
-    { code: 1002, x: 160, y: height - 70 },            // → RIGHT
+    { code: 1001, x: 60, y: height - 60 },             // ← LEFT
+    { code: 1002, x: 160, y: height - 60 },            // → RIGHT
     { code: 1003, x: width - 60, y: height - 80 }, // >> SHIFT (跑步)
     { code: 88, x: width - 140, y: height - 60 }// X 坐下 / 起身
     // 你可以加入更多：如對話鍵、暫停鍵
