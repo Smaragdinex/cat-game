@@ -30,9 +30,13 @@ function mousePressed() {
     playBgm();
     bgmStarted = true;
   }
-  if (game && typeof game.mousePressed === "function") {
-    game.mousePressed(mouseX, mouseY);
+  let x = mouseX, y = mouseY;
+  // 手機或平板觸控時，mouseX/mouseY 可能是 0，要抓 touches[0]
+  if (touches.length > 0) {
+    x = touches[0].x;
+    y = touches[0].y;
   }
+  if (game) game.mousePressed(x, y);
 }
 
 function touchStarted() {
