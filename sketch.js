@@ -1,15 +1,17 @@
 let game;
 let gearX = 0, gearY = 20, gearSize = 40;
-let c
+let cat;
 
 
 function preload() {
   game = new Game();
   game.preload();
+  preloadMusic();
 }
 
 function setup() {
   game.setup();
+  playBgm();
 }
 
 function draw() {
@@ -25,6 +27,7 @@ function keyReleased() {
 }
 
 function mousePressed() {
+  
   game.mousePressed(mouseX, mouseY);
 }
 

@@ -3,8 +3,8 @@ let touchKeys = new Set();
 let TOUCH_BINDINGS = [];
 let buttonImages = {};
 let inputTarget = null;
-function setInputTarget(obj) { inputTarget = obj; }
 
+function setInputTarget(obj) { inputTarget = obj; }
 
 // 初始化按鈕位置（在 setup() 裡呼叫）
 function initTouchBindings() {

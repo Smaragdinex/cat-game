@@ -8,6 +8,8 @@ const langText = {
     language: "🌐 語言選擇：\n中文 / English",
     btn_control: "控制說明",
     btn_lang: "語言",
+    btn_volume: "音量",
+    btn_close: "關閉",
     btn_zh: "中文",
     btn_en: "英文"
   },
@@ -16,6 +18,8 @@ const langText = {
     language: "🌐 Language:\nChinese / English",
     btn_control: "Controls",
     btn_lang: "Language",
+    btn_volume: "Volume",
+    btn_close: "Close",
     btn_zh: "Chinese",
     btn_en: "English"
   }

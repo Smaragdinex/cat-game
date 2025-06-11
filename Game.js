@@ -17,7 +17,7 @@ class Game {
   }
 
   setup() {
-    console.log("App build version: 20240611-1300");
+    console.log("Game build version: 20250611-1606");
     createCanvas(960, 540);
     frameRate(10);
     setInputTarget(this.cat);
@@ -59,20 +59,21 @@ class Game {
 
     fill(255, 255, 255, 220);
     noStroke();
-    rect(width - 200, 50, 180, 100, 10);
+    rect(width - 200, 50, 180, 140, 10);
 
     fill(0);
     textSize(16);
     textAlign(LEFT, TOP);
     text(langText[this.currentLang].btn_control, width - 180, 70);
     text(langText[this.currentLang].btn_lang, width - 180, 110);
+    text(langText[this.currentLang].btn_volume, width - 180, 150);
   }
 
   drawPanel() {
     if (this.activePanel === 'control') {
       fill(255, 255, 255, 220);
       noStroke();
-      rect(width / 2 - 160, height / 2 - 100, 320, 180, 12);
+      rect(width / 2 - 160, height / 2 - 100, 320, 200, 12);
       fill(0);
       textAlign(CENTER, TOP);
       textSize(16);
@@ -83,7 +84,7 @@ class Game {
       fill(0);
       textAlign(CENTER, CENTER);
       textSize(14);
-      text("關閉", width / 2, height / 2 + 75);
+      text(langText[this.currentLang].btn_close, width / 2, height / 2 + 75);
     }
     if (this.activePanel === 'language') {
       fill(255, 255, 255, 220);
@@ -110,12 +111,47 @@ class Game {
       fill(200);
       rect(width / 2 - 40, height / 2 + 40, 80, 30, 8);
       fill(0);
-      text("關閉", width / 2, height / 2 + 55);
+      text(langText[this.currentLang].btn_close, width / 2, height / 2 + 55);
     }
+    if (this.activePanel === 'volume') {
+      fill(255, 255, 255, 220);
+      noStroke();
+      rect(width / 2 - 160, height / 2 - 80, 320, 160, 12);
+
+      fill(0);
+      textAlign(CENTER, TOP);
+      textSize(16);
+      text(langText[this.currentLang].btn_volume, width / 2, height / 2 - 65);
+
+      // 音量條背景
+      let volBarX = width / 2 - 100;
+      let volBarY = height / 2 - 10;
+      let volBarW = 200;
+      let volBarH = 20;
+      fill(180);
+      rect(volBarX, volBarY, volBarW, volBarH, 8);
+
+      // 音量條填充
+      fill(0, 150, 255);
+      rect(volBarX, volBarY, volBarW * getVolume(), volBarH, 8);
+
+      // 數值
+      fill(0);
+      textSize(14);
+      textAlign(LEFT, CENTER);
+      text(Math.round(getVolume() * 100) + "%", volBarX + volBarW + 10, volBarY + volBarH / 2);
+
+      // 關閉按鈕
+      fill(200);
+      rect(width / 2 - 40, height / 2 + 40, 80, 30, 8);
+      fill(0);
+      textAlign(CENTER, CENTER);
+      text(langText[this.currentLang].btn_close, width / 2, height / 2 + 55);
+    }
+
   }
 
   mousePressed(mx, my) {
-    // ========== MENU 互動判斷 ==========
     // CONTROL PANEL 關閉
     if (this.activePanel === 'control') {
       if (
@@ -156,6 +192,28 @@ class Game {
       }
       return;
     }
+    // 音量拖曳
+    if (this.activePanel === 'volume') {
+      // 音量條滑鼠拖拉
+      let volBarX = width / 2 - 100;
+      let volBarY = height / 2 - 10;
+      let volBarW = 200;
+      let volBarH = 20;
+      if (
+        mx >= volBarX && mx <= volBarX + volBarW &&
+        my >= volBarY && my <= volBarY + volBarH
+      ) {
+        let v = (mx - volBarX) / volBarW;
+        setVolume(constrain(v, 0, 1));
+      }
+      // 關閉按鈕
+      if (
+        mx >= width / 2 - 40 && mx <= width / 2 + 40 &&
+        my >= height / 2 + 40 && my <= height / 2 + 70
+      ) {
+        this.activePanel = null;
+      }
+    }
 
     // MAIN MENU
     if (this.showMenu) {
@@ -165,6 +223,9 @@ class Game {
           this.showMenu = false;
         } else if (my >= 100 && my <= 130) {
           this.activePanel = 'language';
+          this.showMenu = false;
+        }else if (my >= 140 && my <= 170) {   // 音量選單
+          this.activePanel = 'volume';
           this.showMenu = false;
         }
       } else {
