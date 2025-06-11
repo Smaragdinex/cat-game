@@ -1,7 +1,7 @@
 let game;
 let gearX = 0, gearY = 20, gearSize = 40;
 let cat;
-
+let bgmStarted = false;
 
 function preload() {
   game = new Game();
@@ -11,7 +11,6 @@ function preload() {
 
 function setup() {
   game.setup();
-  playBgm();
 }
 
 function draw() {
@@ -27,7 +26,23 @@ function keyReleased() {
 }
 
 function mousePressed() {
-  
   game.mousePressed(mouseX, mouseY);
+}
+
+function mousePressed() {
+  if (!bgmStarted) {
+    playBgm();
+    bgmStarted = true;
+  }
+  if (game && typeof game.mousePressed === "function") {
+    game.mousePressed(mouseX, mouseY);
+  }
+}
+
+function touchStarted() {
+  if (!bgmStarted) {
+    playBgm();
+    bgmStarted = true;
+  }
 }
 
