@@ -152,6 +152,7 @@ class Game {
   }
 
   mousePressed(mx, my) {
+    console.log("mousePressed on game", mx, my);
     // CONTROL PANEL 關閉
     if (this.activePanel === 'control') {
       if (
