@@ -122,8 +122,8 @@ class Cat {
     }
     
     // 邊界限制 (調整圖片不超出範圍)
-    if (this.x < -20) this.x = -20;
-    if (this.x > width - 80) this.x = width - 80;
+    if (this.x < 0) this.x = 0;
+    if (this.x > width - 100) this.x = width - 100;
 
     // 更新 hitbox
     this.hitbox = {
