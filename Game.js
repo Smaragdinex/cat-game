@@ -37,6 +37,8 @@ class Game {
     this.cat.updateYByBackground(bgY, bgScale);
 
     this.gearX = width - this.gearSize - 20;
+
+    this.cat.x = width / 5;
   }
 
   draw() {
