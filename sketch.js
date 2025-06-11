@@ -3,10 +3,10 @@ let gearX = 0, gearY = 20, gearSize = 40;
 let cat;
 let bgmStarted = false;
 
+
 function preload() {
   game = new Game();
   game.preload();
-  preloadMusic();
 }
 
 function setup() {
@@ -14,6 +14,7 @@ function setup() {
 }
 
 function draw() {
+  console.log("cat.x =", game.cat.x, "cat.width =", game.cat.width, "右邊界判斷值 =", width - 40 - game.cat.width);
   game.draw();
 }
 
@@ -30,8 +31,8 @@ function mousePressed() {
     playBgm();
     bgmStarted = true;
   }
+  
   let x = mouseX, y = mouseY;
-  // 手機或平板觸控時，mouseX/mouseY 可能是 0，要抓 touches[0]
   if (touches.length > 0) {
     x = touches[0].x;
     y = touches[0].y;

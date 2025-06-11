@@ -8,12 +8,14 @@ class Game {
     this.activePanel = null;
     this.currentLang = 'zh';
   }
-
+  
   preload() {
     this.cat.preload();
     preloadBackgroundImages();
     preloadMenuImages();
     preloadTouchButtonImages();
+    preloadMusic();
+    preloadDialogueImages();
   }
 
   setup() {
@@ -52,6 +54,13 @@ class Game {
 
     checkTouchControls();
     drawTouchButtons();
+    if (game.cat.isNearEdge()) {
+    drawEdgeInteractHint(game.cat);
+    }
+    if (!game.cat.isNearEdge() && dialogActive) {
+    hideDialog();
+    }
+    drawDialog();
   }
   
    drawMenu() {
@@ -148,11 +157,9 @@ class Game {
       textAlign(CENTER, CENTER);
       text(langText[this.currentLang].btn_close, width / 2, height / 2 + 55);
     }
-
   }
 
   mousePressed(mx, my) {
-    console.log("mousePressed on game", mx, my);
     // CONTROL PANEL 關閉
     if (this.activePanel === 'control') {
       if (
@@ -215,7 +222,6 @@ class Game {
         this.activePanel = null;
       }
     }
-    console.log("check gear click:", mx, my, this.gearX, this.gearY, this.gearSize);
 
     // MAIN MENU
     if (this.showMenu) {
@@ -236,7 +242,6 @@ class Game {
     } else {
       // 齒輪
       if (dist(mx, my, this.gearX + this.gearSize / 2, this.gearY + this.gearSize / 2) < this.gearSize / 2) {
-        console.log("齒輪被點中了！");
         this.showMenu = true;
       }
     }

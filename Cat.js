@@ -8,6 +8,7 @@ class Cat {
     this.direction = 'right';
     
     this.x = 0;
+    this.width = 48;
     this.speed = 5;
     
     this.runLeftCat = [];
@@ -27,6 +28,10 @@ class Cat {
     this.sitDirection = 1;    
     this.sleepStartTime = 0;
     
+  }
+  
+  isNearEdge() {
+    return this.x < 40 || this.x > width - 60 - this.width;
   }
 
   preload() {
@@ -180,7 +185,9 @@ class Cat {
     this.sleepStartTime = 0;
     
     if (keyCode === 88) { // 'X'
-      if (!this.isSittingDown) {
+      if (this.isNearEdge()) {
+      showDialog("這裡不能過去喵！鎖住了！！\n", "系統");
+      } else if (!this.isSittingDown) {
         this.isSittingDown = true;
         this.sitDirection = this.isSitting ? -1 : 1;
       }
@@ -251,5 +258,6 @@ class Cat {
     let catScaledH = catOriginalH * scale;
     this.y = bgY + (catY_in_design * scale) - catScaledH;
   }
-}
 
+
+}
