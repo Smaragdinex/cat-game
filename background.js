@@ -1,65 +1,138 @@
-// 物件形式（推薦）——如果每關還有不同前景、地板、物件可一併管理
-let backgrounds = [];
-let currentBgIndex = 0;
+let sceneImages = {};
 let railingImg;
+let sceneManager;
 
-function preloadBackgroundImages() {
-  // 多背景載入
-  backgrounds.push({
-    bg: loadImage('data/background/background.png'),
-    name: "default"
-  });
-  backgrounds.push({
-    bg: loadImage('data/background/train.png'),
-    name: "train"
-  });
-  backgrounds.push({
-    bg: loadImage('data/background/train1.png'),
-    name: "train1"
-  });
-  backgrounds.push({
-    bg: loadImage('data/background/web1.png'),
-    name: "web1"
-  });
-  backgrounds.push({
-    bg: loadImage('data/background/web2.png'),
-    name: "web2"
-  });
-  backgrounds.push({
-    bg: loadImage('data/background/web3.png'),
-    name: "web3"
-  });
-  railingImg = loadImage('data/background/railing.png');
-}
-
-function drawBackground() {
-  let bgObj = backgrounds[currentBgIndex];
-  if (bgObj && bgObj.bg) {
-    let bgOriginalW = 320;
-    let bgOriginalH = 180;
-    let scale = width / bgOriginalW;
-    let bgW = width;
-    let bgH = bgOriginalH * scale;
-    let bgY = height - bgH;
-    image(bgObj.bg, 0, bgY, bgW, bgH);
-
-    if (railingImg) {
-      let railingOriginalW = 293;
-      let railingOriginalH = 64;
-      let railingW = railingOriginalW * scale;
-      let railingH = railingOriginalH * scale;
-      let railingX = 15 * scale;
-      let railingY = bgY + bgH - railingH * 1.77;
-      image(railingImg, railingX, railingY, railingW, railingH);
-    }
+class Scene {
+  constructor({ name, bgKey, entryMap }) {
+    this.name = name;
+    this.bgKey = bgKey;
+    this.entryMap = entryMap; 
   }
 }
 
+class SceneManager {
+  constructor() {
+    this.scenes = [];
+    this.currentIndex = 0;
+  }
 
-function nextScene() {
-  currentBgIndex = (currentBgIndex + 1) % backgrounds.length;
+  addScene(scene) {
+    this.scenes.push(scene);
+  }
+
+  getCurrentScene() {
+    return this.scenes[this.currentIndex];
+  }
+
+  draw() {
+    const scene = this.getCurrentScene();
+    const img = sceneImages[scene.bgKey];
+    if (!img) return;
+
+    const bgOriginalW = 320;
+    const bgOriginalH = 180;
+    const scale = width / bgOriginalW;
+    const bgW = width;
+    const bgH = bgOriginalH * scale;
+    const bgY = height - bgH;
+
+    image(img, 0, bgY, bgW, bgH);
+
+    // 欄杆
+    if (railingImg) {
+      const railingOriginalW = 293;
+      const railingOriginalH = 64;
+      const railingW = railingOriginalW * scale;
+      const railingH = railingOriginalH * scale;
+      const railingX = 15 * scale;
+      const railingY = bgY + bgH - railingH * 1.77;
+      image(railingImg, railingX, railingY, railingW, railingH);
+    }
+  }
+
+  transition(direction, cat) {
+    const current = this.getCurrentScene();
+    const entry = current.entryMap[direction];
+    if (!entry) return;
+
+    this.currentIndex = entry.to;
+
+    const next = this.getCurrentScene();
+    if (entry.spawnX !== undefined) cat.x = entry.spawnX;
+    if (entry.spawnY !== undefined) cat.y = entry.spawnY;
+  }
 }
 
-function prevScene() {
-  currentBgIndex = (currentBgIndex - 1 + backgrounds.length) % backgrounds.length;
+function preloadBackgroundImages() {
+  // 載入背景圖片（保留原結構）
+  sceneImages.default = loadImage('data/background/train00.png');
+  sceneImages.train = loadImage('data/background/train01.png');
+  sceneImages.train1 = loadImage('data/background/train02.png');
+  sceneImages.web1 = loadImage('data/background/web1.png');
+  sceneImages.web2 = loadImage('data/background/web2.png');
+  sceneImages.web3 = loadImage('data/background/web3.png');
+
+  railingImg = loadImage('data/background/railing.png');
+
+  // 初始化 sceneManager
+  sceneManager = new SceneManager();
+
+  // 加入場景
+  sceneManager.addScene(new Scene({
+    name: "001",
+    bgKey: "default",
+    entryMap: {
+    right: { to: 1, spawnX: 10, canGo: true }
+  }
+  }));
+
+  sceneManager.addScene(new Scene({
+    name: "002",
+    bgKey: "default",
+    entryMap: {
+      left: { to: 0, spawnX: 860 ,canGo: true},
+      right: { to: 2, spawnX: 10 ,canGo: true}
+    }
+  }));
+
+  sceneManager.addScene(new Scene({
+    name: "003",
+    bgKey: "default",
+    entryMap: {
+      left: { to: 1, spawnX: 860 ,canGo: true},
+      right: { to: 3, spawnX: 10 ,canGo: true}
+    }
+  }));
+
+  sceneManager.addScene(new Scene({
+    name: "004",
+    bgKey: "default",
+    entryMap: {
+      left: { to: 2, spawnX: 860 ,canGo: true},
+      right: { to: 4, spawnX: 10 ,canGo: true}
+    }
+  }));
+
+  sceneManager.addScene(new Scene({
+    name: "005",
+    bgKey: "default",
+    entryMap: {
+      left: { to: 3, spawnX: 860 ,canGo: true},
+      right: { to: 5, spawnX: 10 ,canGo: true}
+    }
+  }));
+
+  sceneManager.addScene(new Scene({
+    name: "006",
+    bgKey: "default",
+    entryMap: {
+      left: { to: 4, spawnX: 860 ,canGo: true}
+    }
+  }));
+}
+
+function drawBackground() {
+  if (sceneManager) {
+    sceneManager.draw();
+  }
 }

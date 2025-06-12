@@ -1,5 +1,3 @@
-// dialog.js
-
 let dialogActive = false;
 let dialogText = "";
 let dialogSpeaker = "";

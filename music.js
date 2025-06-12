@@ -1,36 +1,52 @@
-let bgmMusic;   // 背景音樂
-let sfxClick;   // 按鈕音效（或更多）
+let bgmMusic = null;
+let sfxClick = null;
+let __GAME_VOL = 1;
 
 function preloadMusic() {
   bgmMusic = loadSound('data/Sound/backgroundSound.mp3');
   sfxClick = loadSound('data/Sound/openSound.mp3');
-  // 可再依需求加入更多音效
 }
 
-function playBgm(loop = true) {
-  if (bgmMusic && !bgmMusic.isPlaying()) {
-    bgmMusic.setLoop(loop);
-    bgmMusic.play();
+function playBgm(input, loop = true) {
+  let newSound = input;
+
+  // ✅ 支援傳入 string key，例如 "train"
+  if (typeof input === 'string' && sceneMusic && sceneMusic[input]) {
+    newSound = sceneMusic[input];
   }
+
+  if (!newSound) return;
+
+  if (bgmMusic && bgmMusic.isPlaying()) {
+    bgmMusic.stop();
+  }
+
+  bgmMusic = newSound;
+  bgmMusic.setLoop(loop);
+  bgmMusic.setVolume(__GAME_VOL);
+  bgmMusic.play();
 }
 
 function stopBgm() {
   if (bgmMusic && bgmMusic.isPlaying()) {
     bgmMusic.stop();
+    bgmMusic = null;
   }
 }
 
 function playClickSfx() {
-  if (sfxClick) sfxClick.play();
+  if (sfxClick) {
+    sfxClick.setVolume(__GAME_VOL);
+    sfxClick.play();
+  }
 }
 
 function setVolume(vol) {
-  if (bgmMusic) bgmMusic.setVolume(vol);
-  if (sfxClick) sfxClick.setVolume(vol);
-  // 可批次控制多音效音量
-  window.__GAME_VOL = vol; // 給 UI 顯示用
-}
-function getVolume() {
-  return typeof window.__GAME_VOL === "number" ? window.__GAME_VOL : 1;
+  __GAME_VOL = constrain(vol, 0, 1);
+  if (bgmMusic) bgmMusic.setVolume(__GAME_VOL);
+  if (sfxClick) sfxClick.setVolume(__GAME_VOL);
 }
 
+function getVolume() {
+  return __GAME_VOL;
+}

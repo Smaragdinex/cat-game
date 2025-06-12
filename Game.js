@@ -7,6 +7,7 @@ class Game {
     this.showMenu = false;
     this.activePanel = null;
     this.currentLang = 'zh';
+    this.bgmStarted = false;
   }
   
   preload() {
@@ -26,6 +27,7 @@ class Game {
     this.cat.setupAnimations();
     initTouchBindings();
     this.updateDynamicPositions();
+
   }
 
   updateDynamicPositions() {
@@ -37,8 +39,8 @@ class Game {
     this.cat.updateYByBackground(bgY, bgScale);
 
     this.gearX = width - this.gearSize - 20;
-
-    this.cat.x = width / 5;
+    
+    this.cat.x = width / 5;  //初始位置
   }
 
   draw() {
@@ -56,10 +58,11 @@ class Game {
 
     checkTouchControls();
     drawTouchButtons();
-    if (game.cat.isNearEdge()) {
+    
+    if (game.cat.isNearLeftEdge() || game.cat.isNearRightEdge()) {
     drawEdgeInteractHint(game.cat);
     }
-    if (!game.cat.isNearEdge() && dialogActive) {
+    if (!(game.cat.isNearLeftEdge() || game.cat.isNearRightEdge()) && dialogActive) {
     hideDialog();
     }
     drawDialog();
@@ -248,12 +251,51 @@ class Game {
       }
     }
   }
+  
+  handleInteraction(x, y) {
+    if (!this.bgmStarted) {
+      playBgm(bgmMusic);
+      this.bgmStarted = true;
+    }
+    this.mousePressed(x, y); // 原本你已有 mousePressed(mx, my)
+  }
 
   keyPressed(keyCode) {
+    if (keyCode === 88) { // X
+    const handled = this.trySceneTransition();
+    if (handled) return; 
+  }
     this.cat.keyPressed(keyCode);
   }
 
   keyReleased(keyCode) {
     this.cat.keyReleased(keyCode);
   }
+  
+  
+  trySceneTransition() {
+    const scene = sceneManager.getCurrentScene();
+
+    let direction = null;
+    if (this.cat.isNearRightEdge()) direction = "right";
+    else if (this.cat.isNearLeftEdge()) direction = "left";
+    
+    if (!direction) return false; // 沒靠邊，不做事
+
+    const entry = scene.entryMap[direction];
+    
+    if (!entry || entry.canGo === false) {
+    showDialog(
+      langText[this.currentLang]?.dialog_locked || "這裡過不去喵！",
+      langText[this.currentLang]?.system || "系統"
+    );
+    return true;
+  }
+   
+    sceneManager.transition(direction, this.cat);
+
+    hideDialog();
+    return true;
+  }
 }
+

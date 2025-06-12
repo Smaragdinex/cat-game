@@ -7,8 +7,8 @@ class Cat {
     this.state = 'idle';
     this.direction = 'right';
     
-    this.x = 0;
     this.width = 48;
+    this.x = 0;
     this.speed = 5;
     
     this.runLeftCat = [];
@@ -27,11 +27,15 @@ class Cat {
     this.isSleeping = false;
     this.sitDirection = 1;    
     this.sleepStartTime = 0;
-    
+       
   }
   
-  isNearEdge() {
-    return this.x < 40 || this.x > width - 60 - this.width;
+  isNearLeftEdge() {
+      return this.x <= 40;
+  }
+
+  isNearRightEdge() {
+      return this.x > width - 60 - this.width;
   }
 
   preload() {
@@ -141,7 +145,6 @@ class Cat {
   }
 
   display() {   
-    
     if (this.isSleeping) {
       const key = this.direction === 'right' ? 'sleeping-right' : 'sleeping-left';
       const frames = this.animations[key];
@@ -184,10 +187,16 @@ class Cat {
     this.isSleeping = false;
     this.sleepStartTime = 0;
     
-    if (keyCode === 88) { // 'X'
-      if (this.isNearEdge()) {
-      showDialog(langText[game.currentLang].dialog_locked, langText[game.currentLang].system);
-      } else if (!this.isSittingDown) {
+    if (this.x <= 0) {
+        sceneManager.transition("left", cat);
+        hideDialog();
+    } else if (this.x + this.width >= width) {
+        sceneManager.transition("right", cat);
+        hideDialog();
+    }
+
+    if (keyCode === 88) {
+      if (!this.isSittingDown) {
         this.isSittingDown = true;
         this.sitDirection = this.isSitting ? -1 : 1;
       }
