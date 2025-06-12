@@ -141,7 +141,6 @@ class Cat {
       w: this.hitboxWidth,
       h: this.hitboxHeight
     };
-
   }
 
   display() {   
@@ -183,7 +182,6 @@ class Cat {
   }
 
   keyPressed(keyCode) {
-    
     this.isSleeping = false;
     this.sleepStartTime = 0;
     
@@ -196,6 +194,13 @@ class Cat {
     }
 
     if (keyCode === 88) {
+      const npcs = sceneManager.getCurrentScene().npcs || [];
+      for (let npc of npcs) {
+        if (npc.isNear(this)) {
+          npc.speak();   // ✅ 播放對話
+          return;        // ✅ 不再繼續往下
+        }
+      }
       if (!this.isSittingDown) {
         this.isSittingDown = true;
         this.sitDirection = this.isSitting ? -1 : 1;

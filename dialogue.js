@@ -4,6 +4,8 @@ let dialogSpeaker = "";
 let dialogTimer = 0;
 let dialogDuration = 0; 
 let interactBtnImg;
+let dialogIsLocked = false;  
+
 
 let dialogDisplayText = "";  // 正在顯示的內容
 let dialogCharIndex = 0;     // 顯示到第幾個字

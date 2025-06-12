@@ -45,10 +45,8 @@ function drawTouchButtons() {
   }
 }
 
-
 // 檢查觸控並模擬鍵盤輸入
 function checkTouchControls() {
-  
   let currentTouchKeys = new Set();
   
    const points = (touches.length > 0)

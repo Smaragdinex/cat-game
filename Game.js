@@ -8,6 +8,8 @@ class Game {
     this.activePanel = null;
     this.currentLang = 'zh';
     this.bgmStarted = false;
+    this.currentInteractingNpc = null;
+
   }
   
   preload() {
@@ -60,14 +62,31 @@ class Game {
     checkTouchControls();
     drawTouchButtons();
     
-    if (game.cat.isNearLeftEdge() || game.cat.isNearRightEdge()) {
-    drawEdgeInteractHint(game.cat);
+    const npcs = sceneManager.getCurrentScene().npcs || [];
+      let nearNpc = null;
+      for (let npc of npcs) {
+        if (npc.isNear(this.cat)) {
+          nearNpc = npc;
+          break;
+        }
+      }
+    if (nearNpc) {
+        drawEdgeInteractHint(this.cat);
+    } else if (this.cat.isNearLeftEdge() || this.cat.isNearRightEdge()) {
+        drawEdgeInteractHint(this.cat);
     }
-    if (!(game.cat.isNearLeftEdge() || game.cat.isNearRightEdge()) && dialogActive) {
-    hideDialog();
+    if (!nearNpc && !(this.cat.isNearLeftEdge() || this.cat.isNearRightEdge()) &&
+        dialogActive && dialogIsLocked) {
+        hideDialog();
+        dialogIsLocked = false;
+      }
+    if (this.currentInteractingNpc && !this.currentInteractingNpc.isNear(this.cat)) {
+      hideDialog();
+      this.currentInteractingNpc = null;
     }
-    drawDialog();
-  }
+  
+      drawDialog();
+    }
   
    drawMenu() {
     if (!this.showMenu) return;
@@ -265,12 +284,14 @@ class Game {
     if (keyCode === 88) { // X
       const scene = sceneManager.getCurrentScene();
       const nearNpc = scene.npcs?.find(n => n.isNear(this.cat));
-      if (nearNpc) {
+      
+      if (nearNpc) { 
         nearNpc.speak();
+        this.currentInteractingNpc = nearNpc;
         return;
       }
-    const handled = this.trySceneTransition();
-    if (handled) return; 
+      const handled = this.trySceneTransition();
+      if (handled) return;
   }
     this.cat.keyPressed(keyCode);
   }
@@ -278,7 +299,6 @@ class Game {
   keyReleased(keyCode) {
     this.cat.keyReleased(keyCode);
   }
-  
   
   trySceneTransition() {
     const scene = sceneManager.getCurrentScene();
@@ -294,14 +314,16 @@ class Game {
     if (!entry || entry.canGo === false) {
     showDialog(
       langText[this.currentLang]?.dialog_locked || "這裡過不去喵！",
-      langText[this.currentLang]?.system || "系統"
-    );
+      langText[this.currentLang]?.system || "系統" );
+      dialogIsLocked = true;
+      
     return true;
   }
    
     sceneManager.transition(direction, this.cat);
 
     hideDialog();
+    dialogIsLocked = false;
     return true;
   }
 }
