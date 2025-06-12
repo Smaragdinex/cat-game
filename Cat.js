@@ -95,7 +95,7 @@ class Cat {
     if (this.isSitting && !this.isSleeping) {
       if (this.sleepStartTime === 0) {
         this.sleepStartTime = millis(); // 開始計時
-      } else if (millis() - this.sleepStartTime >= 12000) {
+      } else if (millis() - this.sleepStartTime >= 5000) {
         this.isSleeping = true;
         this.currentFrame = 0; // 重設動畫播放
       }

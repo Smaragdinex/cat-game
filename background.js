@@ -60,7 +60,7 @@ class SceneManager {
     const current = this.getCurrentScene();
     const entry = current.entryMap[direction];
     if (!entry) return;
-
+  
     this.currentIndex = entry.to;
 
     const next = this.getCurrentScene();
@@ -79,17 +79,17 @@ function preloadBackgroundImages() {
   sceneImages.web3 = loadImage('data/background/web3.png');
 
   railingImg = loadImage('data/background/railing.png');
-  console.log("💬 npcImages.homeless =", npcImages?.homeless);
 
   // 初始化 sceneManager
   sceneManager = new SceneManager();
 
   // 加入場景
   sceneManager.addScene(new Scene({
-    name: "001",
+    name: "000",
     bgKey: "default",
     entryMap: {
-    right: { to: 1, spawnX: 10, canGo: true }
+    right: { to: 0, spawnX: 10, canGo: true },
+    left: { to: 5, spawnX: 860 ,canGo: false}
   },
     npcs:[
     new NPC({ name: "流浪漢", x: 650, y: 350, sprite: npcImages.homeless, dialogKey: "homeless" })
@@ -97,16 +97,16 @@ function preloadBackgroundImages() {
   }));
 
   sceneManager.addScene(new Scene({
-    name: "002",
+    name: "001",
     bgKey: "default",
     entryMap: {
       left: { to: 0, spawnX: 860 ,canGo: true},
-      right: { to: 2, spawnX: 10 ,canGo: true}
+      right: { to: 1, spawnX: 10 ,canGo: false}
     }
   }));
 
   sceneManager.addScene(new Scene({
-    name: "003",
+    name: "002",
     bgKey: "default",
     entryMap: {
       left: { to: 1, spawnX: 860 ,canGo: true},
@@ -115,7 +115,7 @@ function preloadBackgroundImages() {
   }));
 
   sceneManager.addScene(new Scene({
-    name: "004",
+    name: "003",
     bgKey: "default",
     entryMap: {
       left: { to: 2, spawnX: 860 ,canGo: true},
@@ -124,7 +124,7 @@ function preloadBackgroundImages() {
   }));
 
   sceneManager.addScene(new Scene({
-    name: "005",
+    name: "004",
     bgKey: "default",
     entryMap: {
       left: { to: 3, spawnX: 860 ,canGo: true},
@@ -133,7 +133,7 @@ function preloadBackgroundImages() {
   }));
 
   sceneManager.addScene(new Scene({
-    name: "006",
+    name: "005",
     bgKey: "default",
     entryMap: {
       left: { to: 4, spawnX: 860 ,canGo: true}

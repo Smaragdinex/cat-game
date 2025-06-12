@@ -30,17 +30,16 @@ class NPC{
   }
 
   speak() {
-    console.log("💬 播放對話：", this.name);
-
     const text = npcDialogs[this.dialogKey]?.[game.currentLang] || "......";
-    showDialog(text, this.name);
+    const displayName = langText?.[game.currentLang]?.[`npc_${this.dialogKey}`] || this.name;
+    showDialog(text, displayName);
   }
 }
 
 function setupNPCDialogs() {
   npcDialogs.homeless = {
-    zh: "zzzzz....ZZZZZZ",
-    en: "zzzzz....ZZZZZZ"
+    zh: "zzzzzz......ZZZZZZ",
+    en: "zzzzzz......ZZZZZZ"
   };
 }
 

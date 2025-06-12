@@ -6,10 +6,13 @@ class Game {
     this.gearX = 0;
     this.showMenu = false;
     this.activePanel = null;
-    this.currentLang = 'zh';
     this.bgmStarted = false;
     this.currentInteractingNpc = null;
-
+    this.sleepUnlockTriggered = false;
+    this.sleepMessageShown = false;
+    this.sleepMessageTime = 0;
+    
+    this.currentLang = 'zh';
   }
   
   preload() {
@@ -23,7 +26,7 @@ class Game {
   }
 
   setup() {
-    console.log("Game build version: 20250611-1606");
+    console.log("Game build version: 20250613-0616");
     createCanvas(960, 540);
     frameRate(10);
     setInputTarget(this.cat);
@@ -62,31 +65,12 @@ class Game {
     checkTouchControls();
     drawTouchButtons();
     
-    const npcs = sceneManager.getCurrentScene().npcs || [];
-      let nearNpc = null;
-      for (let npc of npcs) {
-        if (npc.isNear(this.cat)) {
-          nearNpc = npc;
-          break;
-        }
-      }
-    if (nearNpc) {
-        drawEdgeInteractHint(this.cat);
-    } else if (this.cat.isNearLeftEdge() || this.cat.isNearRightEdge()) {
-        drawEdgeInteractHint(this.cat);
-    }
-    if (!nearNpc && !(this.cat.isNearLeftEdge() || this.cat.isNearRightEdge()) &&
-        dialogActive && dialogIsLocked) {
-        hideDialog();
-        dialogIsLocked = false;
-      }
-    if (this.currentInteractingNpc && !this.currentInteractingNpc.isNear(this.cat)) {
-      hideDialog();
-      this.currentInteractingNpc = null;
-    }
-  
-      drawDialog();
-    }
+    this.triggerSleepUnlock(); 
+    this.handleInteractHints();
+    this.handleDialogClear();
+    
+    drawDialog();
+}
   
    drawMenu() {
     if (!this.showMenu) return;
@@ -326,5 +310,67 @@ class Game {
     dialogIsLocked = false;
     return true;
   }
+  
+  triggerSleepUnlock() {
+      if (this.sleepUnlockTriggered || !this.cat.isSleeping) return;
+
+      const sleepDuration = millis() - this.cat.sleepStartTime;
+
+      // 第一步：顯示夢話
+      if (sleepDuration > 15000 && !this.sleepMessageShown) {
+        showDialog(langText[this.currentLang].dialog_dream, langText[this.currentLang].system, 8000);
+        this.sleepMessageShown = true;
+        this.sleepMessageTime = millis(); // ⏱ 紀錄開始時間
+      }
+        
+      if (
+        this.sleepMessageShown &&
+        !this.sleepUnlockTriggered &&
+        millis() - this.sleepMessageTime >= 0
+      ) {
+        sceneManager.scenes[0].entryMap.right.to = 1;
+        this.sleepUnlockTriggered = true;
+      }
+  }
+   
+  handleInteractHints() {
+    const npcs = sceneManager.getCurrentScene().npcs || [];
+    let nearNpc = null;
+    for (let npc of npcs) {
+      if (npc.isNear(this.cat)) {
+        nearNpc = npc;
+        break;
+      }
+    }
+
+    this._nearNpc = nearNpc; // 可在其他邏輯用
+
+    if (nearNpc || this.cat.isNearLeftEdge() || this.cat.isNearRightEdge()) {
+      drawEdgeInteractHint(this.cat);
+    }
+  }
+
+  handleDialogClear() {
+    // 清除鎖定型（邊界）對話
+    if (
+      !this._nearNpc &&
+      !this.cat.isNearLeftEdge() &&
+      !this.cat.isNearRightEdge() &&
+      dialogActive && dialogIsLocked
+    ) {
+      hideDialog();
+      dialogIsLocked = false;
+    }
+
+    // 清除 NPC 對話
+    if (
+      this.currentInteractingNpc &&
+      !this.currentInteractingNpc.isNear(this.cat)
+    ) {
+      hideDialog();
+      this.currentInteractingNpc = null;
+    }
+  }
+
 }
 
