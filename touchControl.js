@@ -61,7 +61,12 @@ function checkTouchControls() {
       if (dist(p.x, p.y, btn.x, btn.y) < 30) {
         currentTouchKeys.add(btn.code);
         if (!touchKeys.has(btn.code)) {
-          if (inputTarget) inputTarget.keyPressed(btn.code);
+          if (btn.code === 88 && typeof game !== 'undefined') {
+            game.keyPressed(88);  
+          } else if (inputTarget?.keyPressed) {
+            inputTarget.keyPressed(btn.code);
+          }
+
         }
       }
     }

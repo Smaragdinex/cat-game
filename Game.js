@@ -12,6 +12,7 @@ class Game {
   
   preload() {
     this.cat.preload();
+    preloadNPCImages();
     preloadBackgroundImages();
     preloadMenuImages();
     preloadTouchButtonImages();
@@ -27,7 +28,7 @@ class Game {
     this.cat.setupAnimations();
     initTouchBindings();
     this.updateDynamicPositions();
-
+    setupNPCDialogs();
   }
 
   updateDynamicPositions() {
@@ -46,7 +47,7 @@ class Game {
   draw() {
     background(30);
     drawBackground();
-
+    
     this.gearX = width - this.gearSize - 20; // 保險每幀重算
     image(gearIcon, this.gearX, this.gearY, this.gearSize, this.gearSize);
 
@@ -262,6 +263,12 @@ class Game {
 
   keyPressed(keyCode) {
     if (keyCode === 88) { // X
+      const scene = sceneManager.getCurrentScene();
+      const nearNpc = scene.npcs?.find(n => n.isNear(this.cat));
+      if (nearNpc) {
+        nearNpc.speak();
+        return;
+      }
     const handled = this.trySceneTransition();
     if (handled) return; 
   }

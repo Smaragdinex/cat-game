@@ -3,10 +3,11 @@ let railingImg;
 let sceneManager;
 
 class Scene {
-  constructor({ name, bgKey, entryMap }) {
+  constructor({ name, bgKey, entryMap, npcs = []}) {
     this.name = name;
     this.bgKey = bgKey;
-    this.entryMap = entryMap; 
+    this.entryMap = entryMap;
+    this.npcs = npcs;
   }
 }
 
@@ -37,6 +38,11 @@ class SceneManager {
     const bgY = height - bgH;
 
     image(img, 0, bgY, bgW, bgH);
+    
+    scene.npcs?.forEach(npc => {
+      npc.update();
+      npc.display();
+    });
 
     // 欄杆
     if (railingImg) {
@@ -73,6 +79,7 @@ function preloadBackgroundImages() {
   sceneImages.web3 = loadImage('data/background/web3.png');
 
   railingImg = loadImage('data/background/railing.png');
+  console.log("💬 npcImages.homeless =", npcImages?.homeless);
 
   // 初始化 sceneManager
   sceneManager = new SceneManager();
@@ -83,7 +90,10 @@ function preloadBackgroundImages() {
     bgKey: "default",
     entryMap: {
     right: { to: 1, spawnX: 10, canGo: true }
-  }
+  },
+    npcs:[
+    new NPC({ name: "homeless", x: 650, y: 350, sprite: npcImages.homeless, dialogKey: "homeless" })
+      ]
   }));
 
   sceneManager.addScene(new Scene({
