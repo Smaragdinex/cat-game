@@ -5,6 +5,7 @@ let gearIcon;
 const langText = {
   zh: {
     npc_homeless: "流浪漢",
+    npc_grandpa: "老爺爺",
     control: "🕹 控制說明：\n← →：移動\nShift：跑步\nX：坐下 / 起身\nC: 貓叫",
     language: "🌐 語言選擇：\n中文 / English",
     btn_control: "控制說明",
@@ -19,6 +20,7 @@ const langText = {
   },
   en: {
     npc_homeless: "Homeless",
+    npc_grandpa: "Grandpa",
     control: "🕹 Controls:\n← → : Move\nShift: Run\nX: Sit / Stand\nC: Meow",
     language: "🌐 Language:\nChinese / English",
     btn_control: "Controls",
