@@ -166,7 +166,7 @@ class Cat {
       const key = this.direction === 'right' ? 'sleeping-right' : 'sleeping-left';
       const frames = this.animations[key];
       if (frames) {
-        const index = Math.floor(this.currentFrame / 30) % frames.length;
+        const index = Math.floor(this.currentFrame / 20) % frames.length;
         image(frames[index], this.x, this.y, 100, 100);
       } else {
         console.warn('Missing sleep frames:', key);

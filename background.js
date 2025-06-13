@@ -56,7 +56,7 @@ class SceneManager {
     }
   }
 
-  transition(direction, cat) {
+  transition(direction, cat, option = {}) {
     const current = this.getCurrentScene();
     const entry = current.entryMap[direction];
     if (!entry) return;
@@ -66,6 +66,10 @@ class SceneManager {
     const next = this.getCurrentScene();
     if (entry.spawnX !== undefined) cat.x = entry.spawnX;
     if (entry.spawnY !== undefined) cat.y = entry.spawnY;
+    
+    if (!option.silent) {
+      playDoorSfx();
+    }
   }
 }
 
@@ -87,6 +91,7 @@ function preloadBackgroundImages() {
   sceneManager.addScene(new Scene({
     name: "000",
     bgKey: "default",
+    playDoorSfx: true,
     entryMap: {
     left: { to: 0, spawnX: 860 ,canGo: false},
     right: { to: 0, spawnX: 10, canGo: false }
@@ -99,9 +104,10 @@ function preloadBackgroundImages() {
   sceneManager.addScene(new Scene({
     name: "001",
     bgKey: "default",
+    playDoorSfx: true,
     entryMap: {
-      left: { to: 1, spawnX: 860 ,canGo: true},
-      right: { to: 1, spawnX: 10 ,canGo: true}
+      left: { to: 2, spawnX: 860 ,canGo: true},
+      right: { to: 2, spawnX: 10 ,canGo: true}
     },
     npcs:[
     new NPC({ name: "老爺爺", x: 690, y: 345, sprite: npcImages.grandpa, dialogKey: "grandpa" })
@@ -111,9 +117,10 @@ function preloadBackgroundImages() {
   sceneManager.addScene(new Scene({
     name: "002",
     bgKey: "default",
+    playDoorSfx: true,
     entryMap: {
       left: { to: 1, spawnX: 860 ,canGo: true},
-      right: { to: 3, spawnX: 10 ,canGo: true}
+      right: { to: 1, spawnX: 10 ,canGo: true}
     }
   }));
 

@@ -1,7 +1,5 @@
 let transition = new TransitionManager();
 
-
-
 class Game {
   constructor() {
     this.cat = new Cat();
@@ -269,6 +267,11 @@ class Game {
   }
 
   keyPressed(keyCode) {
+    
+    if (dialogActive && keyCode === 88) {
+      nextDialogLine();  // 快速跳下一句
+      return;
+    }
     if (keyCode === 88) { // X
       const scene = sceneManager.getCurrentScene();
       const nearNpc = scene.npcs?.find(n => n.isNear(this.cat));
@@ -280,6 +283,7 @@ class Game {
       }
       const handled = this.trySceneTransition();
       if (handled) return;
+      
   }
     this.cat.keyPressed(keyCode);
   }
@@ -324,12 +328,11 @@ class Game {
       const sleepDuration = millis() - this.cat.sleepStartTime;
     
       if (sleepDuration > 12000 && !this.sleepMessageShown) {
-        console.log("☁️ 觸發夢話提示！", langText[this.currentLang].dialog_dream);
-
+        
         showDialog(
           langText[this.currentLang].dialog_dream, 
           langText[this.currentLang].system,
-          8000
+          3000
         );
         this.sleepMessageShown = true;
         this.sleepMessageTime = millis(); // ⏱ 紀錄開始時間
@@ -343,7 +346,7 @@ class Game {
         transition.start(() => {
         this.cat.lastWakeTime = millis();  // ⏱ 記錄醒來時間
         sceneManager.scenes[0].entryMap.right.to = 1;
-        sceneManager.transition("right", this.cat);
+        sceneManager.transition("right", this.cat, { silent: true });
         this.cat.x = 200;    
         this.cat.isSleeping = false;
         this.cat.isSitting = true;
@@ -382,7 +385,6 @@ class Game {
       hideDialog();
       dialogIsLocked = false;
     }
-
     // 清除 NPC 對話
     if (
       this.currentInteractingNpc &&

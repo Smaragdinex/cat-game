@@ -38,13 +38,25 @@ class NPC{
 
 function setupNPCDialogs() {
   npcDialogs.homeless = {
-    zh: "zzzzzz......ZZZZZZ",
-    en: "zzzzzz......ZZZZZZ"
-  };
+    zh: [
+    "zzzzzz......ZZZZZZ" 
+  ],
+  en: [
+    "zzzzzz......ZZZZZZ" 
+  ]
+};
   npcDialogs.grandpa = {
-  zh: "你終於醒了……",
-  en: "You’re finally awake…"  
-  };
+  zh: [
+  "你終於醒了……",
+  "夢境與現實，或許並沒有那麼不同。",
+  "喵……別忘了，你的選擇將決定下一段旅程。"
+  ],
+  en: [
+  "You're finally awake…",
+  "Perhaps dreams and reality aren't so different.",
+  "Meow… Remember, your choices shape the journey ahead."
+  ]
+};
 }
 
 function preloadNPCImages() {

@@ -1,36 +1,45 @@
+let interactBtnImg;
+
 let dialogActive = false;
-let dialogText = "";
+let dialogLines = []; 
 let dialogSpeaker = "";
 let dialogTimer = 0;
-let dialogDuration = 0; 
-let interactBtnImg;
 let dialogIsLocked = false;  
-
-let dialogDisplayText = "";  // 正在顯示的內容
-let dialogCharIndex = 0;     // 顯示到第幾個字
-let dialogCharInterval = 40; // 每幾 ms 顯示一個字
+let dialogDisplayText = "";  
+let dialogCharIndex = 0;
+let dialogCurrentLine = 0;
+let dialogCharInterval = 50;
+let dialogDuration = 0; 
 
 function  preloadDialogueImages()
 {
   interactBtnImg = loadImage('data/Icon/x.png');
 }
 
-function showDialog(text, speaker = "", duration = 0) {
-  dialogText = text;
+function showDialog(lines, speaker = "", duration = 0) {
+  
   dialogSpeaker = speaker;
   dialogActive = true;
   dialogTimer = millis();
   dialogDuration = duration;
+  dialogCharIndex = 0;
+  
+  if (Array.isArray(lines)) {
+    dialogLines = lines;
+  } else {
+    dialogLines = [lines];
+  }
   
   dialogDisplayText = "";
-  dialogCharIndex = 0;
+  dialogCurrentLine = 0;
 }
 
 function hideDialog() {
   dialogActive = false;
-  dialogText = "";
-  dialogSpeaker = "";
-  dialogDuration = 0;
+  dialogLines = [];
+  dialogDisplayText = "";
+  dialogCurrentLine = 0;
+  dialogIsLocked = false;
 }
 
 function drawEdgeInteractHint(cat) {
@@ -43,46 +52,81 @@ function drawEdgeInteractHint(cat) {
 function drawDialog() {
   if (!dialogActive) return;
 
-  // 打字機效果：每 X ms 顯示一個字
+  updateTypingEffect();
+  const { boxX, boxY, boxW, boxH } = calculateDialogBoxSize();
+  drawDialogBox(boxX, boxY, boxW, boxH);
+  drawDialogText(boxX, boxY, boxW, boxH);
+  checkAutoHide();
+
+}
+
+function updateTypingEffect() {
+  
+  const fullText = dialogLines[dialogCurrentLine] || "";
   let now = millis();
   let charsToShow = Math.floor((now - dialogTimer) / dialogCharInterval);
   if (charsToShow > dialogCharIndex) {
-    dialogCharIndex = min(charsToShow, dialogText.length);
-    dialogDisplayText = dialogText.substring(0, dialogCharIndex);
+    dialogCharIndex = min(charsToShow, fullText.length);
+    dialogDisplayText = fullText.substring(0, dialogCharIndex);
   }
+}
 
-  // 計算文字尺寸，自動調整對話框寬度
+function calculateDialogBoxSize() {
   textSize(18);
-  let padding = 40;
-  let textW = textWidth(dialogDisplayText);
-  let boxW = constrain(textW + padding, 200, width - 60); // 最小200，最大畫面寬-60
-  let boxH = 80;
-  let boxX = width / 2 - boxW / 2;
-  let boxY = height - boxH - 30;
+  const padding = 40;
+  const textW = textWidth(dialogDisplayText);
+  const boxW = constrain(textW + padding, 200, width - 60);
+  const boxH = 80;
+  const boxX = width / 2 - boxW / 2;
+  const boxY = height - boxH - 30;
+  return { boxX, boxY, boxW, boxH };
+}
 
-  // 繪製框
+function drawDialogBox(x, y, w, h) {
   fill(255, 245, 210, 230);
   stroke(120); strokeWeight(2);
-  rect(boxX, boxY, boxW, boxH, 16);
+  rect(x, y, w, h, 16);
+}
 
-  // 文字內容
+function drawDialogText(x, y, w, h) {
   noStroke();
   fill(30);
   textAlign(LEFT, TOP);
   textSize(18);
 
   if (dialogSpeaker) {
-    text(dialogSpeaker + ":", boxX + 20, boxY + 16);
-    text(dialogDisplayText, boxX + 20, boxY + 44, boxW - 30, boxH - 30);
+    text(dialogSpeaker + ":", x + 20, y + 16);
+    text(dialogDisplayText, x + 20, y + 44, w - 30, h - 30);
   } else {
-    text(dialogDisplayText, boxX + 20, boxY + 32, boxW - 30, boxH - 30);
+    text(dialogDisplayText, x + 20, y + 32, w - 30, h - 30);
   }
+}
 
-  // 自動結束
-  if (dialogDuration > 0 && now - dialogTimer > dialogDuration) {
+function checkAutoHide() {
+  if (dialogDuration > 0 && millis() - dialogTimer > dialogDuration) {
     hideDialog();
   }
 }
 
+function nextDialogLine() {
+  if (!dialogActive) return;
+
+  const fullText = dialogLines[dialogCurrentLine] || "";
+
+  if (dialogCharIndex < fullText.length) {
+    dialogCharIndex = fullText.length;
+    dialogDisplayText = fullText;
+    return;
+  }
+
+  dialogCurrentLine++;
+  if (dialogCurrentLine >= dialogLines.length) {
+    hideDialog(); 
+  } else {
+    dialogCharIndex = 0;
+    dialogDisplayText = "";
+    dialogTimer = millis();
+  }
+}
 
 

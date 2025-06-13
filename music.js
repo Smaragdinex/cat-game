@@ -1,10 +1,12 @@
 let bgmMusic = null;
 let sfxClick = null;
+let sfxDoorOpen;
 let __GAME_VOL = 1;
 
 function preloadMusic() {
   bgmMusic = loadSound('data/Sound/backgroundSound.mp3');
   sfxClick = loadSound('data/Sound/openSound.mp3');
+  sfxDoorOpen = loadSound('data/Sound/openSound.mp3');
 }
 
 function playBgm(input, loop = true) {
@@ -33,6 +35,11 @@ function stopBgm() {
     bgmMusic = null;
   }
 }
+
+function playDoorSfx() {
+  if (sfxDoorOpen) sfxDoorOpen.play();
+}
+
 
 function playClickSfx() {
   if (sfxClick) {
