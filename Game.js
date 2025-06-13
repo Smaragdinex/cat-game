@@ -10,8 +10,7 @@ class Game {
     this.currentInteractingNpc = null;
     this.sleepUnlockTriggered = false;
     this.sleepMessageShown = false;
-    this.sleepMessageTime = 0;
-    
+    this.sleepMessageTime = 0; 
     this.currentLang = 'zh';
   }
   
@@ -45,7 +44,6 @@ class Game {
     this.cat.updateYByBackground(bgY, bgScale);
 
     this.gearX = width - this.gearSize - 20;
-    
     this.cat.x = width / 5;  //初始位置
   }
 
@@ -58,10 +56,9 @@ class Game {
 
     this.drawMenu();
     this.drawPanel();
-
     this.cat.update();
     this.cat.display();
-
+   
     checkTouchControls();
     drawTouchButtons();
     
@@ -315,10 +312,15 @@ class Game {
       if (this.sleepUnlockTriggered || !this.cat.isSleeping) return;
 
       const sleepDuration = millis() - this.cat.sleepStartTime;
+    
+      console.log("🕒 睡眠時間:", sleepDuration.toFixed(0) + "ms");
 
-      // 第一步：顯示夢話
-      if (sleepDuration > 15000 && !this.sleepMessageShown) {
-        showDialog(langText[this.currentLang].dialog_dream, langText[this.currentLang].system, 8000);
+      if (sleepDuration > 12000 && !this.sleepMessageShown) {
+        showDialog(
+          langText[this.currentLang].dialog_dream, 
+          langText[this.currentLang].system, 
+          8000
+        );
         this.sleepMessageShown = true;
         this.sleepMessageTime = millis(); // ⏱ 紀錄開始時間
       }
@@ -342,7 +344,6 @@ class Game {
         break;
       }
     }
-
     this._nearNpc = nearNpc; // 可在其他邏輯用
 
     if (nearNpc || this.cat.isNearLeftEdge() || this.cat.isNearRightEdge()) {
@@ -373,4 +374,7 @@ class Game {
   }
 
 }
+
+
+
 

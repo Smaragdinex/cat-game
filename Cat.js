@@ -19,15 +19,19 @@ class Cat {
     this.idleLeftFrames = [];
     this.walkRightFrames = [];
     this.walkLeftFrames = [];
+    this.meowRightFrames = [];
+    this.meowLeftFrames = [];
   
     this.isMoving = false;
     this.isRunning = false;
     this.isSitting = false;           
     this.isSittingDown = false;
     this.isSleeping = false;
+    this.isMeowing = false;
     this.sitDirection = 1;    
     this.sleepStartTime = 0;
        
+    this.meowSound = null;
   }
   
   isNearLeftEdge() {
@@ -45,6 +49,9 @@ class Cat {
     this.walkSheet = loadImage("data/Cat/Cat-1-Walk.png");
     this.sleepRightSheet = loadImage("data/Cat/Cat-1-Sleeping.png");
     this.sleepLeftSheet = loadImage("data/Cat/Cat-1-SleepingLeft.png");
+    this.meowSheet = loadImage("data/Cat/Cat-1-Meow.png");
+    this.meowSound = loadSound("data/Sound/cat1a.mp3");
+
   }
   
   setupAnimations() {
@@ -52,6 +59,7 @@ class Cat {
     this.setupAnimation('walk', this.walkSheet, 8);
     this.setupAnimation('run', this.runSheet, 8);
     this.setupAnimation('sit', this.sitSheet, 8);
+    this.setupAnimation("meow", this.meowSheet, 4);                                                                                 
     this.setupAnimation('sleeping', this.sleepRightSheet, 2, false);
     this.animations['sleeping-left'] = this.sliceFrames(this.sleepLeftSheet, 2);
   }
@@ -70,8 +78,17 @@ class Cat {
     const movingRight = keyIsDown(RIGHT_ARROW) || this.touchMovingRight;
     const movingLeft = keyIsDown(LEFT_ARROW) || this.touchMovingLeft;
     const running = keyIsDown(SHIFT) || this.touchRunning;
+    
+    if (this.isMeowing) {
+      const meowFrames = this.animations[`meow-${this.direction}`];
+      const max = meowFrames?.length || 0;
+      if (millis() - this.meowStartTime > max * 100) {
+        this.isMeowing = false;
+      } else {
+        return;
+      }
+    }
 
-    // ✅ 如果正在播放坐下/起來動畫，優先處理並跳出 update
     if (this.isSittingDown) {
       this.sitFrameIndex += this.sitDirection;
       const max = this.animations[`sit-${this.direction}`].length - 1;
@@ -155,7 +172,7 @@ class Cat {
       }
       return;
     }
-
+    
     // 🪑 坐下動畫 or 起來動畫
     if (this.isSitting || this.isSittingDown) {
       const sitKey = `sit-${this.direction}`;
@@ -165,6 +182,19 @@ class Cat {
         image(sitFrames[index], this.x, this.y, 100, 100);
       } else {
         console.warn('Missing sit frames:', sitKey);
+      }
+      return;
+    }
+    
+    //Meow
+    if (this.isMeowing) {
+      const key = `meow-${this.direction}`;
+      const frames = this.animations[key];
+      if (frames) {
+        const index = Math.floor(this.currentFrame / 4) % frames.length;
+        image(frames[index], this.x, this.y, 100, 100);
+      } else {
+        console.warn('Missing meow frames:', key);
       }
       return;
     }
@@ -207,6 +237,18 @@ class Cat {
       }
       return;
     }
+    
+    // meow C key
+    if (keyCode === 67) { 
+      if (!this.isSitting && !this.isSittingDown) {
+        this.state = "meow";
+        this.isMeowing = true;
+        this.currentFrame = 0;
+        this.meowStartTime = millis();
+        this.meowSound.play();
+      }
+    }
+
 
     if ((keyCode === 39 || keyCode === 37) && this.isSitting) {
       this.isSittingDown = true;
@@ -272,6 +314,7 @@ class Cat {
     let catScaledH = catOriginalH * scale;
     this.y = bgY + (catY_in_design * scale) - catScaledH;
   }
+  
 
 
 }

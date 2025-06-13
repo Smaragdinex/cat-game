@@ -6,7 +6,6 @@ let dialogDuration = 0;
 let interactBtnImg;
 let dialogIsLocked = false;  
 
-
 let dialogDisplayText = "";  // 正在顯示的內容
 let dialogCharIndex = 0;     // 顯示到第幾個字
 let dialogCharInterval = 40; // 每幾 ms 顯示一個字

@@ -11,17 +11,20 @@ function initTouchBindings() {
   TOUCH_BINDINGS = [
     { code: 1001, x: 60, y: height - 60 },             // ← LEFT
     { code: 1002, x: 160, y: height - 60 },            // → RIGHT
-    { code: 1003, x: width - 60, y: height - 80 }, // >> SHIFT (跑步)
-    { code: 88, x: width - 140, y: height - 60 }// X 坐下 / 起身
+    { code: 1003, x: width - 60, y: height - 80 }, // >> SHIFT run
+    { code: 88, x: width - 140, y: height - 60 },// X sit down sit up
+    { code: 67, x: width - 220, y: height - 80 } // 新增 C 鍵（Meow）
+
     // 你可以加入更多：如對話鍵、暫停鍵
   ];
 }
 
 function preloadTouchButtonImages() {
-  buttonImages[1001] = loadImage('data/Icon/cursor_left.png');
-  buttonImages[1002] = loadImage('data/Icon/cursor_right.png');
-  buttonImages[1003] = loadImage('data/Icon/fast_forward.png');
-  buttonImages[88] = loadImage('data/Icon/cross.png');
+  buttonImages[1001] = loadImage('data/Icon/left.png'); //left
+  buttonImages[1002] = loadImage('data/Icon/right.png'); //right
+  buttonImages[1003] = loadImage('data/Icon/paw.png'); // run
+  buttonImages[88] = loadImage('data/Icon/x-mark.png');
+  buttonImages[67] = loadImage('data/Icon/cat.png'); 
 }
 
 // 每一幀畫出按鈕

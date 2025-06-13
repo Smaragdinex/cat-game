@@ -7,7 +7,6 @@ html, body {
   justify-content: center;
   align-items: center;
 
-  /* ✅ 鎖定互動 */
   -webkit-user-select: none;
   user-select: none;
   -webkit-touch-callout: none;
@@ -26,3 +25,5 @@ canvas {
   -webkit-touch-callout: none;
   -webkit-user-drag: none;
 }
+
+
