@@ -30,6 +30,7 @@ class Cat {
     this.isMeowing = false;
     this.sitDirection = 1;    
     this.sleepStartTime = 0;
+    this.lastWakeTime = 0;
        
     this.meowSound = null;
   }
@@ -110,9 +111,9 @@ class Cat {
     }
     // ✅ 檢查是否應該進入睡眠
     if (this.isSitting && !this.isSleeping) {
-      if (this.sleepStartTime === 0) {
+      if (this.sleepStartTime === 0 && millis() - this.lastWakeTime > 10000) {
         this.sleepStartTime = millis(); // 開始計時
-      } else if (millis() - this.sleepStartTime >= 5000) {
+      } else if (this.sleepStartTime > 0 && millis() - this.sleepStartTime >= 5000) {
         this.isSleeping = true;
         this.currentFrame = 0; // 重設動畫播放
       }
@@ -178,7 +179,12 @@ class Cat {
       const sitKey = `sit-${this.direction}`;
       const sitFrames = this.animations[sitKey];
       if (sitFrames) {
-        const index = this.sitFrameIndex % sitFrames.length;
+        let index;
+        if (this.isSittingDown) {
+          index = this.sitFrameIndex % sitFrames.length;
+        } else {
+          index = sitFrames.length - 1;
+        }
         image(sitFrames[index], this.x, this.y, 100, 100);
       } else {
         console.warn('Missing sit frames:', sitKey);

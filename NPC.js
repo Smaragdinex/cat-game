@@ -41,8 +41,14 @@ function setupNPCDialogs() {
     zh: "zzzzzz......ZZZZZZ",
     en: "zzzzzz......ZZZZZZ"
   };
+  npcDialogs.grandpa = {
+  zh: "你終於醒了……",
+  en: "You’re finally awake…"  
+  };
 }
 
 function preloadNPCImages() {
   npcImages.homeless = loadImage("data/NPC/homeless.png");
+  npcImages.grandpa = loadImage("data/NPC/grandpa.png");
+  
 }

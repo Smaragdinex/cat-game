@@ -1,3 +1,7 @@
+let transition = new TransitionManager();
+
+
+
 class Game {
   constructor() {
     this.cat = new Cat();
@@ -61,6 +65,9 @@ class Game {
    
     checkTouchControls();
     drawTouchButtons();
+    
+    transition.update();
+    transition.draw();
     
     this.triggerSleepUnlock(); 
     this.handleInteractHints();
@@ -309,16 +316,19 @@ class Game {
   }
   
   triggerSleepUnlock() {
+    
+      if (sceneManager.currentIndex !== 0) return; // 只有場景 0 會觸發
+    
       if (this.sleepUnlockTriggered || !this.cat.isSleeping) return;
 
       const sleepDuration = millis() - this.cat.sleepStartTime;
     
-      console.log("🕒 睡眠時間:", sleepDuration.toFixed(0) + "ms");
-
       if (sleepDuration > 12000 && !this.sleepMessageShown) {
+        console.log("☁️ 觸發夢話提示！", langText[this.currentLang].dialog_dream);
+
         showDialog(
           langText[this.currentLang].dialog_dream, 
-          langText[this.currentLang].system, 
+          langText[this.currentLang].system,
           8000
         );
         this.sleepMessageShown = true;
@@ -330,8 +340,18 @@ class Game {
         !this.sleepUnlockTriggered &&
         millis() - this.sleepMessageTime >= 0
       ) {
+        transition.start(() => {
+        this.cat.lastWakeTime = millis();  // ⏱ 記錄醒來時間
         sceneManager.scenes[0].entryMap.right.to = 1;
+        sceneManager.transition("right", this.cat);
+        this.cat.x = 200;    
+        this.cat.isSleeping = false;
+        this.cat.isSitting = true;
+        this.cat.isSittingDown = false;
+        this.cat.sitFrameIndex = this.cat.animations[`sit-${this.cat.direction}`].length - 1;
+        this.cat.lastWakeTime = millis();
         this.sleepUnlockTriggered = true;
+        });
       }
   }
    

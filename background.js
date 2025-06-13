@@ -88,8 +88,8 @@ function preloadBackgroundImages() {
     name: "000",
     bgKey: "default",
     entryMap: {
-    right: { to: 0, spawnX: 10, canGo: true },
-    left: { to: 5, spawnX: 860 ,canGo: false}
+    left: { to: 0, spawnX: 860 ,canGo: false},
+    right: { to: 0, spawnX: 10, canGo: false }
   },
     npcs:[
     new NPC({ name: "流浪漢", x: 650, y: 350, sprite: npcImages.homeless, dialogKey: "homeless" })
@@ -100,9 +100,12 @@ function preloadBackgroundImages() {
     name: "001",
     bgKey: "default",
     entryMap: {
-      left: { to: 0, spawnX: 860 ,canGo: true},
-      right: { to: 1, spawnX: 10 ,canGo: false}
-    }
+      left: { to: 1, spawnX: 860 ,canGo: true},
+      right: { to: 1, spawnX: 10 ,canGo: true}
+    },
+    npcs:[
+    new NPC({ name: "老爺爺", x: 690, y: 345, sprite: npcImages.grandpa, dialogKey: "grandpa" })
+      ]
   }));
 
   sceneManager.addScene(new Scene({
