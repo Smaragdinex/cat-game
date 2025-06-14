@@ -3,11 +3,12 @@ let railingImg;
 let sceneManager;
 
 class Scene {
-  constructor({ name, bgKey, entryMap, npcs = []}) {
+  constructor({ name, bgKey, entryMap, npcs = [],playDoorSfx = true}) {
     this.name = name;
     this.bgKey = bgKey;
     this.entryMap = entryMap;
     this.npcs = npcs;
+    this.playDoorSfx = playDoorSfx;
   }
 }
 
@@ -67,7 +68,7 @@ class SceneManager {
     if (entry.spawnX !== undefined) cat.x = entry.spawnX;
     if (entry.spawnY !== undefined) cat.y = entry.spawnY;
     
-    if (!option.silent) {
+    if (!option.silent && next.playDoorSfx) {
       playDoorSfx();
     }
   }

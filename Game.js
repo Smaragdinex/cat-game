@@ -67,7 +67,7 @@ class Game {
     transition.update();
     transition.draw();
     
-    this.triggerSleepUnlock(); 
+    triggerSleepUnlock(this); 
     this.handleInteractHints();
     this.handleDialogClear();
     
@@ -319,44 +319,7 @@ class Game {
     return true;
   }
   
-  triggerSleepUnlock() {
-    
-      if (sceneManager.currentIndex !== 0) return; // 只有場景 0 會觸發
-    
-      if (this.sleepUnlockTriggered || !this.cat.isSleeping) return;
-
-      const sleepDuration = millis() - this.cat.sleepStartTime;
-    
-      if (sleepDuration > 12000 && !this.sleepMessageShown) {
-        
-        showDialog(
-          langText[this.currentLang].dialog_dream, 
-          langText[this.currentLang].system,
-          3000
-        );
-        this.sleepMessageShown = true;
-        this.sleepMessageTime = millis(); // ⏱ 紀錄開始時間
-      }
-        
-      if (
-        this.sleepMessageShown &&
-        !this.sleepUnlockTriggered &&
-        millis() - this.sleepMessageTime >= 0
-      ) {
-        transition.start(() => {
-        this.cat.lastWakeTime = millis();  // ⏱ 記錄醒來時間
-        sceneManager.scenes[0].entryMap.right.to = 1;
-        sceneManager.transition("right", this.cat, { silent: true });
-        this.cat.x = 200;    
-        this.cat.isSleeping = false;
-        this.cat.isSitting = true;
-        this.cat.isSittingDown = false;
-        this.cat.sitFrameIndex = this.cat.animations[`sit-${this.cat.direction}`].length - 1;
-        this.cat.lastWakeTime = millis();
-        this.sleepUnlockTriggered = true;
-        });
-      }
-  }
+  
    
   handleInteractHints() {
     const npcs = sceneManager.getCurrentScene().npcs || [];
