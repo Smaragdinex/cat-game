@@ -123,7 +123,7 @@ function preloadBackgroundImages() {
       right: { to: 2, spawnX: 10 ,canGo: true}
     },
     npcs:[
-    new NPC({ name: "老爺爺", x: 660, y: 305, sprite: npcImages.grandpa, dialogKey: "grandpa" })
+    new NPC({ name: "老爺爺", x: 660, y: 300, sprite: npcImages.grandpa, dialogKey: "grandpa" })
       ]
   }));
 

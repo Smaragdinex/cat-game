@@ -65,6 +65,6 @@ function preloadNPCImages() {
    });
   
   npcImages.grandpa = loadImage("data/NPC/papa.png", img => {
-    img.resize(40, 0);  // 👈 同樣縮小老爺爺
+    img.resize(40, 46);  // 👈 同樣縮小老爺爺
   });
 }
