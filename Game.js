@@ -66,7 +66,6 @@ class Game {
     this.ui.drawTopButtons();
     this.ui.drawPanels();
     this.ui.drawTouchControls();
-    this.ui.drawLoading();
 
     checkTouchControls();
     drawTouchButtons();

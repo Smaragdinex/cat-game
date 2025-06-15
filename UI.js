@@ -117,35 +117,7 @@ class GameUI {
     drawTouchButtons(); // 你原本的虛擬控制函式
   }
   
-   drawLoading() {
-    if (!this.loading) return;
-
-    const elapsed = millis() - this.loadingStart;
-    if (elapsed > this.minLoadingTime) {
-      this.loading = false;
-      return;
-    }
-
-    push();
-    fill(0, 180);
-    rect(0, 0, width, height);
-
-    // 繪製轉圈圈動畫
-    const angle = (millis() / 300) % TWO_PI;
-    translate(width / 2, height / 2);
-    stroke(255);
-    strokeWeight(4);
-    noFill();
-    arc(0, 0, 60, 60, angle, angle + PI + QUARTER_PI);
-
-    // 文字
-    noStroke();
-    fill(255);
-    textAlign(CENTER, TOP);
-    textSize(16);
-    text("Loading...", 0, 40);
-    pop();
-  }
+   
   
   
 }
