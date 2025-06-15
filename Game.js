@@ -63,11 +63,11 @@ class Game {
     this.gearX = width - this.gearSize - 20; // 保險每幀重算
     image(gearIcon, this.gearX, this.gearY, this.gearSize, this.gearSize);
 
-   this.ui.drawTopButtons();
+    this.ui.drawTopButtons();
     this.ui.drawPanels();
     this.ui.drawTouchControls();
+    this.ui.drawLoading();
 
-   
     checkTouchControls();
     drawTouchButtons();
     
