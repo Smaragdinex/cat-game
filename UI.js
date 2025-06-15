@@ -1,9 +1,10 @@
 class GameUI {
-  constructor(game) {
+  constructor(game, font) {
     this.game = game;
     this.loading = true;
     this.loadingStart = millis();
     this.minLoadingTime = 1000;
+    this.font = font
   }
 
   drawTopButtons() {
@@ -23,7 +24,8 @@ class GameUI {
 
   drawMenu() {
     if (!this.game.showMenu) return;
-
+    
+    textFont(this.font);
     fill(255, 255, 255, 220);
     noStroke();
     rect(width - 200, 50, 180, 140, 10);
@@ -37,6 +39,8 @@ class GameUI {
   }
 
   drawPanel() {
+    textFont(this.font);
+    
     const active = this.game.activePanel;
     const lang = langText[this.game.currentLang];
 

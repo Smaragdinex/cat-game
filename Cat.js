@@ -1,3 +1,5 @@
+const CAT_DISPLAY_SIZE = 120;
+
 class Cat {
   constructor() {
     this.animations = {};  // 統一動畫管理器
@@ -167,7 +169,7 @@ class Cat {
       const frames = this.animations[key];
       if (frames) {
         const index = Math.floor(this.currentFrame / 20) % frames.length;
-        image(frames[index], this.x, this.y, 100, 100);
+        image(frames[index], this.x, this.y, CAT_DISPLAY_SIZE, CAT_DISPLAY_SIZE);
       } else {
         console.warn('Missing sleep frames:', key);
       }
@@ -185,7 +187,7 @@ class Cat {
         } else {
           index = sitFrames.length - 1;
         }
-        image(sitFrames[index], this.x, this.y, 100, 100);
+        image(sitFrames[index], this.x, this.y, CAT_DISPLAY_SIZE, CAT_DISPLAY_SIZE);
       } else {
         console.warn('Missing sit frames:', sitKey);
       }
@@ -198,7 +200,7 @@ class Cat {
       const frames = this.animations[key];
       if (frames) {
         const index = Math.floor(this.currentFrame / 4) % frames.length;
-        image(frames[index], this.x, this.y, 100, 100);
+        image(frames[index], this.x, this.y, CAT_DISPLAY_SIZE, CAT_DISPLAY_SIZE);
       } else {
         console.warn('Missing meow frames:', key);
       }
@@ -211,7 +213,7 @@ class Cat {
     if (frames) {
       const index = this.currentFrame % frames.length;
       const img = frames[index];
-      image(img, this.x, this.y, 100, 100);
+      image(img, this.x, this.y, CAT_DISPLAY_SIZE, CAT_DISPLAY_SIZE);
     } else {
       console.warn('Missing animation:', key);
     }

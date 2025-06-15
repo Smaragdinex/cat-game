@@ -2,9 +2,11 @@ let game;
 let gearX = 0, gearY = 20, gearSize = 40;
 let cat;
 let bgmStarted = false;
+let cubicFont;
 
 function preload() {
-  game = new Game();
+  cubicFont = loadFont("data/Font/Cubic_11.ttf");
+  game = new Game(cubicFont);
   game.preload();
 }
 

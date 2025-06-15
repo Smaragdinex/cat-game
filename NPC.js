@@ -23,7 +23,7 @@ class NPC{
     if (!this.sprite) {
     return;
   }
-    const scale = width / 320; // 假設背景原寬是 320px
+    const scale = width / 320;// 假設背景原寬是 320px
     imageMode(CENTER);
     image(this.sprite, this.x, this.y, this.sprite.width * scale, this.sprite.height * scale);
     imageMode(CORNER);
@@ -60,7 +60,11 @@ function setupNPCDialogs() {
 }
 
 function preloadNPCImages() {
-  npcImages.homeless = loadImage("data/NPC/homeless.png");
-  npcImages.grandpa = loadImage("data/NPC/grandpa.png");
+  npcImages.homeless = loadImage("data/NPC/homeless1.png",img => {
+    img.resize(46, 0);
+   });
   
+  npcImages.grandpa = loadImage("data/NPC/papa.png", img => {
+    img.resize(40, 0);  // 👈 同樣縮小老爺爺
+  });
 }

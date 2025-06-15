@@ -110,7 +110,7 @@ function preloadBackgroundImages() {
     right: { to: 0, spawnX: 10 ,canGo: false}
   },
     npcs:[
-    new NPC({ name: "流浪漢", x: 650, y: 320, sprite: npcImages.homeless, dialogKey: "homeless" })
+    new NPC({ name: "流浪漢", x: 650, y: 315, sprite: npcImages.homeless, dialogKey: "homeless" })
       ]
   }));
 
@@ -123,7 +123,7 @@ function preloadBackgroundImages() {
       right: { to: 2, spawnX: 10 ,canGo: true}
     },
     npcs:[
-    new NPC({ name: "老爺爺", x: 660, y: 320, sprite: npcImages.grandpa, dialogKey: "grandpa" })
+    new NPC({ name: "老爺爺", x: 660, y: 305, sprite: npcImages.grandpa, dialogKey: "grandpa" })
       ]
   }));
 

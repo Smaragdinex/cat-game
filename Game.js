@@ -1,7 +1,7 @@
 let transition = new TransitionManager();
 
 class Game {
-  constructor() {
+  constructor(font) {
     this.cat = new Cat();
     this.gearSize = 40;
     this.gearY = 20;
@@ -15,8 +15,7 @@ class Game {
     this.sleepMessageTime = 0; 
     this.currentLang = 'zh';
     this.shaker = new TrainShaker();
-    this.ui = new GameUI(this);
-
+    this.ui = new GameUI(this, font);
 
   }
   
@@ -39,11 +38,12 @@ class Game {
     initTouchBindings();
     this.updateDynamicPositions();
     setupNPCDialogs();
+    
   }
 
   updateDynamicPositions() {
     // 動態重算 UI/角色/按鈕座標
-    let bgOriginalW = 320, bgOriginalH = 182;
+    let bgOriginalW = 320, bgOriginalH = 186;
     let bgScale = width / bgOriginalW;
     let bgH = bgOriginalH * bgScale;
     let bgY = height - bgH;
