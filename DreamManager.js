@@ -1,7 +1,10 @@
 // DreamManager.js
 
 function triggerSleepUnlock(game) {
-  if (sceneManager.currentIndex !== 0) return; // 只有場景 0 會觸發
+  
+  const scene = sceneManager.getCurrentScene();
+  if (!scene.canEnterDream) return;
+  
   if (game.sleepUnlockTriggered || !game.cat.isSleeping) return;
 
   const sleepDuration = millis() - game.cat.sleepStartTime;
@@ -15,11 +18,20 @@ function triggerSleepUnlock(game) {
     );
     game.sleepMessageShown = true;
     game.sleepMessageTime = millis();
+    
+    const currentIndex = sceneManager.currentIndex;
+    const dreamRoute = {
+      0: 1,
+      3: 6,
+      8: 9 // 可擴充
+    };
 
+    const targetScene = dreamRoute[currentIndex];
+    if (targetScene === undefined) return; // 若無設定，避免跳錯
     // 同時開始轉場動畫
     transition.start(() => {
       game.cat.lastWakeTime = millis();  // ⏱ 記錄醒來時間
-      sceneManager.scenes[sceneManager.currentIndex].entryMap.right.to = 1;
+      scene.entryMap.right.to = targetScene;
       sceneManager.transition("right", game.cat, { silent: true });
 
       game.cat.x = 200;
@@ -28,7 +40,34 @@ function triggerSleepUnlock(game) {
       game.cat.isSittingDown = false;
       game.cat.sitFrameIndex = game.cat.animations[`sit-${game.cat.direction}`].length - 1;
 
-      game.sleepUnlockTriggered = true;
     });
   }
 }
+
+function wakeFromDream(game) {
+  const currentIndex = sceneManager.currentIndex;
+
+  const dreamWakeMap = {
+    3: 2,
+    2: 1,
+    1: 0
+  };
+
+  const targetScene = dreamWakeMap[currentIndex];
+  if (targetScene === undefined) return; // 如果不能醒，就不做事
+
+  transition.start(() => {
+    sceneManager.scenes[currentIndex].entryMap.left.to = targetScene;
+    sceneManager.transition("left", game.cat, { silent: true });
+
+    game.cat.x = 150; // 回到指定位置
+    game.cat.isSitting = true;
+    game.cat.isSleeping = false;
+    game.cat.isSittingDown = false;
+    game.cat.sitFrameIndex = game.cat.animations[`sit-${game.cat.direction}`].length - 1;
+
+    game.sleepUnlockTriggered = false;
+    game.sleepMessageShown = false;
+  });
+}
+

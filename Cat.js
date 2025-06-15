@@ -221,14 +221,9 @@ class Cat {
     this.isSleeping = false;
     this.sleepStartTime = 0;
     
-    if (this.x <= 0) {
-        sceneManager.transition("left", cat);
-        hideDialog();
-    } else if (this.x + this.width >= width) {
-        sceneManager.transition("right", cat);
-        hideDialog();
-    }
-
+    if (this.x <= 0) this.tryMoveScene("left");
+    if (this.x + this.width >= width) this.tryMoveScene("right");
+    
     if (keyCode === 88) {
       const npcs = sceneManager.getCurrentScene().npcs || [];
       for (let npc of npcs) {
@@ -321,6 +316,15 @@ class Cat {
     this.y = bgY + (catY_in_design * scale) - catScaledH;
   }
   
+  tryMoveScene(direction) {
+    const scene = sceneManager.getCurrentScene();
+    const entry = scene.entryMap[direction];
+    if (entry?.canGo) {
+      sceneManager.transition(direction, this);
+      hideDialog();
+    }
+  }
+
 
 
 }

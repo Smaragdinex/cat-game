@@ -3,12 +3,14 @@ let railingImg;
 let sceneManager;
 
 class Scene {
-  constructor({ name, bgKey, entryMap, npcs = [],playDoorSfx = true}) {
+  constructor({ name, bgKey, entryMap, npcs = [],playDoorSfx = true, canEnterDream = false, showRailing = false}) {
     this.name = name;
     this.bgKey = bgKey;
     this.entryMap = entryMap;
     this.npcs = npcs;
     this.playDoorSfx = playDoorSfx;
+    this.canEnterDream = canEnterDream;
+    this.showRailing = showRailing;
   }
 }
 
@@ -38,7 +40,11 @@ class SceneManager {
     const bgH = bgOriginalH * scale;
     const bgY = height - bgH;
 
+    if (typeof game !== "undefined" && game.shaker?.active) game.shaker.update();
+
     image(img, 0, bgY, bgW, bgH);
+
+    if (typeof game !== "undefined" && game.shaker?.active) game.shaker.reset();
     
     scene.npcs?.forEach(npc => {
       npc.update();
@@ -46,7 +52,7 @@ class SceneManager {
     });
 
     // 欄杆
-    if (railingImg) {
+    if (railingImg && scene.showRailing) {
       const railingOriginalW = 293;
       const railingOriginalH = 64;
       const railingW = railingOriginalW * scale;
@@ -58,6 +64,10 @@ class SceneManager {
   }
 
   transition(direction, cat, option = {}) {
+    if (!cat) {
+      console.warn("🚨 transition 被呼叫但 cat 是 undefined！");
+      return;
+    }
     const current = this.getCurrentScene();
     const entry = current.entryMap[direction];
     if (!entry) return;
@@ -76,7 +86,7 @@ class SceneManager {
 
 function preloadBackgroundImages() {
   // 載入背景圖片（保留原結構）
-  sceneImages.default = loadImage('data/background/train00.png');
+  sceneImages.default = loadImage('data/background/test001.png');
   sceneImages.train = loadImage('data/background/train01.png');
   sceneImages.train1 = loadImage('data/background/train02.png');
   sceneImages.web1 = loadImage('data/background/web1.png');
@@ -93,12 +103,14 @@ function preloadBackgroundImages() {
     name: "000",
     bgKey: "default",
     playDoorSfx: true,
+    canEnterDream: true,
+    showRailing: false,
     entryMap: {
     left: { to: 0, spawnX: 860 ,canGo: false},
-    right: { to: 0, spawnX: 10, canGo: false }
+    right: { to: 0, spawnX: 10 ,canGo: false}
   },
     npcs:[
-    new NPC({ name: "流浪漢", x: 650, y: 350, sprite: npcImages.homeless, dialogKey: "homeless" })
+    new NPC({ name: "流浪漢", x: 650, y: 320, sprite: npcImages.homeless, dialogKey: "homeless" })
       ]
   }));
 
@@ -111,7 +123,7 @@ function preloadBackgroundImages() {
       right: { to: 2, spawnX: 10 ,canGo: true}
     },
     npcs:[
-    new NPC({ name: "老爺爺", x: 690, y: 345, sprite: npcImages.grandpa, dialogKey: "grandpa" })
+    new NPC({ name: "老爺爺", x: 660, y: 320, sprite: npcImages.grandpa, dialogKey: "grandpa" })
       ]
   }));
 
@@ -119,6 +131,7 @@ function preloadBackgroundImages() {
     name: "002",
     bgKey: "default",
     playDoorSfx: true,
+    canEnterDream: true,
     entryMap: {
       left: { to: 1, spawnX: 860 ,canGo: true},
       right: { to: 1, spawnX: 10 ,canGo: true}
@@ -155,5 +168,23 @@ function preloadBackgroundImages() {
 function drawBackground() {
   if (sceneManager) {
     sceneManager.draw();
+    
+  if (!sceneManager) return;
+
+  const scene = sceneManager.getCurrentScene();
+  const bgKey = scene.bgKey;
+
+    // ✅ 根據背景是否是列車場景決定是否震動
+  if (bgKey === "default" || bgKey === "train1") {
+      game.shaker.start();
+  } else {
+      game.shaker.stop();
+  }
+
+    game.shaker.update(); // 套用震動偏移
+
+    sceneManager.draw();  // 繪製背景和 NPC
+
+    game.shaker.reset();  // pop 掉畫布偏移
   }
 }

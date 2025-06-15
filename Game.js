@@ -14,6 +14,10 @@ class Game {
     this.sleepMessageShown = false;
     this.sleepMessageTime = 0; 
     this.currentLang = 'zh';
+    this.shaker = new TrainShaker();
+    this.ui = new GameUI(this);
+
+
   }
   
   preload() {
@@ -27,7 +31,7 @@ class Game {
   }
 
   setup() {
-    console.log("Game build version: 20250613-0616");
+    console.log("Game build version: 20250615-1816");
     createCanvas(960, 540);
     frameRate(10);
     setInputTarget(this.cat);
@@ -39,7 +43,7 @@ class Game {
 
   updateDynamicPositions() {
     // 動態重算 UI/角色/按鈕座標
-    let bgOriginalW = 320, bgOriginalH = 180;
+    let bgOriginalW = 320, bgOriginalH = 182;
     let bgScale = width / bgOriginalW;
     let bgH = bgOriginalH * bgScale;
     let bgY = height - bgH;
@@ -51,15 +55,18 @@ class Game {
 
   draw() {
     background(30);
+
     drawBackground();
+    this.cat.update();
+    this.cat.display();
     
     this.gearX = width - this.gearSize - 20; // 保險每幀重算
     image(gearIcon, this.gearX, this.gearY, this.gearSize, this.gearSize);
 
-    this.drawMenu();
-    this.drawPanel();
-    this.cat.update();
-    this.cat.display();
+   this.ui.drawTopButtons();
+    this.ui.drawPanels();
+    this.ui.drawTouchControls();
+
    
     checkTouchControls();
     drawTouchButtons();
@@ -67,109 +74,19 @@ class Game {
     transition.update();
     transition.draw();
     
-    triggerSleepUnlock(this); 
+    triggerSleepUnlock(this);
+    
+    if (!this.cat.isSleeping && this.sleepUnlockTriggered) {
+      this.sleepUnlockTriggered = false;
+      this.sleepMessageShown = false;
+    }
+    
     this.handleInteractHints();
     this.handleDialogClear();
     
     drawDialog();
 }
   
-   drawMenu() {
-    if (!this.showMenu) return;
-
-    fill(255, 255, 255, 220);
-    noStroke();
-    rect(width - 200, 50, 180, 140, 10);
-
-    fill(0);
-    textSize(16);
-    textAlign(LEFT, TOP);
-    text(langText[this.currentLang].btn_control, width - 180, 70);
-    text(langText[this.currentLang].btn_lang, width - 180, 110);
-    text(langText[this.currentLang].btn_volume, width - 180, 150);
-  }
-
-  drawPanel() {
-    if (this.activePanel === 'control') {
-      fill(255, 255, 255, 220);
-      noStroke();
-      rect(width / 2 - 160, height / 2 - 100, 320, 200, 12);
-      fill(0);
-      textAlign(CENTER, TOP);
-      textSize(16);
-      text(langText[this.currentLang].control, width / 2, height / 2 - 80);
-
-      fill(200);
-      rect(width / 2 - 40, height / 2 + 60, 80, 30, 8);
-      fill(0);
-      textAlign(CENTER, CENTER);
-      textSize(14);
-      text(langText[this.currentLang].btn_close, width / 2, height / 2 + 75);
-    }
-    if (this.activePanel === 'language') {
-      fill(255, 255, 255, 220);
-      noStroke();
-      rect(width / 2 - 160, height / 2 - 80, 320, 160, 12);
-
-      fill(0);
-      textAlign(CENTER, TOP);
-      textSize(16);
-      text(langText[this.currentLang].language, width / 2, height / 2 - 70);
-
-      // 畫兩個語言選項按鈕
-      fill(200);
-      rect(width / 2 - 100, height / 2 - 20, 80, 30, 8);
-      rect(width / 2 + 20, height / 2 - 20, 80, 30, 8);
-
-      fill(0);
-      textAlign(CENTER, CENTER);
-      textSize(14);
-      text(langText[this.currentLang].btn_zh, width / 2 - 60, height / 2 - 5);
-      text(langText[this.currentLang].btn_en, width / 2 + 60, height / 2 - 5);
-
-      // 畫關閉按鈕
-      fill(200);
-      rect(width / 2 - 40, height / 2 + 40, 80, 30, 8);
-      fill(0);
-      text(langText[this.currentLang].btn_close, width / 2, height / 2 + 55);
-    }
-    if (this.activePanel === 'volume') {
-      fill(255, 255, 255, 220);
-      noStroke();
-      rect(width / 2 - 160, height / 2 - 80, 320, 160, 12);
-
-      fill(0);
-      textAlign(CENTER, TOP);
-      textSize(16);
-      text(langText[this.currentLang].btn_volume, width / 2, height / 2 - 65);
-
-      // 音量條背景
-      let volBarX = width / 2 - 100;
-      let volBarY = height / 2 - 10;
-      let volBarW = 200;
-      let volBarH = 20;
-      fill(180);
-      rect(volBarX, volBarY, volBarW, volBarH, 8);
-
-      // 音量條填充
-      fill(0, 150, 255);
-      rect(volBarX, volBarY, volBarW * getVolume(), volBarH, 8);
-
-      // 數值
-      fill(0);
-      textSize(14);
-      textAlign(LEFT, CENTER);
-      text(Math.round(getVolume() * 100) + "%", volBarX + volBarW + 10, volBarY + volBarH / 2);
-
-      // 關閉按鈕
-      fill(200);
-      rect(width / 2 - 40, height / 2 + 40, 80, 30, 8);
-      fill(0);
-      textAlign(CENTER, CENTER);
-      text(langText[this.currentLang].btn_close, width / 2, height / 2 + 55);
-    }
-  }
-
   mousePressed(mx, my) {
     // CONTROL PANEL 關閉
     if (this.activePanel === 'control') {
