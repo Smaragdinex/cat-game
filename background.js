@@ -86,7 +86,7 @@ class SceneManager {
 
 function preloadBackgroundImages() {
   // 載入背景圖片（保留原結構）
-  sceneImages.default = loadImage('data/background/test001.png');
+  sceneImages.default = loadImage('data/background/train.png');
   sceneImages.train = loadImage('data/background/train01.png');
   sceneImages.train1 = loadImage('data/background/train02.png');
   sceneImages.web1 = loadImage('data/background/web1.png');
