@@ -42,12 +42,33 @@ function hideDialog() {
   dialogIsLocked = false;
 }
 
-function drawEdgeInteractHint(cat) {
-  let floatOffset = sin(millis() / 400) * 6; 
-  imageMode(CENTER);
-  image(interactBtnImg, cat.x + cat.width / 2, cat.y - 30 + floatOffset, 40, 40);
-  imageMode(CORNER);
-}
+  function drawEdgeInteractHint(cat) {
+      let floatOffset = sin(millis() / 400) * 6;
+
+      const hitbox = cat.getHitbox();
+      const leftEdge = hitbox.x;
+      const rightEdge = hitbox.x + hitbox.w;
+
+      const showLeft = leftEdge <= 30;
+      const showRight = rightEdge >= width - 30;
+
+      let hintX;
+      const padding = 10;  // 可依需求調整距離
+
+      if (showLeft) {
+        hintX = hitbox.x + hitbox.w + padding;  // 左邊界：從 hitbox 右側往右偏移
+      } else if (showRight) {
+        hintX = hitbox.x - padding;             // 右邊界：從 hitbox 左側往左偏移
+      } else {
+        hintX = hitbox.x + hitbox.w / 2;        // 中間：hitbox 正中央
+      }
+
+      const hintY = hitbox.y - 100 + floatOffset;
+
+      imageMode(CENTER);
+      image(interactBtnImg, hintX, hintY, 40, 40);
+      imageMode(CORNER);
+    }
 
 function drawDialog() {
   if (!dialogActive) return;

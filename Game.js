@@ -238,20 +238,27 @@ class Game {
   
    
   handleInteractHints() {
-    const npcs = sceneManager.getCurrentScene().npcs || [];
-    let nearNpc = null;
-    for (let npc of npcs) {
-      if (npc.isNear(this.cat)) {
-        nearNpc = npc;
-        break;
+      const npcs = sceneManager.getCurrentScene().npcs || [];
+      let nearNpc = null;
+
+      for (let npc of npcs) {
+        if (npc.isNear(this.cat)) {
+          nearNpc = npc;
+          break;
+        }
+      }
+
+      this._nearNpc = nearNpc; // 可在其他邏輯用
+
+      // ✅ 改為獨立定義：提示顯示寬鬆一點（例如 30px 以內）
+      const showHintLeft = this.cat.getHitboxLeft() <= 30;
+      const showHintRight = this.cat.getHitboxRight() >= width - 30;
+
+      if (nearNpc || showHintLeft || showHintRight) {
+        drawEdgeInteractHint(this.cat);
       }
     }
-    this._nearNpc = nearNpc; // 可在其他邏輯用
 
-    if (nearNpc || this.cat.isNearLeftEdge() || this.cat.isNearRightEdge()) {
-      drawEdgeInteractHint(this.cat);
-    }
-  }
 
   handleDialogClear() {
     // 清除鎖定型（邊界）對話

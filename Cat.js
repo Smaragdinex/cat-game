@@ -35,14 +35,22 @@ class Cat {
     this.lastWakeTime = 0;
        
     this.meowSound = null;
+    
+    this.hitboxOffsetX = 35;
+    this.hitboxOffsetY = 35;
+    this.hitboxWidth = 55;
+    this.hitboxHeight = 45;
+    
+    this.debugMode = false;
+
   }
   
   isNearLeftEdge() {
-      return this.x <= 40;
+      return this.getHitboxLeft() <= 30;
   }
 
   isNearRightEdge() {
-      return this.x > width - 60 - this.width;
+      return this.getHitboxRight() >= width - 30;
   }
 
   preload() {
@@ -78,92 +86,29 @@ class Cat {
   update() {
     this.currentFrame++;
     
-    const movingRight = keyIsDown(RIGHT_ARROW) || this.touchMovingRight;
-    const movingLeft = keyIsDown(LEFT_ARROW) || this.touchMovingLeft;
-    const running = keyIsDown(SHIFT) || this.touchRunning;
-    
-    if (this.isMeowing) {
-      const meowFrames = this.animations[`meow-${this.direction}`];
-      const max = meowFrames?.length || 0;
-      if (millis() - this.meowStartTime > max * 100) {
-        this.isMeowing = false;
-      } else {
-        return;
-      }
-    }
+    if (this.handleMeowState()) return;
+    if (this.handleSitDown()) return;
 
-    if (this.isSittingDown) {
-      this.sitFrameIndex += this.sitDirection;
-      const max = this.animations[`sit-${this.direction}`].length - 1;
-
-      if (this.sitFrameIndex > max) {
-        this.sitFrameIndex = max;
-        this.isSittingDown = false;
-        this.isSitting = true;
-        this.currentFrame = 0;
-      }
-
-      if (this.sitFrameIndex < 0) {
-        this.sitFrameIndex = 0;
-        this.isSittingDown = false;
-        this.isSitting = false;
-        this.currentFrame = 0;
-      }
-      return; 
-    }
-    // ✅ 檢查是否應該進入睡眠
-    if (this.isSitting && !this.isSleeping) {
-      if (this.sleepStartTime === 0 && millis() - this.lastWakeTime > 10000) {
-        this.sleepStartTime = millis(); // 開始計時
-      } else if (this.sleepStartTime > 0 && millis() - this.sleepStartTime >= 5000) {
-        this.isSleeping = true;
-        this.currentFrame = 0; // 重設動畫播放
-      }
-    } else {
-      this.sleepStartTime = 0; // 沒有坐著就不要計時
-    }
+    this.handleSleepCheck();
   
     if (this.isSitting) {
       this.isMoving = false;
       this.state = 'idle';
       return;
     }
-
-    if (movingRight) {
-      this.direction = 'right';
-      this.isMoving = true;
-    } else if (movingLeft) {
-      this.direction = 'left';
-      this.isMoving = true;
-    } else {
-      this.isMoving = false;
-    }
     
-    this.isRunning = running;
-    
-    if (this.isMoving) {
-      const moveSpeed = this.isRunning ? this.speed * 2 : this.speed;
-      this.x += this.direction === 'right' ? moveSpeed : -moveSpeed;
+    this.handleMovementInput();
+    this.applyMovement();
 
-      this.state = running ? 'run' : 'walk';
-    } else {
-      this.state = 'idle';
-    }
-    
-    // 邊界限制 (調整圖片不超出範圍)
-    if (this.x < 0) this.x = 0;
-    if (this.x > width - 100) this.x = width - 100;
+    this.hitbox = this.getHitbox();
 
-    // 更新 hitbox
-    this.hitbox = {
-      x: this.x + this.hitboxOffsetX,
-      y: this.y + this.hitboxOffsetY,
-      w: this.hitboxWidth,
-      h: this.hitboxHeight
-    };
   }
 
-  display() {   
+  display() {
+    
+    this.debugDrawHitbox(); // 🐾 測試視覺化用
+
+    
     if (this.isSleeping) {
       const key = this.direction === 'right' ? 'sleeping-right' : 'sleeping-left';
       const frames = this.animations[key];
@@ -217,23 +162,43 @@ class Cat {
     } else {
       console.warn('Missing animation:', key);
     }
+    
+    
+    if (this.debugMode) {
+      push();
+      fill(255);
+      textSize(16);
+      textAlign(LEFT, TOP);
+      text("Cat X: " + Math.floor(this.x), this.x + 5, this.y - 20);
+      pop();
+    }
   }
 
   keyPressed(keyCode) {
     this.isSleeping = false;
     this.sleepStartTime = 0;
     
-    if (this.x <= 0) this.tryMoveScene("left");
-    if (this.x + this.width >= width) this.tryMoveScene("right");
-    
     if (keyCode === 88) {
+      // ✅ 先判斷邊界場景切換
+      if (this.isNearLeftEdge() && this.direction === 'left') {
+        this.tryMoveScene("left");
+        return;
+      }
+      if (this.isNearRightEdge() && this.direction === 'right') {
+        this.tryMoveScene("right");
+        return;
+      }
+
+      // ✅ 接著才是 NPC 對話
       const npcs = sceneManager.getCurrentScene().npcs || [];
       for (let npc of npcs) {
         if (npc.isNear(this)) {
-          npc.speak();   // ✅ 播放對話
-          return;        // ✅ 不再繼續往下
+          npc.speak();
+          return;
         }
       }
+
+      // ✅ 最後才是坐下/起來
       if (!this.isSittingDown) {
         this.isSittingDown = true;
         this.sitDirection = this.isSitting ? -1 : 1;
@@ -327,6 +292,119 @@ class Cat {
     }
   }
 
+  debugDrawHitbox() {
+    
+    if (!this.debugMode) return;
+    
+    push();
+    noFill();
+    stroke(255, 0, 0);
+    strokeWeight(2);
+    rect(this.x, this.y, CAT_DISPLAY_SIZE, CAT_DISPLAY_SIZE); // 🟥 圖片邊界紅框
+
+    if (this.hitbox) {
+      stroke(0, 255, 0);
+      strokeWeight(1.5);
+      rect(this.hitbox.x, this.hitbox.y, this.hitbox.w, this.hitbox.h); // 🟩 碰撞 hitbox 綠框
+    }
+    pop();   
+  }
+
+    getHitbox() {
+      return {
+        x: this.x + this.hitboxOffsetX,
+        y: this.y + this.hitboxOffsetY,
+        w: this.hitboxWidth,
+        h: this.hitboxHeight
+      };
+    }
+
+    getHitboxLeft() {
+      return this.hitbox?.x ?? this.x;
+    }
+      
+    getHitboxRight() {
+      return this.hitbox?.x + this.hitbox?.w ?? this.x + this.width;
+    }
+
+
+    handleMeowState() {
+      if (this.isMeowing) {
+        const meowFrames = this.animations[`meow-${this.direction}`];
+        const max = meowFrames?.length || 0;
+        if (millis() - this.meowStartTime > max * 100) {
+          this.isMeowing = false;
+        }
+        return true;
+      }
+      return false;
+    }
+
+    handleSitDown() {
+      if (this.isSittingDown) {
+        this.sitFrameIndex += this.sitDirection;
+        const max = this.animations[`sit-${this.direction}`].length - 1;
+
+        if (this.sitFrameIndex > max) {
+          this.sitFrameIndex = max;
+          this.isSittingDown = false;
+          this.isSitting = true;
+          this.currentFrame = 0;
+        }
+
+        if (this.sitFrameIndex < 0) {
+          this.sitFrameIndex = 0;
+          this.isSittingDown = false;
+          this.isSitting = false;
+          this.currentFrame = 0;
+        }
+        return true;
+      }
+      return false;
+    }
+
+    handleSleepCheck() {
+      if (this.isSitting && !this.isSleeping) {
+        if (this.sleepStartTime === 0 && millis() - this.lastWakeTime > 10000) {
+          this.sleepStartTime = millis(); // 開始計時
+        } else if (this.sleepStartTime > 0 && millis() - this.sleepStartTime >= 5000) {
+          this.isSleeping = true;
+          this.currentFrame = 0;
+        }
+      } else {
+        this.sleepStartTime = 0;
+      }
+    }
+
+    handleMovementInput() {
+      const movingRight = keyIsDown(RIGHT_ARROW) || this.touchMovingRight;
+      const movingLeft = keyIsDown(LEFT_ARROW) || this.touchMovingLeft;
+      this.isRunning = keyIsDown(SHIFT) || this.touchRunning;
+
+      if (movingRight) {
+        this.direction = 'right';
+        this.isMoving = true;
+      } else if (movingLeft) {
+        this.direction = 'left';
+        this.isMoving = true;
+      } else {
+        this.isMoving = false;
+      }
+    }
+
+    applyMovement() {
+      if (this.isMoving) {
+        const moveSpeed = this.isRunning ? this.speed * 2 : this.speed;
+        this.x += this.direction === 'right' ? moveSpeed : -moveSpeed;
+        this.state = this.isRunning ? 'run' : 'walk';
+      } else {
+        this.state = 'idle';
+      }
+
+      // 邊界限制
+      if (this.x < -30) this.x = -30;
+      if (this.x > width - 90) this.x = width - 90;
+    }
 
 
 }
