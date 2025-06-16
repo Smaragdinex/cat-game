@@ -16,7 +16,8 @@ class Game {
     this.currentLang = 'zh';
     this.shaker = new TrainShaker();
     this.ui = new GameUI(this, font);
-
+    this.platformManager = new PlatformManager();
+    
   }
   
   preload() {
@@ -38,6 +39,9 @@ class Game {
     initTouchBindings();
     this.updateDynamicPositions();
     setupNPCDialogs();
+    const sceneName = sceneManager.getCurrentScene().name;
+    this.platformManager.setupPlatformsForScene(sceneName);
+
     
   }
 
@@ -82,6 +86,10 @@ class Game {
     
     this.handleInteractHints();
     this.handleDialogClear();
+    
+    this.platformManager.display();
+    this.platformManager.checkCollision(this.cat);
+
     
     drawDialog();
 }

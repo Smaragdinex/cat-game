@@ -107,71 +107,14 @@ class Cat {
   display() {
     
     this.debugDrawHitbox(); // 🐾 測試視覺化用
+    
+    if (this.displaySleeping()) return;
+    if (this.displaySitting()) return;
+    if (this.displayMeowing()) return;
 
+    this.displayStandardAnimation();
+    this.displayDebugInfo();
     
-    if (this.isSleeping) {
-      const key = this.direction === 'right' ? 'sleeping-right' : 'sleeping-left';
-      const frames = this.animations[key];
-      if (frames) {
-        const index = Math.floor(this.currentFrame / 20) % frames.length;
-        image(frames[index], this.x, this.y, CAT_DISPLAY_SIZE, CAT_DISPLAY_SIZE);
-      } else {
-        console.warn('Missing sleep frames:', key);
-      }
-      return;
-    }
-    
-    // 🪑 坐下動畫 or 起來動畫
-    if (this.isSitting || this.isSittingDown) {
-      const sitKey = `sit-${this.direction}`;
-      const sitFrames = this.animations[sitKey];
-      if (sitFrames) {
-        let index;
-        if (this.isSittingDown) {
-          index = this.sitFrameIndex % sitFrames.length;
-        } else {
-          index = sitFrames.length - 1;
-        }
-        image(sitFrames[index], this.x, this.y, CAT_DISPLAY_SIZE, CAT_DISPLAY_SIZE);
-      } else {
-        console.warn('Missing sit frames:', sitKey);
-      }
-      return;
-    }
-    
-    //Meow
-    if (this.isMeowing) {
-      const key = `meow-${this.direction}`;
-      const frames = this.animations[key];
-      if (frames) {
-        const index = Math.floor(this.currentFrame / 4) % frames.length;
-        image(frames[index], this.x, this.y, CAT_DISPLAY_SIZE, CAT_DISPLAY_SIZE);
-      } else {
-        console.warn('Missing meow frames:', key);
-      }
-      return;
-    }
-
-    // 🐾 其他移動或 idle 動畫
-    const key = `${this.state}-${this.direction}`;
-    const frames = this.animations[key];
-    if (frames) {
-      const index = this.currentFrame % frames.length;
-      const img = frames[index];
-      image(img, this.x, this.y, CAT_DISPLAY_SIZE, CAT_DISPLAY_SIZE);
-    } else {
-      console.warn('Missing animation:', key);
-    }
-    
-    
-    if (this.debugMode) {
-      push();
-      fill(255);
-      textSize(16);
-      textAlign(LEFT, TOP);
-      text("Cat X: " + Math.floor(this.x), this.x + 5, this.y - 20);
-      pop();
-    }
   }
 
   keyPressed(keyCode) {
@@ -405,6 +348,76 @@ class Cat {
       if (this.x < -30) this.x = -30;
       if (this.x > width - 90) this.x = width - 90;
     }
+    
+      displaySleeping() {
+      if (!this.isSleeping) return false;
+      const key = this.direction === 'right' ? 'sleeping-right' : 'sleeping-left';
+      const frames = this.animations[key];
+      if (frames) {
+        const index = Math.floor(this.currentFrame / 20) % frames.length;
+        image(frames[index], this.x, this.y, CAT_DISPLAY_SIZE, CAT_DISPLAY_SIZE);
+      } else {
+        console.warn('Missing sleep frames:', key);
+      }
+      return true;
+    }
+      
+      displaySitting() {
+      if (!this.isSitting && !this.isSittingDown) return false;
+
+      const sitKey = `sit-${this.direction}`;
+      const sitFrames = this.animations[sitKey];
+      if (sitFrames) {
+        let index = this.isSittingDown
+          ? this.sitFrameIndex % sitFrames.length
+          : sitFrames.length - 1;
+        image(sitFrames[index], this.x, this.y, CAT_DISPLAY_SIZE, CAT_DISPLAY_SIZE);
+      } else {
+        console.warn('Missing sit frames:', sitKey);
+      }
+      return true;
+    }
+      
+    displayMeowing() {
+      if (!this.isMeowing) return false;
+
+      const key = `meow-${this.direction}`;
+      const frames = this.animations[key];
+      if (frames) {
+        const index = Math.floor(this.currentFrame / 4) % frames.length;
+        image(frames[index], this.x, this.y, CAT_DISPLAY_SIZE, CAT_DISPLAY_SIZE);
+      } else {
+        console.warn('Missing meow frames:', key);
+      }
+      return true;
+    }
+    
+    displayStandardAnimation() {
+      const key = `${this.state}-${this.direction}`;
+      const frames = this.animations[key];
+      if (frames) {
+        const index = this.currentFrame % frames.length;
+        image(frames[index], this.x, this.y, CAT_DISPLAY_SIZE, CAT_DISPLAY_SIZE);
+      } else {
+        console.warn('Missing animation:', key);
+      }
+    }
+
+    displayDebugInfo() {
+      if (!this.debugMode) return;
+      push();
+      fill(255);
+      textSize(16);
+      textAlign(LEFT, TOP);
+      text("Cat X: " + Math.floor(this.x), this.x + 5, this.y - 20);
+      pop();
+    }
+      
+    adjustToPlatformY(platformY) {
+      const offsetY = this.hitbox.y - this.y;
+      this.y = platformY - this.hitboxHeight - offsetY;
+    }
+
 
 
 }

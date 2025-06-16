@@ -65,7 +65,6 @@ class SceneManager {
 
   transition(direction, cat, option = {}) {
     if (!cat) {
-      console.warn("🚨 transition 被呼叫但 cat 是 undefined！");
       return;
     }
     const current = this.getCurrentScene();
@@ -81,6 +80,12 @@ class SceneManager {
     if (!option.silent && next.playDoorSfx) {
       playDoorSfx();
     }
+    
+    if (typeof platformManager !== "undefined") {
+      const sceneName = this.getCurrentScene().name;
+      platformManager.setupPlatformsForScene(sceneName);
+    }
+    
   }
 }
 
@@ -105,8 +110,8 @@ function preloadBackgroundImages() {
     canEnterDream: true,
     showRailing: false,
     entryMap: {
-    left: { to: 0, spawnX: 860 ,canGo: false},
-    right: { to: 0, spawnX: 10 ,canGo: false}
+    left: { to: 0, spawnX: 865 ,canGo: false},
+    right: { to: 0, spawnX: -25 ,canGo: false}
   },
     npcs:[
     new NPC({ name: "流浪漢", x: 650, y: 315, sprite: npcImages.homeless, dialogKey: "homeless" })
@@ -118,8 +123,8 @@ function preloadBackgroundImages() {
     bgKey: "default",
     playDoorSfx: true,
     entryMap: {
-      left: { to: 2, spawnX: 860 ,canGo: true},
-      right: { to: 2, spawnX: 10 ,canGo: true}
+      left: { to: 2, spawnX: 865 ,canGo: true},
+      right: { to: 2, spawnX: -25 ,canGo: true}
     },
     npcs:[
     new NPC({ name: "老爺爺", x: 660, y: 300, sprite: npcImages.grandpa, dialogKey: "grandpa" })
@@ -132,8 +137,8 @@ function preloadBackgroundImages() {
     playDoorSfx: true,
     canEnterDream: true,
     entryMap: {
-      left: { to: 1, spawnX: 860 ,canGo: true},
-      right: { to: 1, spawnX: 10 ,canGo: true}
+      left: { to: 1, spawnX: 865 ,canGo: true},
+      right: { to: 1, spawnX: -25 ,canGo: true}
     }
   }));
 
@@ -141,8 +146,8 @@ function preloadBackgroundImages() {
     name: "003",
     bgKey: "default",
     entryMap: {
-      left: { to: 2, spawnX: 860 ,canGo: true},
-      right: { to: 4, spawnX: 10 ,canGo: true}
+      left: { to: 2, spawnX: 865 ,canGo: true},
+      right: { to: 4, spawnX: -25 ,canGo: true}
     }
   }));
 
@@ -150,8 +155,8 @@ function preloadBackgroundImages() {
     name: "004",
     bgKey: "default",
     entryMap: {
-      left: { to: 3, spawnX: 860 ,canGo: true},
-      right: { to: 5, spawnX: 10 ,canGo: true}
+      left: { to: 3, spawnX: 865 ,canGo: true},
+      right: { to: 5, spawnX: -25 ,canGo: true}
     }
   }));
 
@@ -159,7 +164,7 @@ function preloadBackgroundImages() {
     name: "005",
     bgKey: "default",
     entryMap: {
-      left: { to: 4, spawnX: 860 ,canGo: true}
+      left: { to: 4, spawnX: 865 ,canGo: true}
     }
   }));
 }
