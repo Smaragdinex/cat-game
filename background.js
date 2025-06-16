@@ -92,7 +92,6 @@ function preloadBackgroundImages() {
   sceneImages.web1 = loadImage('data/background/web1.png');
   sceneImages.web2 = loadImage('data/background/web2.png');
   sceneImages.web3 = loadImage('data/background/web3.png');
-
   railingImg = loadImage('data/background/railing.png');
 
   // 初始化 sceneManager
