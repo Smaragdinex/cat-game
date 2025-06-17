@@ -6,7 +6,7 @@ class Platform {
     this.h = h;
   }
 
-  display(debugMode) {
+  display(debugMode = false) {
     if (!debugMode) return;
 
     push();

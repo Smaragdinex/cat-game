@@ -89,7 +89,7 @@ class Game {
     
     this.platformManager.display();
     this.platformManager.checkCollision(this.cat);
-
+    maybeTriggerSleepHint(this);
     
     drawDialog();
 }
@@ -203,6 +203,10 @@ class Game {
       if (nearNpc) { 
         nearNpc.speak();
         this.currentInteractingNpc = nearNpc;
+        
+        if (nearNpc.dialogKey === "homeless") {
+          this.dialogWithSleeperDone = true; 
+        }
         return;
       }
       const handled = this.trySceneTransition();

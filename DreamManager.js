@@ -1,5 +1,45 @@
 // DreamManager.js
 
+let sleepHintTimerStarted = false;
+let sleepHintLastTime = 0;
+const sleepHintInterval = 30000;
+
+function maybeTriggerSleepHint(game) {
+  const scene = sceneManager.getCurrentScene();
+
+  // ✅ 條件1：如果不是場景0，就不顯示提示
+  if (!scene || scene.name !== "000") {
+    sleepHintTimerStarted = false;
+    return;
+  }
+
+  // ✅ 條件2：玩家已坐下或入睡 → 停止提示
+  if (sleepHintTimerStarted && (game.cat.isSitting || game.cat.isSleeping)) {
+    sleepHintTimerStarted = false;
+    return;
+  }
+
+  // ✅ 條件3：如果對話過，啟動提示計時器
+  if (!sleepHintTimerStarted && game.dialogWithSleeperDone) {
+    sleepHintTimerStarted = true;
+    sleepHintLastTime = millis();
+  }
+
+  // ✅ 條件4：每次間隔30秒提示一次
+  if (sleepHintTimerStarted) {
+    const elapsed = millis() - sleepHintLastTime;
+    if (elapsed > sleepHintInterval) {
+      showDialog(
+        langText[game.currentLang].dialog_sleephint,
+        langText[game.currentLang].system,
+        4000
+      );
+      sleepHintLastTime = millis(); // ⏱ 重置下一次提示計時
+    }
+  }
+}
+
+
 function triggerSleepUnlock(game) {
   
   const scene = sceneManager.getCurrentScene();

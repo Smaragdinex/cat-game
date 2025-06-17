@@ -114,7 +114,7 @@ function preloadBackgroundImages() {
     right: { to: 0, spawnX: -25 ,canGo: false}
   },
     npcs:[
-    new NPC({ name: "流浪漢", x: 650, y: 315, sprite: npcImages.homeless, dialogKey: "homeless" })
+    new NPC({ name: "未知的男子", x: 650, y: 315, sprite: npcImages.homeless, dialogKey: "homeless" })
       ]
   }));
 
