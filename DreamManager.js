@@ -29,7 +29,7 @@ function maybeTriggerSleepHint(game) {
   if (sleepHintTimerStarted) {
     const elapsed = millis() - sleepHintLastTime;
     if (elapsed > sleepHintInterval) {
-      showDialog(
+      game.dialogue.show(
         langText[game.currentLang].dialog_sleephint,
         langText[game.currentLang].system,
         4000
@@ -51,7 +51,7 @@ function triggerSleepUnlock(game) {
 
   if (sleepDuration > 12000 && !game.sleepMessageShown) {
     // 顯示訊息
-    showDialog(
+    game.dialogue.show(
       langText[game.currentLang].dialog_dream, // e.g. "你似乎做了一個夢..."
       langText[game.currentLang].system,       // e.g. "系統"
       3000

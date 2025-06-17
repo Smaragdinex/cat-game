@@ -15,6 +15,10 @@ const langText = {
     dialog_locked: "這裡不能過去喵！鎖住了！！",
     dialog_dream: "你似乎做了一場夢…喵",
     dialog_sleephint: "你也許該……坐下來，休息一下？",
+    dialog_train_question: "你知道這列車正往哪邊走嗎？",
+    dialog_train_left: "你選擇了左側的列車，回到過去。",
+    dialog_train_right: "你選擇了右側的列車，通往未來。",
+    dialog_train_after: "老人只是靜靜地看著你。",
     system: "系統",
     btn_zh: "中文",
     btn_en: "英文"
@@ -31,6 +35,10 @@ const langText = {
     dialog_locked: "You can't go through meow! It's locked!",
     dialog_dream: "You seem to have had a dream...Meow.",
     dialog_sleephint: "Maybe... you should sit down and rest.",
+    dialog_train_question: "Do you know which direction this train is heading?",
+    dialog_train_left: "You chose the left train — to the past.",
+    dialog_train_right: "You chose the right train — to the future.",
+    dialog_train_after: "The old man silently looks at you.",
     system: "System",
     btn_zh: "Chinese",
     btn_en: "English"

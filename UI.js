@@ -121,7 +121,5 @@ class GameUI {
     drawTouchButtons(); // 你原本的虛擬控制函式
   }
   
-   
-  
   
 }

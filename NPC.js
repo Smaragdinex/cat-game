@@ -32,7 +32,7 @@ class NPC{
   speak() {
     const text = npcDialogs[this.dialogKey]?.[game.currentLang] || "......";
     const displayName = langText?.[game.currentLang]?.[`npc_${this.dialogKey}`] || this.name;
-    showDialog(text, displayName);
+    game.dialogue.show(text, displayName);
   }
 }
 
