@@ -1,6 +1,10 @@
 let sceneImages = {};
 let railingImg;
 let sceneManager;
+let nightViewImg;
+let nightOffset = 0;
+let nightScrollSpeed = 1;
+
 
 class Scene {
   constructor({ name, bgKey, entryMap, npcs = [],playDoorSfx = true, canEnterDream = false, showRailing = false}) {
@@ -30,6 +34,14 @@ class SceneManager {
 
   draw() {
     const scene = this.getCurrentScene();
+    
+    if (scene.name === "001" || scene.name === "002") {
+      if (game.trainDirection) {
+        updateNightView(game.trainDirection);
+        drawNightView();
+      }
+    }
+    
     const img = sceneImages[scene.bgKey];
     if (!img) return;
 
@@ -93,10 +105,9 @@ function preloadBackgroundImages() {
   // 載入背景圖片（保留原結構）
   sceneImages.default = loadImage('data/background/train.png');
   sceneImages.train = loadImage('data/background/train01.png');
-  sceneImages.train1 = loadImage('data/background/train02.png');
-  sceneImages.web1 = loadImage('data/background/web1.png');
-  sceneImages.web2 = loadImage('data/background/web2.png');
-  sceneImages.web3 = loadImage('data/background/web3.png');
+  nightViewImg = loadImage('data/background/NightView.png');
+
+
   railingImg = loadImage('data/background/railing.png');
 
   // 初始化 sceneManager
@@ -120,7 +131,7 @@ function preloadBackgroundImages() {
 
   sceneManager.addScene(new Scene({
     name: "001",
-    bgKey: "default",
+    bgKey: "train",
     playDoorSfx: true,
     entryMap: {
       left: { to: 2, spawnX: 865 ,canGo: true},
@@ -133,7 +144,7 @@ function preloadBackgroundImages() {
 
   sceneManager.addScene(new Scene({
     name: "002",
-    bgKey: "default",
+    bgKey: "train",
     playDoorSfx: true,
     canEnterDream: true,
     entryMap: {
@@ -192,3 +203,24 @@ function drawBackground() {
     game.shaker.reset();  // pop 掉畫布偏移
   }
 }
+
+function updateNightView(direction = "east") {
+  if (!nightViewImg) return;
+  if (direction === "east") {
+    nightOffset -= nightScrollSpeed;
+  } else if (direction === "west") {
+    nightOffset += nightScrollSpeed;
+  }
+  nightOffset %= nightViewImg.width;
+}
+
+function drawNightView() {
+  if (!nightViewImg) return;
+
+  const w = nightViewImg.width;
+  const h = nightViewImg.height;
+
+  image(nightViewImg, nightOffset, 0, w, height);
+  image(nightViewImg, nightOffset + w, 0, w, height);
+}
+

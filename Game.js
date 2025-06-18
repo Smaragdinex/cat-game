@@ -42,6 +42,8 @@ class Game {
     setupNPCDialogs();
     const sceneName = sceneManager.getCurrentScene().name;
     this.platformManager.setupPlatformsForScene(sceneName);
+    game.trainDirection = "east";
+
   }
 
   updateDynamicPositions() {
