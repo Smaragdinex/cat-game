@@ -1,4 +1,4 @@
-// ✅ 重構後的 Game.js，使用 DialogueManager
+
 let transition = new TransitionManager();
 
 class Game {
@@ -90,69 +90,8 @@ class Game {
     this.dialogue.draw();
   }
 
-  mousePressed(mx, my) {
-    if (this.activePanel === 'control') {
-      if (
-        mx >= width / 2 - 40 && mx <= width / 2 + 40 &&
-        my >= height / 2 + 60 && my <= height / 2 + 90
-      ) {
-        this.activePanel = null;
-      }
-      return;
-    }
-
-    if (this.activePanel === 'language') {
-      if (mx >= width / 2 - 100 && mx <= width / 2 - 20 && my >= height / 2 - 20 && my <= height / 2 + 10) {
-        this.currentLang = 'zh';
-        this.activePanel = null;
-      }
-      if (mx >= width / 2 + 20 && mx <= width / 2 + 100 && my >= height / 2 - 20 && my <= height / 2 + 10) {
-        this.currentLang = 'en';
-        this.activePanel = null;
-      }
-      if (mx >= width / 2 - 40 && mx <= width / 2 + 40 && my >= height / 2 + 40 && my <= height / 2 + 70) {
-        this.activePanel = null;
-      }
-      return;
-    }
-
-    if (this.activePanel === 'volume') {
-      let volBarX = width / 2 - 100;
-      let volBarY = height / 2 - 10;
-      let volBarW = 200;
-      let volBarH = 20;
-      if (
-        mx >= volBarX && mx <= volBarX + volBarW &&
-        my >= volBarY && my <= volBarY + volBarH
-      ) {
-        let v = (mx - volBarX) / volBarW;
-        setVolume(constrain(v, 0, 1));
-      }
-      if (mx >= width / 2 - 40 && mx <= width / 2 + 40 && my >= height / 2 + 40 && my <= height / 2 + 70) {
-        this.activePanel = null;
-      }
-    }
-
-    if (this.showMenu) {
-      if (mx >= width - 200 && mx <= width - 20) {
-        if (my >= 60 && my <= 90) {
-          this.activePanel = 'control';
-          this.showMenu = false;
-        } else if (my >= 100 && my <= 130) {
-          this.activePanel = 'language';
-          this.showMenu = false;
-        } else if (my >= 140 && my <= 170) {
-          this.activePanel = 'volume';
-          this.showMenu = false;
-        }
-      } else {
-        this.showMenu = false;
-      }
-    } else {
-      if (dist(mx, my, this.gearX + this.gearSize / 2, this.gearY + this.gearSize / 2) < this.gearSize / 2) {
-        this.showMenu = true;
-      }
-    }
+  mousePressed(mx, my) {  
+    this.ui.handleClick(mx, my);
   }
 
   handleInteraction(x, y) {
@@ -161,35 +100,6 @@ class Game {
       this.bgmStarted = true;
     }
     this.mousePressed(x, y);
-  }
-
-  keyPressed(keyCode) {
-    if (keyCode === 88) {
-      if (this.dialogue.active) {
-        this.dialogue.nextLine();
-        return;
-      }
-
-      const scene = sceneManager.getCurrentScene();
-      const nearNpc = scene.npcs?.find(n => n.isNear(this.cat));
-      if (nearNpc) {
-        nearNpc.speak();
-        this.currentInteractingNpc = nearNpc;
-        if (nearNpc.dialogKey === "homeless") {
-          this.dialogWithSleeperDone = true;
-        }
-        return;
-      }
-
-      const handled = this.trySceneTransition();
-      if (handled) return;
-    }
-
-    this.cat.keyPressed(keyCode);
-  }
-
-  keyReleased(keyCode) {
-    this.cat.keyReleased(keyCode);
   }
 
   trySceneTransition() {

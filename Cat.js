@@ -132,14 +132,6 @@ class Cat {
         return;
       }
 
-      // ✅ 接著才是 NPC 對話
-      const npcs = sceneManager.getCurrentScene().npcs || [];
-      for (let npc of npcs) {
-        if (npc.isNear(this)) {
-          npc.speak();
-          return;
-        }
-      }
 
       // ✅ 最後才是坐下/起來
       if (!this.isSittingDown) {
@@ -185,6 +177,7 @@ class Cat {
     if (keyCode === 1001) this.touchMovingLeft = true;
     if (keyCode === 1002) this.touchMovingRight = true;
     if (keyCode === 1003) this.touchRunning = true;
+    
 }
   keyReleased(keyCode) {
     if (keyCode === 39 || keyCode === 37) {

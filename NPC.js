@@ -32,8 +32,41 @@ class NPC{
   speak() {
     const text = npcDialogs[this.dialogKey]?.[game.currentLang] || "......";
     const displayName = langText?.[game.currentLang]?.[`npc_${this.dialogKey}`] || this.name;
-    game.dialogue.show(text, displayName);
+
+    if (this.dialogKey === "grandpa") {
+      // ✅ 玩家已選過，不再重複選項流程
+      if (game.trainChoice) {
+        const finalLine = {
+          zh: ["謝謝你告訴我，小貓咪。"],
+          en: ["Thank you for telling me, kitty."]
+        };
+        game.dialogue.show(finalLine[game.currentLang], displayName);
+        return;
+      }
+
+      // ✨ 第一次對話流程（還沒選過）
+      game.dialogue.show(text, displayName, 0, (key, choice) => {
+        if (key === "train_direction") {
+          game.trainChoice = choice; // ✅ 記下選擇，避免重複
+
+          const followUp = {
+            zh: [
+              "謝謝你告訴我，小貓咪。"
+            ],
+            en: [
+              "Thank you for telling me, kitty."
+            ]
+          };
+          game.dialogue.show(followUp[game.currentLang], displayName);
+        }
+      });
+    } else {
+      game.dialogue.show(text, displayName);
+    }
   }
+
+
+
 }
 
 function setupNPCDialogs() {
@@ -47,14 +80,20 @@ function setupNPCDialogs() {
 };
   npcDialogs.grandpa = {
   zh: [
-  "你終於醒了……",
-  "夢境與現實，或許並沒有那麼不同。",
-  "喵……別忘了，你的選擇將決定下一段旅程。"
+  "你好,小貓咪",
+    "你知道這列車正在往東邊前進，還是往西邊？",
+  {
+      choices: ["往西走", "往東走"],
+      key: "train_direction"
+    }
   ],
   en: [
-  "You're finally awake…",
-  "Perhaps dreams and reality aren't so different.",
-  "Meow… Remember, your choices shape the journey ahead."
+  "Hello, Kitty.",
+  "Do you know if this train is heading east or west?",
+    {
+      choices: ["Going West", "Going East"],
+      key: "train_direction"
+    }
   ]
 };
 }

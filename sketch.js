@@ -1,3 +1,4 @@
+
 let game;
 let gearX = 0, gearY = 20, gearSize = 40;
 let cat;
@@ -19,11 +20,12 @@ function draw() {
 }
 
 function keyPressed() {
-  game.keyPressed(keyCode);
+  if (game.dialogue.handleChoiceKey(keyCode)) return;
+  handleKeyPressed(game, keyCode);
 }
 
 function keyReleased() {
-  game.keyReleased(keyCode);
+  handleKeyReleased(game, keyCode);
 }
 
 function mousePressed() {

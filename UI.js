@@ -121,5 +121,70 @@ class GameUI {
     drawTouchButtons(); // 你原本的虛擬控制函式
   }
   
-  
+  handleClick(mx, my) {
+    const game = this.game;
+
+    if (game.activePanel === 'control') {
+      if (mx >= width / 2 - 40 && mx <= width / 2 + 40 &&
+          my >= height / 2 + 60 && my <= height / 2 + 90) {
+        game.activePanel = null;
+      }
+      return;
+    }
+
+    if (game.activePanel === 'language') {
+      if (mx >= width / 2 - 100 && mx <= width / 2 - 20 && my >= height / 2 - 20 && my <= height / 2 + 10) {
+        game.currentLang = 'zh';
+        game.activePanel = null;
+      }
+      if (mx >= width / 2 + 20 && mx <= width / 2 + 100 && my >= height / 2 - 20 && my <= height / 2 + 10) {
+        game.currentLang = 'en';
+        game.activePanel = null;
+      }
+      if (mx >= width / 2 - 40 && mx <= width / 2 + 40 && my >= height / 2 + 40 && my <= height / 2 + 70) {
+        game.activePanel = null;
+      }
+      return;
+    }
+
+    if (game.activePanel === 'volume') {
+      let volBarX = width / 2 - 100;
+      let volBarY = height / 2 - 10;
+      let volBarW = 200;
+      let volBarH = 20;
+      if (mx >= volBarX && mx <= volBarX + volBarW &&
+          my >= volBarY && my <= volBarY + volBarH) {
+        let v = (mx - volBarX) / volBarW;
+        setVolume(constrain(v, 0, 1));
+      }
+      if (mx >= width / 2 - 40 && mx <= width / 2 + 40 &&
+          my >= height / 2 + 40 && my <= height / 2 + 70) {
+        game.activePanel = null;
+      }
+      return;
+    }
+
+    if (game.showMenu) {
+      if (mx >= width - 200 && mx <= width - 20) {
+        if (my >= 60 && my <= 90) {
+          game.activePanel = 'control';
+          game.showMenu = false;
+        } else if (my >= 100 && my <= 130) {
+          game.activePanel = 'language';
+          game.showMenu = false;
+        } else if (my >= 140 && my <= 170) {
+          game.activePanel = 'volume';
+          game.showMenu = false;
+        }
+      } else {
+        game.showMenu = false;
+      }
+      return;
+    }
+
+    if (dist(mx, my, game.gearX + game.gearSize / 2, game.gearY + game.gearSize / 2) < game.gearSize / 2) {
+      game.showMenu = true;
+    }
+  }
+
 }
