@@ -21,7 +21,7 @@ class Game {
     this.dialogue = new DialogueManager(this.currentLang);
     this.controlMode = "cat"; // 預設模式為貓咪控制
     this.joystick = new VirtualJoystick(0, 0);
-
+    this.lastDirection = "none";
 
   }
 
@@ -71,15 +71,11 @@ class Game {
     
     this.cat.update();
     this.cat.display();
-    
-    
+        
     this.joystick.update(touches);
     this.joystick.draw();
    // this.joystick.drawDebug();
     this.handleJoystickInput();
-    console.log("joystick active:", this.joystick.active);
-    
-   
     
     this.gearX = width - this.gearSize - 20;
     image(gearIcon, this.gearX, this.gearY, this.gearSize, this.gearSize);
@@ -185,16 +181,31 @@ class Game {
     if (!this.joystick.active) return;
 
     const dir = this.joystick.getDirection();
+    const prevDirection = this.lastDirection || "none";
+    let currentDirection = "none";
 
     if (this.controlMode === "cat") {
       if (dir.x > 0.5) {
-        this.cat.keyPressed(1002); // →
+        currentDirection = "right";
       } else if (dir.x < -0.5) {
-        this.cat.keyPressed(1001); // ←
-      } else {
+        currentDirection = "left";
+      }
+
+      // ✅ 方向改變 → 釋放上一個方向按鍵
+      if (currentDirection !== prevDirection) {
+        if (prevDirection === "left") this.cat.keyReleased(1001);
+        if (prevDirection === "right") this.cat.keyReleased(1002);
+      }
+
+      // ✅ 根據當前方向發送 keyPressed
+      if (currentDirection === "right") this.cat.keyPressed(1002);
+      if (currentDirection === "left") this.cat.keyPressed(1001);
+      if (currentDirection === "none") {
         this.cat.keyReleased(1001);
         this.cat.keyReleased(1002);
       }
+
+      this.lastDirection = currentDirection;
     }
 
     if (this.controlMode === "flashlight" && typeof flashlight !== "undefined") {
@@ -202,6 +213,7 @@ class Game {
       flashlight.y += dir.y * 4;
     }
   }
+
 
   
   
