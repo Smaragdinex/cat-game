@@ -22,8 +22,7 @@ class Game {
     this.controlMode = "cat"; // 預設模式為貓咪控制
     this.joystick = new VirtualJoystick(0, 0);
     this.lastDirection = "none";
-    this.lastRunning = false;
-
+    
   }
 
   preload() {
@@ -223,6 +222,7 @@ class Game {
       flashlight.y += dir.y * 4;
     }
   }
+
 
 
 }
