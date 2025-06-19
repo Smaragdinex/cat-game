@@ -185,24 +185,30 @@ class Game {
     let currentDirection = "none";
 
     if (this.controlMode === "cat") {
-      if (dir.x > 0.5) {
-        currentDirection = "right";
-      } else if (dir.x < -0.5) {
-        currentDirection = "left";
-      }
+      // 判斷方向
+      if (dir.x > 0.5) currentDirection = "right";
+      else if (dir.x < -0.5) currentDirection = "left";
 
-      // ✅ 方向改變 → 釋放上一個方向按鍵
+      // 切換方向時釋放原來的
       if (currentDirection !== prevDirection) {
         if (prevDirection === "left") this.cat.keyReleased(1001);
         if (prevDirection === "right") this.cat.keyReleased(1002);
       }
 
-      // ✅ 根據當前方向發送 keyPressed
+      // 按下新方向
       if (currentDirection === "right") this.cat.keyPressed(1002);
       if (currentDirection === "left") this.cat.keyPressed(1001);
       if (currentDirection === "none") {
         this.cat.keyReleased(1001);
         this.cat.keyReleased(1002);
+      }
+
+      // ✅ 根據搖桿強度判斷是否跑步
+      const strength = sqrt(dir.x * dir.x + dir.y * dir.y);
+      if (strength > 0.7) {
+        this.cat.keyPressed(1003); // Shift
+      } else {
+        this.cat.keyReleased(1003);
       }
 
       this.lastDirection = currentDirection;
@@ -213,6 +219,7 @@ class Game {
       flashlight.y += dir.y * 4;
     }
   }
+
 
 
   

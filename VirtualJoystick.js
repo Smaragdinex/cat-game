@@ -8,11 +8,11 @@ class VirtualJoystick {
     this.knobX = baseX;
     this.knobY = baseY;
     this.inputVector = { x: 0, y: 0 };
-    this.active = true;
+    this.active = this.isMobile();
   }
 
   isMobile() {
-    return /iPhone|iPad|Android/i.test(navigator.userAgent);
+    return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
   }
 
   update(touchPoints) {
