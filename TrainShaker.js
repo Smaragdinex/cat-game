@@ -2,7 +2,7 @@ class TrainShaker {
   constructor() {
     this.intensity = 2.0;     // 震動強度
     this.shakeDuration = 3000; // 每次震動持續時間（毫秒）
-    this.shakeInterval = 10000; // 間隔時間（毫秒）10 秒
+    this.shakeInterval = 20000; // 間隔時間（毫秒）10 秒
     this.lastShakeTime = 0;
     this.shaking = false;
     this.time = 0;

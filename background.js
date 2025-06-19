@@ -155,7 +155,7 @@ function preloadBackgroundImages() {
 
   sceneManager.addScene(new Scene({
     name: "003",
-    bgKey: "default",
+    bgKey: "train",
     entryMap: {
       left: { to: 2, spawnX: 865 ,canGo: true},
       right: { to: 4, spawnX: -25 ,canGo: true}
@@ -164,7 +164,7 @@ function preloadBackgroundImages() {
 
   sceneManager.addScene(new Scene({
     name: "004",
-    bgKey: "default",
+    bgKey: "train",
     entryMap: {
       left: { to: 3, spawnX: 865 ,canGo: true},
       right: { to: 5, spawnX: -25 ,canGo: true}
@@ -173,7 +173,7 @@ function preloadBackgroundImages() {
 
   sceneManager.addScene(new Scene({
     name: "005",
-    bgKey: "default",
+    bgKey: "train",
     entryMap: {
       left: { to: 4, spawnX: 865 ,canGo: true}
     }
@@ -190,7 +190,7 @@ function drawBackground() {
   const bgKey = scene.bgKey;
 
     // ✅ 根據背景是否是列車場景決定是否震動
-  if (bgKey === "default" || bgKey === "train1") {
+  if (bgKey === "default" || bgKey === "train") {
       game.shaker.start();
   } else {
       game.shaker.stop();

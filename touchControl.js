@@ -55,33 +55,48 @@ function drawTouchButtons() {
 // 檢查觸控並模擬鍵盤輸入
 function checkTouchControls() {
   let currentTouchKeys = new Set();
-  
-   const points = (touches.length > 0)
+
+  const points = (touches.length > 0)
     ? touches
     : (mouseIsPressed ? [{ x: mouseX, y: mouseY }] : []);
 
   for (let p of points) {
-    if (typeof p.x !== 'number' || typeof p.y !== 'number') continue; 
+    if (typeof p.x !== 'number' || typeof p.y !== 'number') continue;
+
     for (let btn of TOUCH_BINDINGS) {
       if (dist(p.x, p.y, btn.x, btn.y) < 30) {
         currentTouchKeys.add(btn.code);
+
+        // 🧠 按鈕剛被按下
         if (!touchKeys.has(btn.code)) {
-          if (btn.code === 88 && typeof game !== 'undefined') {
-            game.keyPressed(88);  
-          } else if (inputTarget?.keyPressed) {
-            inputTarget.keyPressed(btn.code);
+          // 🧠 將虛擬上下鍵轉換為 p5 系統的 keyCode
+          let actualKey = btn.code;
+          if (btn.code === 1004) actualKey = UP_ARROW;
+          if (btn.code === 1005) actualKey = DOWN_ARROW;
+
+          // 🧠 如果是對話選項相關按鍵（X / ↑ / ↓）
+          if ([88, UP_ARROW, DOWN_ARROW].includes(actualKey)) {
+            if (game.dialogue?.handleChoiceKey?.(actualKey)) return;
           }
 
+          // 🧠 一般處理鍵盤輸入
+          handleKeyPressed(game, actualKey);
         }
       }
     }
   }
 
-  // 判斷釋放的按鈕
+  // 🧠 處理釋放
   for (let code of touchKeys) {
     if (!currentTouchKeys.has(code)) {
-      if (inputTarget) inputTarget.keyReleased(code);
+      let actualKey = code;
+      if (code === 1004) actualKey = UP_ARROW;
+      if (code === 1005) actualKey = DOWN_ARROW;
+
+      handleKeyReleased(game, actualKey);
     }
   }
-  touchKeys = currentTouchKeys; // 更新狀態
+
+  // 更新狀態
+  touchKeys = currentTouchKeys;
 }
