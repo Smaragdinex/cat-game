@@ -38,8 +38,8 @@ class SceneManager {
     
     if (scene.name === "000") {
       if (game.trainDirection) {
-        updateMountainView(game.trainDirection);
-        drawMountainViewMasked();
+        updateCityView(game.trainDirection);
+        drawCityViewMasked();
       }
     }
     
@@ -114,7 +114,7 @@ function preloadBackgroundImages() {
   sceneImages.default = loadImage('data/background/train.png');
   sceneImages.train = loadImage('data/background/train01.png');
   nightViewImg = loadImage('data/background/NightView.png');
-  mountainViewImg = loadImage('data/background/MountainView.png');
+  CityViewImg = loadImage('data/background/CityView.png');
 
 
   railingImg = loadImage('data/background/railing.png');
@@ -233,38 +233,40 @@ function drawNightView() {
   image(nightViewImg, nightOffset + w, 0, w, height);
 }
 
-function updateMountainView(direction = "east") {
-  if (!mountainViewImg) return;
+function updateCityView(direction = "east") {
+  if (!CityViewImg) return;
   if (direction === "east") {
     nightOffset -= nightScrollSpeed; // ❗共用 same offset & speed
   } else if (direction === "west") {
     nightOffset += nightScrollSpeed;
   }
-  nightOffset %= mountainViewImg.width;
+  nightOffset %= CityViewImg.width;
 }
 
-function drawMountainViewMasked() {
-  if (!mountainViewImg) return;
+function drawCityViewMasked() {
+  if (!CityViewImg) return;
 
-  const w = mountainViewImg.width;
-  const h = mountainViewImg.height;
+  const imgW = CityViewImg.width;
+  const imgH = CityViewImg.height;
 
   const windowX = 20;
   const windowY = 200;
   const windowW = 900;
   const windowH = 300;
-  
-  let mountainYOffset = -130;
+
+  const cityYOffset = -600; // ✅ 圖片往上偏移對齊窗戶
 
   push();
 
-  // ✅ 函式式 clip（自動結束）
+  // ✅ 限制風景只畫在窗戶範圍
   clip(() => {
     rect(windowX, windowY, windowW, windowH);
   });
 
-  image(mountainViewImg, nightOffset, windowY + mountainYOffset, w, height);
-  image(mountainViewImg, nightOffset + w, windowY + mountainYOffset, w, height);
+  // ✅ 正確比例：不拉伸，只畫原始圖片
+  image(CityViewImg, nightOffset, windowY + cityYOffset);
+  image(CityViewImg, nightOffset + imgW, windowY + cityYOffset);
 
   pop();
 }
+
