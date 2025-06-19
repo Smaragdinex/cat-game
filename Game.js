@@ -205,7 +205,7 @@ class Game {
 
       // ✅ 根據搖桿強度判斷是否跑步
       const strength = sqrt(dir.x * dir.x + dir.y * dir.y);
-      if (strength > 0.7) {
+      if (strength > 0.9) {
         this.cat.keyPressed(1003); // Shift
       } else {
         this.cat.keyReleased(1003);
