@@ -22,6 +22,7 @@ class Game {
     this.controlMode = "cat"; // 預設模式為貓咪控制
     this.joystick = new VirtualJoystick(0, 0);
     this.lastDirection = "none";
+    this.lastRunning = false;
 
   }
 
@@ -181,6 +182,7 @@ class Game {
     if (!this.joystick.active) return;
 
     const dir = this.joystick.getDirection();
+    const strength = sqrt(dir.x * dir.x + dir.y * dir.y);
     const prevDirection = this.lastDirection || "none";
     let currentDirection = "none";
 
@@ -189,13 +191,13 @@ class Game {
       if (dir.x > 0.5) currentDirection = "right";
       else if (dir.x < -0.5) currentDirection = "left";
 
-      // 切換方向時釋放原來的
+      // 切換方向時釋放原方向鍵
       if (currentDirection !== prevDirection) {
         if (prevDirection === "left") this.cat.keyReleased(1001);
         if (prevDirection === "right") this.cat.keyReleased(1002);
       }
 
-      // 按下新方向
+      // 根據方向送出 keyPressed
       if (currentDirection === "right") this.cat.keyPressed(1002);
       if (currentDirection === "left") this.cat.keyPressed(1001);
       if (currentDirection === "none") {
@@ -203,17 +205,19 @@ class Game {
         this.cat.keyReleased(1002);
       }
 
-      // ✅ 根據搖桿強度判斷是否跑步
-      const strength = sqrt(dir.x * dir.x + dir.y * dir.y);
-      if (strength > 0.9) {
+      // ✅ 跑步狀態判斷（> 0.9 視為跑步）
+      if (strength > 0.9 && !this.lastRunning) {
         this.cat.keyPressed(1003); // Shift
-      } else {
+        this.lastRunning = true;
+      } else if (strength <= 0.9 && this.lastRunning) {
         this.cat.keyReleased(1003);
+        this.lastRunning = false;
       }
 
       this.lastDirection = currentDirection;
     }
 
+    // 🔦 手電筒模式：搖桿控制 flashlight 方向
     if (this.controlMode === "flashlight" && typeof flashlight !== "undefined") {
       flashlight.x += dir.x * 4;
       flashlight.y += dir.y * 4;
@@ -221,7 +225,4 @@ class Game {
   }
 
 
-
-  
-  
 }
