@@ -9,10 +9,10 @@ function setInputTarget(obj) { inputTarget = obj; }
 // 初始化按鈕位置（在 setup() 裡呼叫）
 function initTouchBindings() {
   TOUCH_BINDINGS = [
-    { code: 1001, x: 60, y: height - 65 },             // ← LEFT
-    { code: 1002, x: 160, y: height - 65 },            // → RIGHT
-    { code: 1004, x: 110, y: height - 100 },     // ↑ Up 
-    { code: 1005, x: 110, y: height - 30 },      // ↓ Down
+    //{ code: 1001, x: 60, y: height - 65 },             // ← LEFT
+    //{ code: 1002, x: 160, y: height - 65 },            // → RIGHT
+    //{ code: 1004, x: 110, y: height - 100 },     // ↑ Up 
+    //{ code: 1005, x: 110, y: height - 30 },      // ↓ Down
     { code: 1003, x: width - 60, y: height - 80 }, // >> SHIFT run
     { code: 88, x: width - 120, y: height - 30 },// X sit down sit up
     { code: 67, x: width - 180, y: height - 80 } // 新增 C 鍵（Meow）

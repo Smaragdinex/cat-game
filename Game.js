@@ -18,7 +18,10 @@ class Game {
     this.shaker = new TrainShaker();
     this.ui = new GameUI(this, font);
     this.platformManager = new PlatformManager();
-    this.dialogue = new DialogueManager(this.currentLang); // ✅ 加入對話系統
+    this.dialogue = new DialogueManager(this.currentLang); 
+    this.joystick = new VirtualJoystick(100, height - 100); // 左下角搖桿
+    this.controlMode = "cat"; // 預設模式為貓咪控制
+
   }
 
   preload() {
@@ -43,6 +46,8 @@ class Game {
     const sceneName = sceneManager.getCurrentScene().name;
     this.platformManager.setupPlatformsForScene(sceneName);
     game.trainDirection = "east";
+    this.controlMode = "cat"; // 預設為控制貓咪
+
 
   }
 
@@ -62,6 +67,10 @@ class Game {
     drawBackground();
     this.cat.update();
     this.cat.display();
+    
+    this.joystick.update(touches);
+    this.handleJoystickInput();
+    this.joystick.draw();
 
     this.gearX = width - this.gearSize - 20;
     image(gearIcon, this.gearX, this.gearY, this.gearSize, this.gearSize);
@@ -162,4 +171,29 @@ class Game {
       this.currentInteractingNpc = null;
     }
   }
+  
+  handleJoystickInput() {
+    if (!this.joystick.active) return;
+
+    const dir = this.joystick.getDirection();
+
+    if (this.controlMode === "cat") {
+      if (dir.x > 0.5) {
+        this.cat.keyPressed(1002); // →
+      } else if (dir.x < -0.5) {
+        this.cat.keyPressed(1001); // ←
+      } else {
+        this.cat.keyReleased(1001);
+        this.cat.keyReleased(1002);
+      }
+    }
+
+    if (this.controlMode === "flashlight" && typeof flashlight !== "undefined") {
+      flashlight.x += dir.x * 4;
+      flashlight.y += dir.y * 4;
+    }
+  }
+
+  
+  
 }
