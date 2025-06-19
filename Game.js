@@ -18,9 +18,10 @@ class Game {
     this.shaker = new TrainShaker();
     this.ui = new GameUI(this, font);
     this.platformManager = new PlatformManager();
-    this.dialogue = new DialogueManager(this.currentLang); 
-    this.joystick = new VirtualJoystick(100, height - 100); // 左下角搖桿
+    this.dialogue = new DialogueManager(this.currentLang);
     this.controlMode = "cat"; // 預設模式為貓咪控制
+    this.joystick = new VirtualJoystick(0, 0);
+
 
   }
 
@@ -47,6 +48,8 @@ class Game {
     this.platformManager.setupPlatformsForScene(sceneName);
     game.trainDirection = "east";
     this.controlMode = "cat"; // 預設為控制貓咪
+    joystickPositionManager(this.joystick);
+
 
 
   }
@@ -65,13 +68,19 @@ class Game {
   draw() {
     background(30);
     drawBackground();
+    
     this.cat.update();
     this.cat.display();
     
+    
     this.joystick.update(touches);
-    this.handleJoystickInput();
     this.joystick.draw();
-
+   // this.joystick.drawDebug();
+    this.handleJoystickInput();
+    console.log("joystick active:", this.joystick.active);
+    
+   
+    
     this.gearX = width - this.gearSize - 20;
     image(gearIcon, this.gearX, this.gearY, this.gearSize, this.gearSize);
 

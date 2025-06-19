@@ -8,7 +8,7 @@ class VirtualJoystick {
     this.knobX = baseX;
     this.knobY = baseY;
     this.inputVector = { x: 0, y: 0 };
-    this.active = this.isMobile();
+    this.active = true;
   }
 
   isMobile() {
@@ -56,11 +56,41 @@ class VirtualJoystick {
   getDirection() {
     return this.inputVector;
   }
-} 
 
-// 使用方法：
-// joystick = new VirtualJoystick(100, height - 100);
-// joystick.update(touches);
-// joystick.draw();
-// let dir = joystick.getDirection();
-// if (dir.x > 0.5) ...  // 控制右移
+  drawDebug() {
+    if (!this.active) return;
+
+    // 底座中心點
+    stroke(0, 255, 255);
+    strokeWeight(2);
+    noFill();
+    ellipse(this.baseX, this.baseY, this.radius * 2);
+
+    // 畫方向箭頭
+    const arrowScale = 40;
+    const endX = this.baseX + this.inputVector.x * arrowScale;
+    const endY = this.baseY + this.inputVector.y * arrowScale;
+
+    stroke(255, 100, 100);
+    line(this.baseX, this.baseY, endX, endY);
+    fill(255, 100, 100);
+    ellipse(this.knobX, this.knobY, 12); // 當前 knob 圓圈
+  }
+
+  // 📦 動態調整搖桿位置（可在 resize 或設計階段呼叫）
+  setPosition(x, y) {
+    this.baseX = x;
+    this.baseY = y;
+    this.knobX = x;
+    this.knobY = y;
+  }
+}
+
+// ✅ 管理搖桿位置（建議在 setup 或 resize 時呼叫）
+function joystickPositionManager(joystick) {
+  const marginX = 80;      
+  const marginY = 65;
+  const x = marginX;
+  const y = height - marginY;
+  joystick.setPosition(x, y);
+}
