@@ -2,6 +2,7 @@ let sceneImages = {};
 let railingImg;
 let sceneManager;
 let nightViewImg;
+let mountainViewImg;
 let nightOffset = 0;
 let nightScrollSpeed = 1;
 
@@ -34,6 +35,13 @@ class SceneManager {
 
   draw() {
     const scene = this.getCurrentScene();
+    
+    if (scene.name === "000") {
+      if (game.trainDirection) {
+        updateMountainView(game.trainDirection);
+        drawMountainViewMasked();
+      }
+    }
     
     if (scene.name === "001" || scene.name === "002") {
       if (game.trainDirection) {
@@ -106,6 +114,7 @@ function preloadBackgroundImages() {
   sceneImages.default = loadImage('data/background/train.png');
   sceneImages.train = loadImage('data/background/train01.png');
   nightViewImg = loadImage('data/background/NightView.png');
+  mountainViewImg = loadImage('data/background/MountainView.png');
 
 
   railingImg = loadImage('data/background/railing.png');
@@ -116,7 +125,7 @@ function preloadBackgroundImages() {
   // 加入場景
   sceneManager.addScene(new Scene({
     name: "000",
-    bgKey: "default",
+    bgKey: "train",
     playDoorSfx: true,
     canEnterDream: true,
     showRailing: false,
@@ -224,3 +233,38 @@ function drawNightView() {
   image(nightViewImg, nightOffset + w, 0, w, height);
 }
 
+function updateMountainView(direction = "east") {
+  if (!mountainViewImg) return;
+  if (direction === "east") {
+    nightOffset -= nightScrollSpeed; // ❗共用 same offset & speed
+  } else if (direction === "west") {
+    nightOffset += nightScrollSpeed;
+  }
+  nightOffset %= mountainViewImg.width;
+}
+
+function drawMountainViewMasked() {
+  if (!mountainViewImg) return;
+
+  const w = mountainViewImg.width;
+  const h = mountainViewImg.height;
+
+  const windowX = 20;
+  const windowY = 200;
+  const windowW = 900;
+  const windowH = 300;
+  
+  let mountainYOffset = -130;
+
+  push();
+
+  // ✅ 函式式 clip（自動結束）
+  clip(() => {
+    rect(windowX, windowY, windowW, windowH);
+  });
+
+  image(mountainViewImg, nightOffset, windowY + mountainYOffset, w, height);
+  image(mountainViewImg, nightOffset + w, windowY + mountainYOffset, w, height);
+
+  pop();
+}

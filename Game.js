@@ -74,7 +74,6 @@ class Game {
         
     this.joystick.update(touches);
     this.joystick.draw();
-   // this.joystick.drawDebug();
     this.handleJoystickInput();
     
     this.gearX = width - this.gearSize - 20;
