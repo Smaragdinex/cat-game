@@ -88,7 +88,7 @@ class VirtualJoystick {
 
 // ✅ 管理搖桿位置（建議在 setup 或 resize 時呼叫）
 function joystickPositionManager(joystick) {
-  const marginX = 60;      
+  const marginX = 100;      
   const marginY = 65;
   const x = marginX;
   const y = height - marginY;
