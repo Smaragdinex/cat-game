@@ -48,7 +48,7 @@ class NPC{
       game.dialogue.show(text, displayName, 0, (key, choice) => {
         if (key === "train_direction") {
           game.trainChoice = choice;
-          game.trainDirection = (choice === "往東走" || choice === "Going East") ? "east" : "west";
+          game.trainDirection = (choice.includes("東")  || choice === "Going East") ? "east" : "west";
           game.trainStarted = true;
           game.dialogWithGrandpaDone = true;
 
@@ -102,7 +102,7 @@ function setupNPCDialogs() {
 }
 
 function preloadNPCImages() {
-  npcImages.girl = loadImage("data/NPC/Girl.png",img => {
+  npcImages.girl = loadImage("data/NPC/002.png",img => {
     img.resize(46, 46);
    });
   
