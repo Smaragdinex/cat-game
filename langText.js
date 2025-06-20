@@ -4,7 +4,7 @@ let gearIcon;
 // 語言對照文字
 const langText = {
   zh: {
-    npc_homeless: "未知的男子",
+    npc_girl: "未知的女子",
     npc_grandpa: "神秘老人",
     control: "控制說明：\n← →：移動\n↑ ↓：選擇對話選項\nShift：跑步\nX：坐下 / 起身 / 確認\nC：貓叫",
     language: "語言選擇：\n中文 / English",
@@ -24,7 +24,7 @@ const langText = {
     btn_en: "英文"
   },
   en: {
-    npc_homeless: "Anonymous",
+    npc_girl: "Girl",
     npc_grandpa: "Mysterious Old Man",
     control: "Controls:\n← → : Move\n↑ ↓ : Choose option\nShift: Run\nX: Sit / Stand / Confirm\nC: Meow",
     language: "Language:\nChinese / English",

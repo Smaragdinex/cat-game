@@ -14,7 +14,7 @@ function handleKeyPressed(game, keyCode) {
     if (nearNpc) {
       nearNpc.speak();
       game.currentInteractingNpc = nearNpc;
-      if (nearNpc.dialogKey === "homeless") {
+      if (nearNpc.dialogKey === "girl") {
         game.dialogWithSleeperDone = true;
       }
       return;

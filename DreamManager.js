@@ -20,7 +20,7 @@ function maybeTriggerSleepHint(game) {
   }
 
   // ✅ 條件3：如果對話過，啟動提示計時器
-  if (!sleepHintTimerStarted && game.dialogWithSleeperDone) {
+  if (!sleepHintTimerStarted && game.dialogWithGrandpaDone) {
     sleepHintTimerStarted = true;
     sleepHintLastTime = millis();
   }
@@ -44,6 +44,8 @@ function triggerSleepUnlock(game) {
   
   const scene = sceneManager.getCurrentScene();
   if (!scene.canEnterDream) return;
+  
+  if (!game.trainDirection) return;
   
   if (game.sleepUnlockTriggered || !game.cat.isSleeping) return;
 
@@ -79,6 +81,8 @@ function triggerSleepUnlock(game) {
       game.cat.isSitting = true;
       game.cat.isSittingDown = false;
       game.cat.sitFrameIndex = game.cat.animations[`sit-${game.cat.direction}`].length - 1;
+      
+      game.sleepUnlockTriggered = true;
 
     });
   }

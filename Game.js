@@ -23,6 +23,9 @@ class Game {
     this.joystick = new VirtualJoystick(0, 0);
     this.lastDirection = "none";
     
+    this.trainStarted = false;
+
+    
   }
 
   preload() {
@@ -36,21 +39,26 @@ class Game {
   }
 
   setup() {
-    console.log("Game build version: 20250615-1816");
+    console.log("Game build version: 20250620-1816");
     createCanvas(960, 540);
     frameRate(10);
     setInputTarget(this.cat);
     this.cat.setupAnimations();
+    
     initTouchBindings();
-    this.updateDynamicPositions();
-    setupNPCDialogs();
-    const sceneName = sceneManager.getCurrentScene().name;
-    this.platformManager.setupPlatformsForScene(sceneName);
-    game.trainDirection = "east";
-    this.controlMode = "cat"; // 預設為控制貓咪
     joystickPositionManager(this.joystick);
+    setupNPCDialogs();
+    
+    this.updateDynamicPositions();
 
-
+    const sceneName = sceneManager?.getCurrentScene()?.name;
+      if (sceneName) {
+        this.platformManager.setupPlatformsForScene(sceneName);
+      }
+    
+    this.controlMode = "cat";
+    this.trainDirection = null;
+    
 
   }
 

@@ -37,8 +37,8 @@ class NPC{
       // ✅ 玩家已選過，不再重複選項流程
       if (game.trainChoice) {
         const finalLine = {
-          zh: ["謝謝你告訴我，小貓咪。"],
-          en: ["Thank you for telling me, kitty."]
+          zh: ["謝謝你，小貓咪，這路程很遙遠建議你休息一下"],
+          en: ["Thank you, kitty. This journey is long... you should get some rest."]
         };
         game.dialogue.show(finalLine[game.currentLang], displayName);
         return;
@@ -47,14 +47,18 @@ class NPC{
       // ✨ 第一次對話流程（還沒選過）
       game.dialogue.show(text, displayName, 0, (key, choice) => {
         if (key === "train_direction") {
-          game.trainChoice = choice; // ✅ 記下選擇，避免重複
+          game.trainChoice = choice;
+          game.trainDirection = (choice === "往東走" || choice === "Going East") ? "east" : "west";
+          game.trainStarted = true;
+          game.dialogWithGrandpaDone = true;
+
 
           const followUp = {
             zh: [
-              "謝謝你告訴我，小貓咪。"
+              "謝謝你，小貓咪，這路程很遙遠建議你休息一下"
             ],
             en: [
-              "Thank you for telling me, kitty."
+              "Thank you, kitty. This journey is long... you should get some rest."
             ]
           };
           game.dialogue.show(followUp[game.currentLang], displayName);
@@ -66,24 +70,23 @@ class NPC{
   }
 
 
-
 }
 
 function setupNPCDialogs() {
-  npcDialogs.homeless = {
+  npcDialogs.girl = {
     zh: [
-    "zzzzzz......ZZZZZZ" 
+    "你也會做夢嗎？" 
   ],
   en: [
-    "zzzzzz......ZZZZZZ" 
+    "Do you... dream too?" 
   ]
 };
   npcDialogs.grandpa = {
   zh: [
   "你好,小貓咪",
-    "你知道這列車正在往東邊前進，還是往西邊？",
+    "你知道這列車準備往東邊前進，還是往西邊？",
   {
-      choices: ["往西走", "往東走"],
+      choices: ["往西前進", "往東前進"],
       key: "train_direction"
     }
   ],
@@ -99,8 +102,8 @@ function setupNPCDialogs() {
 }
 
 function preloadNPCImages() {
-  npcImages.homeless = loadImage("data/NPC/homeless1.png",img => {
-    img.resize(46, 0);
+  npcImages.girl = loadImage("data/NPC/Girl.png",img => {
+    img.resize(46, 46);
    });
   
   npcImages.grandpa = loadImage("data/NPC/papa.png", img => {
