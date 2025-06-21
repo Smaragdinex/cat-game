@@ -1,7 +1,6 @@
 window.npcImages = {};
 window.npcDialogs = {};
 
-
 class NPC{
   constructor({ name, x, y, sprite, dialogKey }) {
     this.name = name;
@@ -9,6 +8,8 @@ class NPC{
     this.y = y;
     this.sprite = sprite;
     this.dialogKey = dialogKey;
+    game.girlReactedToMeow = false;
+
   }
   
   isNear(cat) {
@@ -30,80 +31,142 @@ class NPC{
   }
 
   speak() {
-    const text = npcDialogs[this.dialogKey]?.[game.currentLang] || "......";
-    const displayName = langText?.[game.currentLang]?.[`npc_${this.dialogKey}`] || this.name;
+    const name = this.name;
+    const langKey = langText?.[game.currentLang]?.[`npc_${this.dialogKey}`] || name;
+
+    if (this.dialogKey === "girl") {
+      this.speakToGirl(langKey);
+      return;
+    }
 
     if (this.dialogKey === "grandpa") {
-      // ✅ 玩家已選過，不再重複選項流程
-      if (game.trainChoice) {
-        const finalLine = {
-          zh: ["謝謝你，小貓咪，這路程很遙遠建議你休息一下"],
-          en: ["Thank you, kitty. This journey is long... you should get some rest."]
-        };
-        game.dialogue.show(finalLine[game.currentLang], displayName);
-        return;
-      }
-
-      // ✨ 第一次對話流程（還沒選過）
-      game.dialogue.show(text, displayName, 0, (key, choice) => {
-        if (key === "train_direction") {
-          game.trainChoice = choice;
-          game.trainDirection = (choice.includes("東")  || choice === "Going East") ? "east" : "west";
-          game.trainStarted = true;
-          game.dialogWithGrandpaDone = true;
-
-
-          const followUp = {
-            zh: [
-              "謝謝你，小貓咪，這路程很遙遠建議你休息一下"
-            ],
-            en: [
-              "Thank you, kitty. This journey is long... you should get some rest."
-            ]
-          };
-          game.dialogue.show(followUp[game.currentLang], displayName);
-        }
-      });
-    } else {
-      game.dialogue.show(text, displayName);
+      this.speakToGrandpa(langKey);
+      return;
     }
+
+    // 通用 NPC 對話
+    const lines = npcDialogs[this.dialogKey]?.[game.currentLang] || ["..."];
+    game.dialogue.show(lines, langKey);
+  }
+  
+  speakToGirl(displayName) {
+    const dialogSet = game.girlReactedToMeow
+      ? npcDialogs.girl.afterMeow
+      : npcDialogs.girl.default;
+
+    const lines = dialogSet?.[game.currentLang] || ["..."];
+
+    game.dialogue.show(lines, displayName, 0, (key, choice) => {
+      if (key === "play_with_girl") {
+        if (choice === "想玩" || choice === "Sure") {
+          game.mode = "minigame";
+          startMiniGame();
+        } else {
+          const reply = {
+            zh: ["『好吧，那你有空再找我玩～』"],
+            en: ["\"Okay, maybe next time.\""]
+          };
+          game.dialogue.show(reply[game.currentLang], displayName);
+        }
+      }
+    });
+  }
+  
+  speakToGrandpa(displayName) {
+    if (game.trainChoice) {
+      const finalLine = {
+        zh: ["謝謝你，小貓咪，這路程很遙遠建議你休息一下"],
+        en: ["Thank you, kitty. This journey is long... you should get some rest."]
+      };
+      game.dialogue.show(finalLine[game.currentLang], displayName);
+      return;
+    }
+
+    const lines = npcDialogs[this.dialogKey]?.[game.currentLang] || ["..."];
+
+    game.dialogue.show(lines, displayName, 0, (key, choice) => {
+      if (key === "train_direction") {
+        game.trainChoice = choice;
+        game.trainDirection = (choice.includes("東") || choice === "Going East") ? "east" : "west";
+        game.trainStarted = true;
+        game.dialogWithGrandpaDone = true;
+
+        const followUp = {
+          zh: [
+            "謝謝你，小貓咪，這路程很遙遠建議你休息一下"
+          ],
+          en: [
+            "Thank you, kitty. This journey is long... you should get some rest."
+          ]
+        };
+        game.dialogue.show(followUp[game.currentLang], displayName);
+      }
+    });
   }
 
 
+  
+  
+  
 }
 
+
 function setupNPCDialogs() {
-  npcDialogs.girl = {
-    zh: [
-    "你也會做夢嗎？" 
-  ],
-  en: [
-    "Do you... dream too?" 
-  ]
-};
-  npcDialogs.grandpa = {
-  zh: [
-  "你好,小貓咪",
-    "你知道這列車準備往東邊前進，還是往西邊？",
-  {
-      choices: ["往西前進", "往東前進"],
-      key: "train_direction"
-    }
-  ],
-  en: [
-  "Hello, Kitty.",
-  "Do you know if this train is heading east or west?",
-    {
-      choices: ["Going West", "Going East"],
-      key: "train_direction"
-    }
-  ]
-};
-}
+    npcDialogs.girl = {
+      default: {
+        zh: [
+          "(她似乎沒注意到你。)"
+        ],
+        en: [
+          "(She doesn't seem to notice you.)"
+        ]
+      },
+      afterMeow: {
+        zh: [
+          "抱歉小貓咪沒注意到你,你也想玩遊戲嗎？",
+          {
+            choices: ["想玩", "不了"],
+            key: "play_with_girl"
+          },
+          "『這隻貓怎麼會叫我？』",
+          "她笑了笑。"
+        ],
+        en: [
+          "She looks up for a moment.",
+          {
+            choices: ["Sure", "Maybe later"],
+            key: "play_with_girl"
+          },
+          "\"Did that cat just meow at me?\"",
+          "She smiles slightly."
+        ]
+      }
+    };
+
+    npcDialogs.grandpa = {
+      zh: [
+        "你好,小貓咪",
+        "你知道這列車準備往東邊前進，還是往西邊？",
+        {
+          choices: ["往西前進", "往東前進"],
+          key: "train_direction"
+        }
+      ],
+      en: [
+        "Hello, Kitty.",
+        "Do you know if this train is heading east or west?",
+        {
+          choices: ["Going West", "Going East"],
+          key: "train_direction"
+        }
+      ]
+    };
+  }
+
 
 function preloadNPCImages() {
   npcImages.girl = loadImage("data/NPC/002.png",img => {
-    img.resize(46, 46);
+    img.resize(0, 42);
    });
   
   npcImages.grandpa = loadImage("data/NPC/papa.png", img => {

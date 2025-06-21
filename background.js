@@ -120,6 +120,7 @@ function preloadBackgroundImages() {
     canEnterDream: true,
     windViewImg: CityViewImg,
     windOffsetY: -500,
+    windScrollSpeed: 2.0, // ✅ 城市快一點
     entryMap: {
       left: { to: 0, spawnX: 865, canGo: false },
       right: { to: 0, spawnX: -25, canGo: false }
@@ -135,12 +136,13 @@ function preloadBackgroundImages() {
     playDoorSfx: true,
     windViewImg: NightViewImg,
     windOffsetY: -400,
+    windScrollSpeed: 2.0,
     entryMap: {
       left: { to: 2, spawnX: 865, canGo: true },
       right: { to: 2, spawnX: -25, canGo: true }
     },
     npcs: [
-      new NPC({ name: "未知的女子", x: 720, y: 300, sprite: npcImages.girl, dialogKey: "girl" })
+      new NPC({ name: "未知的女子", x: 720, y: 285, sprite: npcImages.girl, dialogKey: "girl" })
     ]
   }));
 

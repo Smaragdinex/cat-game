@@ -59,7 +59,6 @@ class Game {
     this.controlMode = "cat";
     this.trainDirection = null;
     
-
   }
 
   updateDynamicPositions() {

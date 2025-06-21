@@ -7,25 +7,50 @@ let cubicFont;
 
 function preload() {
   cubicFont = loadFont("data/Font/Cubic_11.ttf");
+  
+  preloadMiniGameAssets();
+  
   game = new Game(cubicFont);
   game.preload();
 }
 
 function setup() {
   game.setup();
+  
+  // ✅ 強制進入 minigame 模式
+  //game.mode = "minigame";
+  //startMiniGame();             
 }
 
 function draw() {
+  
+  if (game.mode === "minigame") {
+    updateMiniGame();
+    drawMiniGame();
+    return;
+  }
   game.draw();
 }
 
 function keyPressed() {
+  
+  if (game.mode === "minigame") {
+    keyPressedMiniGame(keyCode);
+    return;
+  }
+  
   if (game.dialogue.handleChoiceKey(keyCode)) return;
   handleKeyPressed(game, keyCode);
 }
 
 function keyReleased() {
+  if (game.mode === "minigame") {
+    keyReleasedMiniGame(keyCode);
+    return;
+  }
+  
   handleKeyReleased(game, keyCode);
+  
 }
 
 function mousePressed() {
