@@ -4,6 +4,7 @@ class Platform {
     this.y = y;
     this.w = w;
     this.h = h;
+    this.active = true;
   }
 
   display(debugMode = false) {
@@ -17,13 +18,14 @@ class Platform {
     pop();
   }
 
-
-  // ✅ 檢查角色是否腳底站在平台上
-  isStandingOn(hitbox) {
+  isStandingOn(hitbox, cat) {
+    if (!this.active) return false;
+    const footCenter = hitbox.x + hitbox.w / 2;
     const feetY = hitbox.y + hitbox.h;
-    const isAbove = feetY <= this.y && feetY + 5 >= this.y; // 容許誤差範圍
-    const isWithinX = hitbox.x + hitbox.w > this.x && hitbox.x < this.x + this.w;
-    return isAbove && isWithinX;
+    const isAbove = Math.abs(feetY - this.y) <= 6;
+    const isWithinX = footCenter >= this.x && footCenter <= this.x + this.w;
+    const isFalling = cat.vy >= 0;
+    return isAbove && isWithinX && isFalling;
   }
 }
 
@@ -34,31 +36,22 @@ class PlatformManager {
   }
 
   setupPlatformsForScene(sceneName) {
-    this.platforms = []; // 先清空舊平台
-
-    if (sceneName === "000") {
-      this.platforms.push(new Platform(200, 390, 300, 20)); // 地板
-      this.platforms.push(new Platform(600, 300, 200, 20)); // 浮空台
-    }
-
-    if (sceneName === "001") {
-      this.platforms.push(new Platform(100, 350, 400, 20));
-      this.platforms.push(new Platform(550, 270, 150, 20));
-    }
-
-    // 沒有對應場景則不加平台
+    this.platforms = [];
+    // 自定場景平台清單
   }
 
-
-  // ✅ 平台碰撞邏輯（將角色貼齊平台頂部）
   checkCollision(cat) {
-  
     cat.isOnPlatform = false;
 
+    // ✅ 獲取當前畫面範圍
+    const visibleLeft = game?.miniGameManager?.cameraOffsetX ?? 0;
+    const visibleRight = visibleLeft + width;
+
     for (let p of this.platforms) {
-      if (p.isStandingOn(cat.hitbox)) {
+      if (p.isStandingOn(cat.hitbox, cat)) {
         cat.adjustToPlatformY(p.y);
         cat.isOnPlatform = true;
+        cat.vy = 0;
         break;
       }
     }
@@ -73,9 +66,9 @@ class PlatformManager {
     cat.hitbox = cat.getHitbox(); // 更新 hitbox
   }
 
-  display() {
+  display(debugMode = false) {
     for (let p of this.platforms) {
-      p.display();
+      p.display(debugMode);
     }
   }
 }

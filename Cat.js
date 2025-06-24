@@ -23,7 +23,7 @@ class Cat {
     this.walkLeftFrames = [];
     this.meowRightFrames = [];
     this.meowLeftFrames = [];
-  
+    
     this.isMoving = false;
     this.isRunning = false;
     this.isSitting = false;           
@@ -37,8 +37,8 @@ class Cat {
     this.meowSound = null;
     
     this.hitboxOffsetX = 35;
-    this.hitboxOffsetY = 35;
-    this.hitboxWidth = 55;
+    this.hitboxOffsetY = 30;
+    this.hitboxWidth = 50;
     this.hitboxHeight = 45;
     
     this.debugMode = false;
@@ -62,7 +62,7 @@ class Cat {
     this.sleepLeftSheet = loadImage("data/Cat/Cat-1-SleepingLeft.png");
     this.meowSheet = loadImage("data/Cat/Cat-1-Meow.png");
     this.meowSound = loadSound("data/Sound/cat1a.mp3");
-
+    
   }
   
   setupAnimations() {
@@ -70,7 +70,8 @@ class Cat {
     this.setupAnimation('walk', this.walkSheet, 8);
     this.setupAnimation('run', this.runSheet, 8);
     this.setupAnimation('sit', this.sitSheet, 8);
-    this.setupAnimation("meow", this.meowSheet, 4);                                                                                 
+    this.setupAnimation("meow", this.meowSheet, 4);
+    
     this.setupAnimation('sleeping', this.sleepRightSheet, 2, false);
     this.animations['sleeping-left'] = this.sliceFrames(this.sleepLeftSheet, 2);
   }
@@ -99,6 +100,8 @@ class Cat {
     
     this.handleMovementInput();
     this.applyMovement();
+    
+    this.updateMiniGameJumpState();
 
     this.hitbox = this.getHitbox();
 
@@ -111,6 +114,8 @@ class Cat {
     if (this.displaySleeping()) return;
     if (this.displaySitting()) return;
     if (this.displayMeowing()) return;
+    if (this.displayMinigameJumpFrame()) return;
+
 
     this.displayStandardAnimation();
     this.displayDebugInfo();
@@ -232,12 +237,6 @@ class Cat {
     
     if (!this.debugMode) return;
     
-    push();
-    noFill();
-    stroke(255, 0, 0);
-    strokeWeight(2);
-    rect(this.x, this.y, CAT_DISPLAY_SIZE, CAT_DISPLAY_SIZE); // 🟥 圖片邊界紅框
-
     if (this.hitbox) {
       stroke(0, 255, 0);
       strokeWeight(1.5);
@@ -337,9 +336,12 @@ class Cat {
         this.state = 'idle';
       }
 
-      // 邊界限制
-      if (this.x < -30) this.x = -30;
-      if (this.x > width - 90) this.x = width - 90;
+     // 🎯 只在主遊戲限制邊界，minigame 中讓貓自由移動
+      if (typeof game !== "undefined" && game.mode !== "minigame") {
+        if (this.x < -30) this.x = -30;
+        if (this.x > width - 90) this.x = width - 90;
+      }
+
     }
     
       displaySleeping() {
@@ -386,8 +388,11 @@ class Cat {
     }
     
     displayStandardAnimation() {
+      
       const key = `${this.state}-${this.direction}`;
       const frames = this.animations[key];
+
+      // ✅ 一般動畫播放
       if (frames) {
         const index = this.currentFrame % frames.length;
         image(frames[index], this.x, this.y, CAT_DISPLAY_SIZE, CAT_DISPLAY_SIZE);
@@ -395,6 +400,7 @@ class Cat {
         console.warn('Missing animation:', key);
       }
     }
+
 
     displayDebugInfo() {
       if (!this.debugMode) return;
@@ -411,6 +417,43 @@ class Cat {
       this.y = platformY - this.hitboxHeight - offsetY;
     }
 
+    updateMiniGameJumpState() {
+      if (typeof game !== "undefined" && game.mode === "minigame") {
+        if (!this.isOnPlatform) {
+          this.jumpState = (this.vy < 0) ? "jumping" : "falling";
+        } else {
+          this.jumpState = null;
+        }
+      } else {
+        this.jumpState = null;
+      }
+    }
+      
+   displayMinigameJumpFrame() {
+      if (
+        typeof game === "undefined" ||
+        game.mode !== "minigame" ||
+        this.isOnPlatform ||
+        !this.jumpState ||
+        !this.animations[`run-${this.direction}`]
+      ) {
+        return false;
+      }
+
+      const runFrames = this.animations[`run-${this.direction}`];
+
+      // 跳躍階段使用第 4 幀，落下階段使用第 5 幀
+      const index = (this.jumpState === "jumping") ? 3 : 4;
+
+      const safeIndex = constrain(index, 0, runFrames.length - 1);
+      image(runFrames[safeIndex], this.x, this.y, CAT_DISPLAY_SIZE, CAT_DISPLAY_SIZE);
+
+      return true;
+    }
+
+
+  
+      
 
 
 }
