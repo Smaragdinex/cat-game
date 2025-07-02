@@ -2,7 +2,7 @@ let miniGameManager;
 let hillImg, cloudImg, bushImg;
 let overworldImg;
 let minigameBgm;
-
+let playMusic = true; // turn off music
 
 class MiniGameManager {
   constructor() {
@@ -295,8 +295,6 @@ class MiniGameManager {
   }
 
 }
-
-let playMusic = false; // turn off music
 
 function startMiniGame() {
   miniGameManager = new MiniGameManager();
