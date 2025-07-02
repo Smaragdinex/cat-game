@@ -18,8 +18,8 @@ function setup() {
   game.setup();
   
   // ✅ 強制進入 minigame 模式
-  game.mode = "minigame";
-  startMiniGame();             
+  //game.mode = "minigame";
+  //startMiniGame();             
 }
 
 function draw() {
