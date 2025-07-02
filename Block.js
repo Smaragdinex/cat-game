@@ -1,6 +1,3 @@
-/**
- * Block - 磚塊物件，同時對應碰撞平台（包含地磚）
- */
 class Block {
   constructor(x, y, type, sheet, sx, sy, sw = 16, sh = 16, scale = 2) {
     this.x = x;
@@ -9,41 +6,98 @@ class Block {
     this.sheet = sheet;
     this.sx = sx;
     this.sy = sy;
+    this.sw = sw;
+    this.sh = sh;
     this.scale = scale;
 
-    // ✅ 圖片來源尺寸
-    this.sourceW = sw;
-    this.sourceH = sh;
+    this.w = this.sw * this.scale;
+    this.h = this.sh * this.scale;
 
-    // ✅ 顯示尺寸（已放大）
-    this.w = sw * scale;
-    this.h = sh * scale;
+    // ✅ 定義哪些類型有碰撞平台
+    this.hasCollision = ["brick", "hard", "mystery", "ground", "pipe", "pipeB"].includes(this.type);
 
-    // ✅ ground 也算有碰撞
-    this.hasCollision = ["brick", "hard", "mystery", "empty", "ground"].includes(this.type);
+    this.platform = this.getPlatform();
 
-    // ✅ 若有碰撞，自動建立對應 Platform
-    this.platform = this.hasCollision ? new Platform(this.x, this.y, this.w, this.h) : null;
+    // ✅ 擴充互動邏輯屬性
+    this.hitCount = 0;
+    this.maxHits = 1;
+    this.itemType = "coin"; // 可設定為 "mushroom"、"star" 等
+    this.broken = false;
   }
 
-  /**
-   * 回傳對應的 Platform（若有）
-   */
-  getPlatform() {
-    return this.platform;
-  }
+  display(cameraOffsetX = 0) {
+    if (!this.sheet || this.broken) return;
 
-  display() {
-    if (this.sheet) {
-      image(
-        this.sheet,
-        this.x, this.y,                 // ✅ 用世界座標，因為 draw() 已經 translate
-        this.w, this.h,
-        this.sx, this.sy, this.sourceW, this.sourceH
-      );
+    image(
+      this.sheet,
+      this.x,
+      this.y,
+      this.w,
+      this.h,
+      this.sx,
+      this.sy,
+      this.sw,
+      this.sh
+    );
+
+    if (game?.debugMode) {
+      push();
+      noFill();
+      stroke(255, 0, 0);
+      rect(this.x, this.y, this.w, this.h);
+      pop();
     }
   }
 
+  getPlatform() {
+    if (!this.hasCollision || this.broken) return null;
 
+    const platform = new Platform(this.x, this.y, this.w, this.h);
+    platform.source = this;
+    return platform;
+  }
 
+  // ✅ 玩家從下方撞擊 block 時觸發
+  onHitFromBelow(cat) {
+    if (this.broken) return;
+
+    if (this.type === "mystery") {
+      this.triggerItem(this.itemType);
+      this.type = "empty";
+      this.playBounce();
+    } else if (this.type === "brick") {
+      if (this.hitCount < this.maxHits) {
+        this.spawnCoin();
+        this.hitCount++;
+        this.playBounce();
+        if (this.hitCount >= this.maxHits) {
+          this.type = "empty";
+        }
+      }
+    } else if (this.type === "brickBreakable") {
+      this.break();
+    }
+  }
+
+  triggerItem(type) {
+    console.log(`🎁 block triggered item: ${type}`);
+    // ✅ 可擴充 spawn mushroom 等實體
+  }
+
+  spawnCoin() {
+    console.log("🪙 block spawned coin");
+    // ✅ 可加音效動畫等
+  }
+
+  playBounce() {
+    // ✅ 可簡化為記錄動畫狀態，這裡先簡單印出
+    console.log("🔄 block bounced");
+  }
+
+  break() {
+    this.broken = true;
+    console.log("💥 block broken");
+    // ✅ 可加入爆炸動畫、刪除 block、移除平台
+  }
 }
+

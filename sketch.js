@@ -18,8 +18,8 @@ function setup() {
   game.setup();
   
   // ✅ 強制進入 minigame 模式
-  //game.mode = "minigame";
-  //startMiniGame();             
+  game.mode = "minigame";
+  startMiniGame();             
 }
 
 function draw() {
@@ -65,6 +65,13 @@ function mousePressed() {
 function touchStarted() {
   let x = touches[0]?.x ?? mouseX;
   let y = touches[0]?.y ?? mouseY;
+  
+  if (game?.mode === "minigame") {
+    checkTouchControls?.();       // 右側按鈕處理
+    joystick?.handleTouch?.(x, y); // 左側搖桿處理（如果你有這方法）
+    return false; // ✅ 防止頁面捲動
+  }
+  
   if (game) game.handleInteraction(x, y);
 }
 

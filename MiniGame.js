@@ -1,4 +1,3 @@
-
 let miniGameManager;
 let hillImg, cloudImg, bushImg;
 let overworldImg;
@@ -11,31 +10,52 @@ class MiniGameManager {
     this.cat = null;
     this.platformManager = new PlatformManager();
     this.gravity = 1;
-    this.jumpStrength = -20;
+    this.jumpStrength = -16;
     this.isJumping = false;
     this.cameraOffsetX = 0;
     this.mapWidth = 4096; 
     this.blocks = [];
     this.decorations = [];
+    this.debugMode = false;
+
   }
 
   start() {
     this.state = "playing";
     this.isJumping = false;
+    this.platformManager.platforms = [];
     this.blocks = [];
-
+    this.pipes = [];
+    
     // ✅ 加入所有磚塊（地板 + 上層）
-    for (let i = 0; i < 41; i++) {
+    for (let i = 0; i < 81; i++) {
       let x = i * 32;
       this.blocks.push(new Block(x, 400, "ground", overworldImg, 0, 0));
     }
 
     this.blocks.push(
-      new Block(416, 300, "hard", overworldImg, 16, 0),
-      new Block(448, 300, "empty", overworldImg, 32, 0),
-      new Block(480, 300, "brick", overworldImg, 48, 0),
-      new Block(512, 300, "mystery", overworldImg, 64, 0)
+        new Block(322, 368, "mystery", overworldImg, 64, 0),
+        new Block(480, 300, "mystery", overworldImg, 64, 0),
+        new Block(608, 300, "brick", overworldImg, 48, 0),
+        new Block(640, 300, "mystery", overworldImg, 64, 0),
+        new Block(672, 300, "brick", overworldImg, 48, 0), // mid
+        new Block(704, 300, "mystery", overworldImg, 64, 0),
+        new Block(736, 300, "brick", overworldImg, 48, 0),
+        new Block(672, 200, "mystery", overworldImg, 64, 0),
+        
+      //new Block(416, 300, "hard", overworldImg, 16, 0),
+      //new Block(448, 300, "empty", overworldImg, 32, 0),
+    
     );
+    // ✅ pipe block 獨立管理，避免畫在 blocks 上層被蓋住
+    this.pipes = [
+      new Block(1000, 336, "pipe", overworldImg, 96, 0, 32, 32, 2),
+      new Block(1000, 368, "pipeB", overworldImg, 96, 16, 32, 16, 2),
+      
+      new Block(1400, 304, "pipe", overworldImg, 96, 0, 32, 32, 2),
+      new Block(1400, 336, "pipeB", overworldImg, 96, 16, 32, 16, 2),
+      new Block(1400, 368, "pipeB", overworldImg, 96, 16, 32, 16, 2)
+    ];
 
     // ✅ 自動加入有碰撞的 Block 所對應的平台
     for (let block of this.blocks) {
@@ -44,88 +64,101 @@ class MiniGameManager {
         this.platformManager.platforms.push(platform);
       }
     }
+    
+    // ✅ 自動加入 pipe 的平台
+    for (let pipe of this.pipes) {
+      const platform = pipe.getPlatform();
+      if (platform) {
+        this.platformManager.platforms.push(platform);
+      }
+    }
 
     // ✅ 裝飾物（純顯示用）
     this.decorations = [
-      new Decoration(10, 308, overworldImg, 48, 64, 80, 48, 160, 96),
-      new Decoration(300, 368, overworldImg, 8, 96, 32, 16, 64, 32),
-      new Decoration(600, 80, overworldImg, 88, 33, 32, 22, 64, 44),
-      new Decoration(800, 308, overworldImg, 96, 0, 32, 13, 64, 32),
-      new Decoration(800, 340, overworldImg, 96, 18, 32, 14, 64, 32),
-      new Decoration(800, 371, overworldImg, 96, 18, 32, 14, 64, 32)
+      new Decoration(10, 308, overworldImg, 48, 64, 80, 48, 160, 96), // hill
+      new Decoration(352, 368, overworldImg, 8, 96, 32, 16, 64, 32), // bush
+      new Decoration(384, 368, overworldImg, 8, 96, 32, 16, 64, 32), //bush
+      new Decoration(416, 368, overworldImg, 8, 96, 32, 16, 64, 32), //bush
+      new Decoration(448, 338, overworldImg, 48, 64, 80, 48, 160, 96), // hill
+      new Decoration(600, 50, overworldImg, 88, 33, 32, 22, 64, 44), // cloud
+      new Decoration(736, 368, overworldImg, 8, 96, 32, 16, 64, 32), // bush
+      
+      new Decoration(1000, 100, overworldImg, 88, 33, 32, 22, 64, 44), // cloud
+      new Decoration(1050, 100, overworldImg, 88, 33, 32, 22, 64, 44), // cloud
+      new Decoration(1100, 100, overworldImg, 88, 33, 32, 22, 64, 44), // cloud
+      
+      new Decoration(1350, 50, overworldImg, 88, 33, 32, 22, 64, 44), // cloud
+      new Decoration(1400, 50, overworldImg, 88, 33, 32, 22, 64, 44), // cloud
+    
     ];
+    
+    // ✅ 將 pipe 放回 blocks 末尾，確保畫在其他磚塊之後
+    for (let pipe of this.pipes) {
+      this.blocks.push(pipe);
+    }
 
     if (game?.cat) {
       this.cat = game.cat;
       this.cat.x = 0;
-      this.cat.y = 325;
+      this.cat.y = 300 - this.cat.hitboxHeight - this.cat.hitboxOffsetY;
       this.cat.vx = 0;
       this.cat.vy = 0;
+      this.cat.isOnPlatform = false;
+      this.cat.isDead = false;
+      this.cat.deathTime = 0;
       this.cat.hitbox = this.cat.getHitbox();
-      this.cat.debugMode = false;
+    
+      this.cat.onLanded = () => {
+          this.isJumping = false;
+        };
     }
   }
 
   
-  
   update() {
     if (this.state !== "playing" || !this.cat) return;
+    
+    const cat = this.cat;
 
-    // ✅ 角色與螢幕滑動邏輯（角色中心對齊畫面中心）
-    const catCenterX = this.cat.x + this.cat.width / 2;
+    // ✅ 相機跟隨邏輯
+    const catCenterX = cat.x + cat.width / 2;
     this.cameraOffsetX = catCenterX - width / 2;
     this.cameraOffsetX = constrain(this.cameraOffsetX, 0, this.mapWidth - width);
 
     // ✅ 模擬重力
     this.cat.vy += this.gravity;
     this.cat.y += this.cat.vy;
-
+    
     // ✅ 更新碰撞框
-    this.cat.hitbox = this.cat.getHitbox();
+    cat.hitbox = cat.getHitbox();
 
-    // ✅ 檢查與平台碰撞
-    this.cat.isOnPlatform = false;
+    // ✅ 使用正確平台碰撞邏輯（包含落地回調）
+    //this.platformManager.checkCollision(cat);
+    
+    // ✅ 封裝：落地與撞擊方塊邏輯已整合
+    this.platformManager.checkCollision(cat, [...this.blocks, ...this.pipes]);
 
-    for (let p of this.platformManager.platforms) {
-      if (!p.active) continue;
-
-      // ✅ 判斷貓腳中心是否站在平台上（精準）
-      const footCenter = this.cat.hitbox.x + this.cat.hitbox.w / 2;
-      const feetY = this.cat.hitbox.y + this.cat.hitbox.h;
-
-      const isAbove = Math.abs(feetY - p.y) <= 6;
-      const isWithinX = footCenter >= p.x && footCenter <= p.x + p.w;
-      const isFalling = this.cat.vy >= 0;
-
-      if (isAbove && isWithinX && isFalling) {
-        this.cat.adjustToPlatformY(p.y);
-        this.cat.isOnPlatform = true;
-        this.cat.vy = 0;
-        this.isJumping = false;
-        break;
-      }
-    }
-
-    // ✅ 掉出畫面底部就死亡（y 超過畫布 + buffer）
-    if (!this.cat.isOnPlatform && !this.cat.isDead && this.cat.y > height + 100) {
-      this.cat.isDead = true;
-      this.cat.vx = 0;
-      this.cat.vy = 0;
-      this.cat.deathTime = millis();
+    // ✅ 檢查是否掉出畫面視為死亡
+    const feetY = cat.hitbox.y + cat.hitbox.h;
+    if (!cat.isOnPlatform && !cat.isDead && feetY > height + 100) {
+      cat.isDead = true;
+      cat.vx = 0;
+      cat.vy = 0;
+      cat.deathTime = millis();
       console.log("🐱 死亡：掉出畫面");
     }
 
-    // ✅ 死亡後 2 秒自動重開
-    if (this.cat.isDead && millis() - this.cat.deathTime > 2000) {
-      this.start(); // ✅ 重新開始
+    // ✅ 死亡後 2 秒自動重啟
+    if (cat.isDead && millis() - cat.deathTime > 2000) {
+      this.start();
     }
 
+    // ✅ 限制水平範圍
+    cat.x = constrain(this.cat.x, 0, this.mapWidth - cat.width - 100);
 
-    // ✅ 更新角色
-    this.cat.x = constrain(this.cat.x, 0, this.mapWidth - this.cat.width - 100);
-    this.cat.update();
+    // ✅ 更新角色邏輯（包含動畫）
+    cat.update();
   }
-
 
 
   jump() {
@@ -152,19 +185,30 @@ class MiniGameManager {
     if (this.state !== "playing" || !this.cat) return;
 
     background(135, 206, 235);
-    push(); // ✅ 全部使用 translate 控制畫面位移
+    push(); 
     translate(-this.cameraOffsetX, 0);
 
     this.drawVisibleScreenDebug();
+    
+    // ✅ 可見區塊邏輯
+    const visibleLeft = this.cameraOffsetX;
+    const visibleRight = visibleLeft + width;
 
     // ✅ 顯示所有裝飾物（內部會使用 offset 計算）
     for (let deco of this.decorations) {
       deco.display(0); // ✅ 讓裝飾也改用 translate 控制畫面位置
     }
-
-    // ✅ 顯示 block（直接使用世界座標，因為已在 translate 區域內）
-    for (let block of this.blocks) {
-      block.display(); // ✅ 改為不傳 offset，讓 block.x 是 world 座標
+    
+    // ✅ 再畫 pipe block（畫在上層）
+    for (let pipe of this.pipes) {
+      if (pipe.x + pipe.w < visibleLeft || pipe.x > visibleRight) continue;
+      pipe.display(this.cameraOffsetX);
+    }
+    
+   // ✅ 非 pipe 的 block（例如磚塊與地板）
+      for (let block of this.blocks) {
+      if (block.x + block.w < visibleLeft || block.x > visibleRight) continue;
+      block.display(this.cameraOffsetX);
     }
 
     // ✅ 顯示平台碰撞框
@@ -172,7 +216,7 @@ class MiniGameManager {
 
     // ✅ 顯示角色與碰撞框
     this.cat.display();
-    this.cat.debugDrawHitbox();
+    this.cat.debugDrawHitbox(this.debugMode);
 
     // ✅ 顯示平台紅框 tile 編號
     this.drawPlatformTilesWithDebug();
@@ -182,6 +226,7 @@ class MiniGameManager {
 
 
   keyPressed(keyCode) {
+    if (this.cat?.isDead) return;
     if (keyCode === 32) this.jump();
     if (keyCode === LEFT_ARROW || keyCode === 65) this.moveLeft();
     if (keyCode === RIGHT_ARROW || keyCode === 68) this.moveRight();
@@ -251,18 +296,37 @@ class MiniGameManager {
 
 }
 
+let playMusic = false; // turn off music
+
 function startMiniGame() {
   miniGameManager = new MiniGameManager();
   miniGameManager.start();
   game.mode = "minigame";
+  stopBgm();
+  if (playMusic && minigameBgm) playBgm(minigameBgm);
 }
 
 function updateMiniGame() {
   miniGameManager?.update();
+  
+  // ✅ 搖桿輸入 → 控制貓咪移動
+  const dir = game.joystick.getDirection?.();
+  if (dir && miniGameManager?.cat) {
+    if (dir.x < -0.5) {
+      miniGameManager.cat.moveLeft();
+    } else if (dir.x > 0.5) {
+      miniGameManager.cat.moveRight();
+    }
+  }
+
+  checkTouchControls(); // ✅ 每幀持續檢查是否在按右側按鈕
 }
 
 function drawMiniGame() {
   miniGameManager?.draw();
+  
+  game.joystick?.draw();
+  drawTouchButtons();
 }
 
 function keyPressedMiniGame(keyCode) {
@@ -285,21 +349,6 @@ function preloadMiniGameAssets() {
   overworldImg = loadImage("data/minigame/OverWorld.png");
   minigameBgm = loadSound("data/minigame/001.mp3");
 
-}
-
-
-function startMiniGame() {
-  miniGameManager = new MiniGameManager();
-  miniGameManager.start();
-  game.mode = "minigame";
-
-  // ✅ 停掉任何舊 BGM
-  stopBgm();
-
-  // ✅ 用封裝播放新 BGM，避免重複
-  if (minigameBgm) {
-    playBgm(minigameBgm); // 使用封裝函式播放
-  }
 }
 
 

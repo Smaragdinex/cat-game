@@ -41,6 +41,9 @@ class Cat {
     this.hitboxWidth = 50;
     this.hitboxHeight = 45;
     
+    this.prevY = this.y;
+
+    
     this.debugMode = false;
 
   }
@@ -85,7 +88,13 @@ class Cat {
   }
 
   update() {
+    
     this.currentFrame++;
+    
+    this.hitbox = this.getHitbox();
+    
+    this.prevY = this.y;
+    this.prevFeetY = this.y + this.hitboxOffsetY + this.hitboxHeight;
     
     if (this.handleMeowState()) return;
     if (this.handleSitDown()) return;
@@ -102,8 +111,6 @@ class Cat {
     this.applyMovement();
     
     this.updateMiniGameJumpState();
-
-    this.hitbox = this.getHitbox();
 
   }
 
@@ -233,7 +240,7 @@ class Cat {
     }
   }
 
-  debugDrawHitbox() {
+  debugDrawHitbox(debugMode = false) {
     
     if (!this.debugMode) return;
     
@@ -242,7 +249,6 @@ class Cat {
       strokeWeight(1.5);
       rect(this.hitbox.x, this.hitbox.y, this.hitbox.w, this.hitbox.h); // 🟩 碰撞 hitbox 綠框
     }
-    pop();   
   }
 
     getHitbox() {

@@ -8,7 +8,9 @@ class VirtualJoystick {
     this.knobX = baseX;
     this.knobY = baseY;
     this.inputVector = { x: 0, y: 0 };
-    this.active = this.isMobile();
+    //this.active = this.isMobile();
+    this.active = true;
+
   }
 
   isMobile() {
