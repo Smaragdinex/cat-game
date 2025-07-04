@@ -158,23 +158,8 @@ class DialogueManager {
 
       fill(30);
       text(this.choices[i], startX + 10, cy); // 稍微往右讓位給圖示
-      
+          
     }
-    
-    this.choiceHitboxes = [];
-
-    for (let i = 0; i < choices.length; i++) {
-      const x = boxX + 40;
-      const y = boxY + 100 + i * 50;
-      const w = 300;
-      const h = 40;
-
-      text(this.choices[i], x, y);
-
-      // ✅ 記錄每個選項的點擊區域供觸控偵測
-      this.choiceHitboxes.push({ index: i, x, y: y - h / 2, w, h });
-    }
-
   }
 
   drawEdgeHint(cat) {
