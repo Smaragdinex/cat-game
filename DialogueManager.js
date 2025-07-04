@@ -169,7 +169,7 @@ class DialogueManager {
       const w = 300;
       const h = 40;
 
-      text(choices[i], x, y);
+      text(this.choices[i], x, y);
 
       // ✅ 記錄每個選項的點擊區域供觸控偵測
       this.choiceHitboxes.push({ index: i, x, y: y - h / 2, w, h });
