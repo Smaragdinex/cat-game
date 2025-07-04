@@ -195,16 +195,6 @@ class Game {
   const prevDirection = this.lastDirection || "none";
   let currentDirection = "none";
 
-    if (this.joystick && this.dialogue?.choiceVisible) {
-      push();
-      fill(255, 0, 0);
-      textSize(20);
-      text(`joystick.y = ${dir.y.toFixed(2)}`, 20, 40);
-      text(`choiceVisible = ${this.dialogue.choiceVisible}`, 20, 70);
-      pop();
-    }
-
-
   if (this.controlMode === "cat") {
     
     if (this.dialogue?.choiceVisible) {
