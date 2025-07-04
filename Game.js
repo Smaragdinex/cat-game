@@ -186,55 +186,42 @@ class Game {
   }
   
   handleJoystickInput() {
-    if (!this.joystick.active) return;
+  if (!this.joystick.active) return;
 
-    const dir = this.joystick.getDirection();
-    const prevDirection = this.lastDirection || "none";
-    let currentDirection = "none";
+  const dir = this.joystick.getDirection();
+  const prevDirection = this.lastDirection || "none";
+  let currentDirection = "none";
 
-    if (this.controlMode === "cat") {
-        if (dir.x > 0.5) {
-          currentDirection = "right";
-        } else if (dir.x < -0.5) {
-          currentDirection = "left";
-        }
-
-        // ✅ 對話選單上下移動（joystick 控制）
-        if (this.dialogue?.choiceVisible) {
-          if (dir.y < -0.5 && !this.joystick.lastUp) {
-            this.dialogue.moveChoiceUp?.();
-            this.joystick.lastUp = true;
-          } else if (dir.y > 0.5 && !this.joystick.lastDown) {
-            this.dialogue.moveChoiceDown?.();
-            this.joystick.lastDown = true;
-          } else if (Math.abs(dir.y) < 0.3) {
-            this.joystick.lastUp = false;
-            this.joystick.lastDown = false;
-          }
-        }
-      }
-
-      // ✅ 方向改變 → 釋放上一個方向按鍵
-      if (currentDirection !== prevDirection) {
-        if (prevDirection === "left") this.cat.keyReleased(1001);
-        if (prevDirection === "right") this.cat.keyReleased(1002);
-      }
-
-      // ✅ 根據當前方向發送 keyPressed
-      if (currentDirection === "right") this.cat.keyPressed(1002);
-      if (currentDirection === "left") this.cat.keyPressed(1001);
-      if (currentDirection === "none") {
-        this.cat.keyReleased(1001);
-        this.cat.keyReleased(1002);
-      }
-
-      this.lastDirection = currentDirection;
-    
-    if (this.controlMode === "flashlight" && typeof flashlight !== "undefined") {
-      flashlight.x += dir.x * 4;
-      flashlight.y += dir.y * 4;
+  if (this.controlMode === "cat") {
+    if (dir.x > 0.5) {
+      currentDirection = "right";
+    } else if (dir.x < -0.5) {
+      currentDirection = "left";
     }
+
+    // ✅ 方向改變 → 釋放上一個方向按鍵
+    if (currentDirection !== prevDirection) {
+      if (prevDirection === "left") this.cat.keyReleased(1001);
+      if (prevDirection === "right") this.cat.keyReleased(1002);
+    }
+
+    // ✅ 根據當前方向發送 keyPressed
+    if (currentDirection === "right") this.cat.keyPressed(1002);
+    if (currentDirection === "left") this.cat.keyPressed(1001);
+    if (currentDirection === "none") {
+      this.cat.keyReleased(1001);
+      this.cat.keyReleased(1002);
+    }
+
+    this.lastDirection = currentDirection;
   }
+
+  if (this.controlMode === "flashlight" && typeof flashlight !== "undefined") {
+    flashlight.x += dir.x * 4;
+    flashlight.y += dir.y * 4;
+  }
+}
+
 
 
 }
