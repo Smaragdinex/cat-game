@@ -23,6 +23,8 @@ class Game {
     this.joystick = new VirtualJoystick(0, 0);
     this.lastDirection = "none";
     
+    this.joystick.lastUp = false;
+    this.joystick.lastDown = false;
     this.trainStarted = false;
 
     
@@ -191,10 +193,25 @@ class Game {
     let currentDirection = "none";
 
     if (this.controlMode === "cat") {
-      if (dir.x > 0.5) {
-        currentDirection = "right";
-      } else if (dir.x < -0.5) {
-        currentDirection = "left";
+        if (dir.x > 0.5) {
+          currentDirection = "right";
+        } else if (dir.x < -0.5) {
+          currentDirection = "left";
+        }
+
+        // ✅ 對話選單上下移動（joystick 控制）
+        if (this.dialogue?.choiceVisible) {
+          if (dir.y < -0.5 && !this.joystick.lastUp) {
+            this.dialogue.moveChoiceUp?.();
+            this.joystick.lastUp = true;
+          } else if (dir.y > 0.5 && !this.joystick.lastDown) {
+            this.dialogue.moveChoiceDown?.();
+            this.joystick.lastDown = true;
+          } else if (Math.abs(dir.y) < 0.3) {
+            this.joystick.lastUp = false;
+            this.joystick.lastDown = false;
+          }
+        }
       }
 
       // ✅ 方向改變 → 釋放上一個方向按鍵
@@ -212,15 +229,12 @@ class Game {
       }
 
       this.lastDirection = currentDirection;
-    }
-
+    
     if (this.controlMode === "flashlight" && typeof flashlight !== "undefined") {
       flashlight.x += dir.x * 4;
       flashlight.y += dir.y * 4;
     }
   }
-
-
 
 
 }

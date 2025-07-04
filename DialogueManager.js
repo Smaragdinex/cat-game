@@ -14,7 +14,6 @@ class DialogueManager {
     this.interactBtnImg = null;
     this.choiceIconImg = null;
 
-
     // ✨ 新增選項相關狀態
     this.choiceVisible = false;
     this.choices = [];

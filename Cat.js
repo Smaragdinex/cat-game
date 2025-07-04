@@ -37,12 +37,11 @@ class Cat {
     this.meowSound = null;
     
     this.hitboxOffsetX = 35;
-    this.hitboxOffsetY = 30;
+    this.hitboxOffsetY = 45;
     this.hitboxWidth = 50;
-    this.hitboxHeight = 45;
+    this.hitboxHeight = 30;
     
     this.prevY = this.y;
-
     
     this.debugMode = false;
 
@@ -123,7 +122,6 @@ class Cat {
     if (this.displayMeowing()) return;
     if (this.displayMinigameJumpFrame()) return;
 
-
     this.displayStandardAnimation();
     this.displayDebugInfo();
     
@@ -144,7 +142,6 @@ class Cat {
         return;
       }
 
-
       // ✅ 最後才是坐下/起來
       if (!this.isSittingDown) {
         this.isSittingDown = true;
@@ -163,7 +160,6 @@ class Cat {
         this.meowSound.play();
       }
     }
-
 
     if ((keyCode === 39 || keyCode === 37) && this.isSitting) {
       this.isSittingDown = true;
@@ -267,7 +263,6 @@ class Cat {
     getHitboxRight() {
       return this.hitbox?.x + this.hitbox?.w ?? this.x + this.width;
     }
-
 
     handleMeowState() {
       if (this.isMeowing) {
@@ -407,7 +402,6 @@ class Cat {
       }
     }
 
-
     displayDebugInfo() {
       if (!this.debugMode) return;
       push();
@@ -459,7 +453,5 @@ class Cat {
 
 
   
-      
-
-
+    
 }

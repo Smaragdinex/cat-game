@@ -2,7 +2,8 @@ let miniGameManager;
 let hillImg, cloudImg, bushImg;
 let overworldImg;
 let minigameBgm;
-let playMusic = true; // turn off music
+let playMusic = false; // turn off music
+
 
 class MiniGameManager {
   constructor() {
@@ -34,7 +35,6 @@ class MiniGameManager {
     }
 
     this.blocks.push(
-        new Block(322, 368, "mystery", overworldImg, 64, 0),
         new Block(480, 300, "mystery", overworldImg, 64, 0),
         new Block(608, 300, "brick", overworldImg, 48, 0),
         new Block(640, 300, "mystery", overworldImg, 64, 0),
@@ -49,12 +49,12 @@ class MiniGameManager {
     );
     // ✅ pipe block 獨立管理，避免畫在 blocks 上層被蓋住
     this.pipes = [
-      new Block(1000, 336, "pipe", overworldImg, 96, 0, 32, 32, 2),
-      new Block(1000, 368, "pipeB", overworldImg, 96, 16, 32, 16, 2),
+      new Block(992, 336, "pipe", overworldImg, 96, 0, 32, 32, 2),
+      new Block(992, 368, "pipeB", overworldImg, 96, 16, 32, 16, 2),
       
-      new Block(1400, 304, "pipe", overworldImg, 96, 0, 32, 32, 2),
-      new Block(1400, 336, "pipeB", overworldImg, 96, 16, 32, 16, 2),
-      new Block(1400, 368, "pipeB", overworldImg, 96, 16, 32, 16, 2)
+      new Block(1376, 304, "pipe", overworldImg, 96, 0, 32, 32, 2),
+      new Block(1376, 336, "pipeB", overworldImg, 96, 16, 32, 16, 2),
+      new Block(1376, 368, "pipeB", overworldImg, 96, 16, 32, 16, 2)
     ];
 
     // ✅ 自動加入有碰撞的 Block 所對應的平台
@@ -114,7 +114,6 @@ class MiniGameManager {
     }
   }
 
-  
   update() {
     if (this.state !== "playing" || !this.cat) return;
     
@@ -126,8 +125,12 @@ class MiniGameManager {
     this.cameraOffsetX = constrain(this.cameraOffsetX, 0, this.mapWidth - width);
 
     // ✅ 模擬重力
-    this.cat.vy += this.gravity;
-    this.cat.y += this.cat.vy;
+    if (!this.cat.isOnPlatform) {
+      this.cat.vy += this.gravity;
+      this.cat.y += this.cat.vy;
+    } else {
+      this.cat.vy = 0; // ✅ 停止下落速度
+    }
     
     // ✅ 更新碰撞框
     cat.hitbox = cat.getHitbox();
@@ -160,7 +163,6 @@ class MiniGameManager {
     cat.update();
   }
 
-
   jump() {
     if (!this.isJumping && this.cat?.isOnPlatform) {
       this.cat.vy = this.jumpStrength;
@@ -180,7 +182,6 @@ class MiniGameManager {
     if (this.cat) this.cat.vx = 0;
   }
 
-  
   draw() {
     if (this.state !== "playing" || !this.cat) return;
 
@@ -223,7 +224,6 @@ class MiniGameManager {
 
     pop();
   }
-
 
   keyPressed(keyCode) {
     if (this.cat?.isDead) return;
