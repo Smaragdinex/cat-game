@@ -66,21 +66,6 @@ function touchStarted() {
   let x = touches[0]?.x ?? mouseX;
   let y = touches[0]?.y ?? mouseY;
   
-  // ✅ 觸控對話選項（主遊戲限定）
-    if (game.dialogue?.choiceVisible) {
-      for (const choice of game.dialogue.choiceHitboxes ?? []) {
-        if (
-          x >= choice.x &&
-          x <= choice.x + choice.w &&
-          y >= choice.y &&
-          y <= choice.y + choice.h
-        ) {
-          game.dialogue.selectChoice(choice.index);
-          return false; // ✅ 中斷觸控傳遞
-        }
-      }
-    }
-  
   if (game?.mode === "minigame") {
     checkTouchControls?.();       // 右側按鈕處理
     joystick?.handleTouch?.(x, y); // 左側搖桿處理（如果你有這方法）
@@ -89,5 +74,6 @@ function touchStarted() {
   
   if (game) game.handleInteraction(x, y);
 }
+
 
 
