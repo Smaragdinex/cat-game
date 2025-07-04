@@ -50,6 +50,9 @@ class Game {
     initTouchBindings();
     joystickPositionManager(this.joystick);
     setupNPCDialogs();
+    this.joystick.lastUp = false;
+    this.joystick.lastDown = false;
+
     
     this.updateDynamicPositions();
 
