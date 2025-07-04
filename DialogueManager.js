@@ -103,6 +103,15 @@ class DialogueManager {
     this.timer = millis();
   }
 
+  moveChoiceUp() {
+    if (!this.choiceVisible) return;
+    this.selectedIndex = (this.selectedIndex - 1 + this.choices.length) % this.choices.length;
+  }
+  
+  moveChoiceDown() {
+    if (!this.choiceVisible) return;
+    this.selectedIndex = (this.selectedIndex + 1) % this.choices.length;
+  }
 
   handleChoiceKey(keyCode) {
     if (!this.choiceVisible) return false;
