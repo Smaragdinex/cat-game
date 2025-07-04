@@ -158,8 +158,10 @@ class DialogueManager {
 
       fill(30);
       text(this.choices[i], startX + 10, cy); // 稍微往右讓位給圖示
-          
+      
     }
+    
+
   }
 
   drawEdgeHint(cat) {
@@ -216,12 +218,6 @@ class DialogueManager {
     }
   }
   
-  selectChoice(index) {
-  if (this.choiceVisible) {
-    this.choiceIndex = index;
-    this.confirmChoice(); // ✅ 觸發實際動作
-  }
-}
 
   
 

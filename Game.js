@@ -193,6 +193,21 @@ class Game {
   let currentDirection = "none";
 
   if (this.controlMode === "cat") {
+    
+    if (this.dialogue?.choiceVisible) {
+      if (dir.y < -0.5 && !this.joystick.lastUp) {
+        this.dialogue.moveChoiceUp?.();
+        this.joystick.lastUp = true;
+      } else if (dir.y > 0.5 && !this.joystick.lastDown) {
+        this.dialogue.moveChoiceDown?.();
+        this.joystick.lastDown = true;
+      } else if (Math.abs(dir.y) < 0.3) {
+        this.joystick.lastUp = false;
+        this.joystick.lastDown = false;
+      }
+    }
+
+    
     if (dir.x > 0.5) {
       currentDirection = "right";
     } else if (dir.x < -0.5) {
