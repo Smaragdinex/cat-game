@@ -34,13 +34,6 @@ class Platform {
 
     const result = isCrossing && isWithinX && isFalling;
 
-    // ✅ 僅 debug 模式輸出錯誤
-    if (!result && nowBelow && isFalling) {
-      console.log(
-        `[平台偵測失敗] pY=${this.y} | wasAbove=${wasAbove} | nowBelow=${nowBelow} | footY=${feetY} | footCenter=${footCenter} | isWithinX=${isWithinX} | vy=${cat.vy}`
-      );
-    }
-
     return result;
   }
 }
@@ -94,8 +87,11 @@ class PlatformManager {
 
       if (isBelow && isWithinX && isJumpingUp) {
         const targetBlock = allBlocks.find(b => b.platform === p);
-        if (targetBlock) targetBlock.onHitFromBelow?.(cat);
+        if (targetBlock) {
+          console.log("👊 撞到 block at:", targetBlock.x, targetBlock.y);
+          targetBlock.onHitFromBelow?.(cat);
         cat.vy = 0;
+        }
       }
     }
 

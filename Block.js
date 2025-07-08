@@ -1,3 +1,19 @@
+const BlockConfig = {
+  // 會裂開的磚塊（撞一次就爆）
+  breakableBricks: new Set([
+    "3872,300",
+    "3968,150",
+    "4288,150"
+  ]),
+
+  // 撞幾次會變 empty 的磚塊（brick 類）
+  hitBricks: new Map([
+    ["2592,300", 2]
+  ])
+};
+
+
+
 class Block {
   constructor(x, y, type, sheet, sx, sy, sw = 16, sh = 16, scale = 2) {
     this.x = x;
@@ -23,19 +39,91 @@ class Block {
     this.maxHits = 1;
     this.itemType = "coin"; // 可設定為 "mushroom"、"star" 等
     this.broken = false;
+    
+    this.vy = 0;             
+    this.originalY = this.y; 
+    
+
+    
+    if (this.type === "brick") {
+      const key = `${this.x},${this.y}`;
+
+      if (BlockConfig.breakableBricks.has(key)) {
+        this.type = "brickBreakable"; // ✅ 改為會爆的磚
+      } else if (BlockConfig.hitBricks.has(key)) {
+        this.hitCount = 0;
+        this.maxHits = BlockConfig.hitBricks.get(key);
+        this.hasCoin = true;
+      } else {
+        // 預設：不能破壞，只會彈跳
+        this.hitCount = 0;
+        this.maxHits = Infinity;
+        this.hasCoin = false;
+      }
+    }
+    
+    if (this.type === "mystery") {
+      this.animationFrame = 0;
+      this.animationSpeed = 5; // 每幾幀切換一次（可以調整）
+      this.frameCount = 0;
+      this.totalFrames = 3;
+    }
+
+
+  }
+  
+  update() {
+      if (this.y !== this.originalY || this.vy !== 0) {
+        this.y += this.vy;
+        this.vy += 0.5; // 模擬重力加速度，讓磚塊下來
+
+        if (this.y >= this.originalY) {
+          this.y = this.originalY;
+          this.vy = 0;
+        }
+        // ✅ 同步更新平台位置
+        if (this.platform) {
+          this.platform.y = this.y;
+        }
+      }
+        console.log("📦 y:", this.y, "vy:", this.vy, "originalY:", this.originalY);
+        
+        // ✅ 如果是 mystery block，就更新動畫格
+        if (this.type === "mystery") {
+          this.frameCount++;
+          if (this.frameCount % this.animationSpeed === 0) {
+            this.animationFrame = (this.animationFrame + 1) % this.totalFrames;
+          }
+        }
   }
 
   display(cameraOffsetX = 0) {
     if (!this.sheet || this.broken) return;
+    
+    let sx = this.sx;
+    let sy = this.sy;
+    let sourceImg = this.sheet;
+
+    if (this.type === "mystery" && typeof mysteryAnimImg !== "undefined") {
+      sourceImg = mysteryAnimImg;
+      const frame = this.animationFrame;
+        if (frame === 0) {
+          sx = 0; sy = 0;
+        } else if (frame === 1) {
+          sx = 16; sy = 0;
+        } else if (frame === 2) {
+          sx = 0; sy = 16;
+        }
+    }
 
     image(
-      this.sheet,
+      sourceImg,
       this.x,
       this.y,
       this.w,
       this.h,
-      this.sx,
-      this.sy,
+      sx,
+      sy,
       this.sw,
       this.sh
     );
@@ -52,10 +140,14 @@ class Block {
   getPlatform() {
     if (!this.hasCollision || this.broken) return null;
 
-    const platform = new Platform(this.x, this.y, this.w, this.h);
-    platform.source = this;
-    return platform;
+    if (!this.platform) {
+      this.platform = new Platform(this.x, this.y, this.w, this.h);
+      this.platform.source = this;
+    }
+
+    return this.platform;
   }
+
 
   // ✅ 玩家從下方撞擊 block 時觸發
   onHitFromBelow(cat) {
@@ -64,14 +156,17 @@ class Block {
     if (this.type === "mystery") {
       this.triggerItem(this.itemType);
       this.type = "empty";
+      this.sx = 32;              
+      this.sy = 0;
       this.playBounce();
     } else if (this.type === "brick") {
       if (this.hitCount < this.maxHits) {
-        this.spawnCoin();
+        if (this.hasCoin) this.spawnCoin(); // ✅ 只有指定過才冒金幣
         this.hitCount++;
         this.playBounce();
-        if (this.hitCount >= this.maxHits) {
-          this.type = "empty";
+
+        if (this.hitCount >= this.maxHits && this.maxHits !== Infinity) {
+        this.type = "empty";
         }
       }
     } else if (this.type === "brickBreakable") {
@@ -90,7 +185,7 @@ class Block {
   }
 
   playBounce() {
-    // ✅ 可簡化為記錄動畫狀態，這裡先簡單印出
+    this.vy = -3; // 控制彈跳的初速度，可依喜好調整
     console.log("🔄 block bounced");
   }
 

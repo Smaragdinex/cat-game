@@ -42,7 +42,7 @@ class Cat {
     this.hitboxHeight = 30;
     
     this.prevY = this.y;
-    
+
     this.debugMode = false;
 
   }

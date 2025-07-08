@@ -1,10 +1,95 @@
 let miniGameManager;
-let hillImg, cloudImg, bushImg;
-let overworldImg;
+let overworldImg, mysteryAnimImg;
 let minigameBgm;
 let playMusic = false; // turn off music
 
+// ✅ 裝飾物（純顯示用）
+   const decorationsData = [
+    { type: "hill", x: 10, y: 308 },
+    { type: "bush", x: 352, y: 368 },
+    { type: "bush", x: 384, y: 368 },
+    { type: "bush", x: 416, y: 368 },
+    { type: "hill", x: 448, y: 338 },
+    { type: "cloud", x: 600, y: 50 },
+    { type: "bush", x: 736, y: 368 },
 
+    { type: "cloud", x: 1000, y: 100 },
+    { type: "cloud", x: 1050, y: 100 },
+    { type: "cloud", x: 1100, y: 100 },
+
+    { type: "cloud", x: 1350, y: 50 },
+    { type: "cloud", x: 1400, y: 50 },
+
+    { type: "bush", x: 1504, y: 368 },
+    { type: "bush", x: 1536, y: 368 },
+
+    { type: "hill", x: 1696, y: 308 },
+
+    { type: "bush", x: 2048, y: 368 },
+    { type: "bush", x: 2080, y: 368 },
+    { type: "bush", x: 2112, y: 368 },
+
+    { type: "cloud", x: 1952, y: 100 },
+
+    { type: "hill", x: 2144, y: 338 },
+    { type: "cloud", x: 2272, y: 50 },
+    { type: "bush", x: 2400, y: 368 },
+
+    { type: "cloud", x: 2560, y: 100 },
+    { type: "cloud", x: 2592, y: 100 },
+    { type: "cloud", x: 2624, y: 100 },
+
+    { type: "cloud", x: 2848, y: 50 },
+    { type: "cloud", x: 2880, y: 50 },
+
+    { type: "bush", x: 2976, y: 368 },
+    { type: "bush", x: 3008, y: 368 },
+
+    { type: "hill", x: 3168, y: 308 },
+
+    { type: "cloud", x: 3424, y: 100 },
+
+    { type: "bush", x: 3552, y: 368 },
+    { type: "bush", x: 3584, y: 368 },
+    { type: "bush", x: 3616, y: 368 },
+    { type: "hill", x: 3648, y: 338 },
+    { type: "cloud", x: 3776, y: 50 },
+
+    { type: "bush", x: 3904, y: 368 },
+
+    { type: "cloud", x: 4064, y: 100 },
+    { type: "cloud", x: 4096, y: 100 },
+    { type: "cloud", x: 4128, y: 100 },
+
+    { type: "cloud", x: 4352, y: 50 },
+    { type: "cloud", x: 4384, y: 50 },
+
+    { type: "bush", x: 4502, y: 368 },
+    { type: "bush", x: 4534, y: 368 },
+
+    { type: "hill", x: 4682, y: 308 },
+
+    { type: "cloud", x: 4992, y: 100 },
+
+    { type: "hill", x: 5184, y: 338 },
+
+    { type: "cloud", x: 5344, y: 50 },
+    { type: "bush", x: 5472, y: 368 },
+
+    { type: "cloud", x: 5600, y: 100 },
+    { type: "cloud", x: 5632, y: 100 },
+    { type: "cloud", x: 5664, y: 100 },
+
+    { type: "cloud", x: 5920, y: 50 },
+    { type: "cloud", x: 5952, y: 50 },
+
+    { type: "hill", x: 6240, y: 308 },
+
+    { type: "cloud", x: 6528, y: 100 },
+    { type: "hill", x: 6752, y: 338 },
+  ];
+
+  
 class MiniGameManager {
   constructor() {
     this.state = "idle";
@@ -14,9 +99,11 @@ class MiniGameManager {
     this.jumpStrength = -16;
     this.isJumping = false;
     this.cameraOffsetX = 0;
-    this.mapWidth = 4096; 
+    this.mapWidth = 6912; 
     this.blocks = [];
     this.decorations = [];
+    
+    
     this.debugMode = false;
 
   }
@@ -29,11 +116,26 @@ class MiniGameManager {
     this.pipes = [];
     
     // ✅ 加入所有磚塊（地板 + 上層）
-    for (let i = 0; i < 81; i++) {
+    for (let i = 0; i < 73; i++) {
       let x = i * 32;
       this.blocks.push(new Block(x, 400, "ground", overworldImg, 0, 0));
     }
-
+    
+    for (let i = 75; i < 90; i++) {
+      let x = i * 32;
+      this.blocks.push(new Block(x, 400, "ground", overworldImg, 0, 0));
+    }
+    
+    for (let i = 93; i < 156; i++) {
+      let x = i * 32;
+      this.blocks.push(new Block(x, 400, "ground", overworldImg, 0, 0));
+    }
+    
+    for (let i = 158; i < 216; i++) {
+      let x = i * 32;
+      this.blocks.push(new Block(x, 400, "ground", overworldImg, 0, 0));
+    }
+  
     this.blocks.push(
         new Block(480, 300, "mystery", overworldImg, 64, 0),
         new Block(608, 300, "brick", overworldImg, 48, 0),
@@ -43,10 +145,172 @@ class MiniGameManager {
         new Block(736, 300, "brick", overworldImg, 48, 0),
         new Block(672, 200, "mystery", overworldImg, 64, 0),
         
-      //new Block(416, 300, "hard", overworldImg, 16, 0),
+        new Block(2592, 300, "brick", overworldImg, 48, 0),
+        new Block(2624, 300, "mystery", overworldImg, 64, 0),
+        new Block(2656, 300, "brick", overworldImg, 48, 0), 
+      
+        new Block(2688, 150, "brick", overworldImg, 48, 0), 
+        new Block(2720, 150, "brick", overworldImg, 48, 0), 
+        new Block(2752, 150, "brick", overworldImg, 48, 0), 
+        new Block(2784, 150, "brick", overworldImg, 48, 0), 
+        new Block(2816, 150, "brick", overworldImg, 48, 0), 
+        new Block(2848, 150, "brick", overworldImg, 48, 0), 
+        new Block(2880, 150, "brick", overworldImg, 48, 0), 
+        new Block(2912, 150, "brick", overworldImg, 48, 0),
+      
+        new Block(3040, 150, "brick", overworldImg, 48, 0), 
+        new Block(3072, 150, "brick", overworldImg, 48, 0), 
+        new Block(3104, 150, "brick", overworldImg, 48, 0),
+        new Block(3136, 150, "mystery", overworldImg, 64, 0),
+        new Block(3136, 300, "brick", overworldImg, 48, 0),
+      
+        new Block(3296, 300, "brick", overworldImg, 48, 0),
+        new Block(3328, 300, "brick", overworldImg, 48, 0),
+      
+        new Block(3488, 300, "mystery", overworldImg, 64, 0),
+        new Block(3584, 300, "mystery", overworldImg, 64, 0),
+        new Block(3584, 150, "mystery", overworldImg, 64, 0),
+        new Block(3680, 300, "mystery", overworldImg, 64, 0),
+      
+        new Block(3872, 300, "brick", overworldImg, 48, 0),
+      
+        new Block(3968, 150, "brick", overworldImg, 48, 0),
+        new Block(4000, 150, "brick", overworldImg, 48, 0),
+        new Block(4032, 150, "brick", overworldImg, 48, 0),
+      
+        new Block(4192, 150, "brick", overworldImg, 48, 0),
+        new Block(4224, 150, "mystery", overworldImg, 64, 0),
+        new Block(4256, 150, "mystery", overworldImg, 64, 0),
+        new Block(4288, 150, "brick", overworldImg, 48, 0),
+      
+        new Block(4224, 300, "brick", overworldImg, 48, 0),
+        new Block(4256, 300, "brick", overworldImg, 48, 0),
+        
+        new Block(4384, 368, "hard", overworldImg, 16, 0),
+      
+        new Block(4416, 368, "hard", overworldImg, 16, 0),
+        new Block(4416, 336, "hard", overworldImg, 16, 0),
+      
+        new Block(4448, 368, "hard", overworldImg, 16, 0),
+        new Block(4448, 336, "hard", overworldImg, 16, 0),
+        new Block(4448, 304, "hard", overworldImg, 16, 0),
+      
+        new Block(4480, 368, "hard", overworldImg, 16, 0),
+        new Block(4480, 336, "hard", overworldImg, 16, 0),
+        new Block(4480, 304, "hard", overworldImg, 16, 0),
+        new Block(4480, 272, "hard", overworldImg, 16, 0),
+      
+        new Block(4576, 368, "hard", overworldImg, 16, 0),
+        new Block(4576, 336, "hard", overworldImg, 16, 0),
+        new Block(4576, 304, "hard", overworldImg, 16, 0),
+        new Block(4576, 272, "hard", overworldImg, 16, 0),
+      
+        new Block(4608, 368, "hard", overworldImg, 16, 0),
+        new Block(4608, 336, "hard", overworldImg, 16, 0),
+        new Block(4608, 304, "hard", overworldImg, 16, 0),
+      
+        new Block(4640, 368, "hard", overworldImg, 16, 0),
+        new Block(4640, 336, "hard", overworldImg, 16, 0),
+        
+        new Block(4672, 368, "hard", overworldImg, 16, 0),
+      
+        new Block(4832, 368, "hard", overworldImg, 16, 0),
+      
+        new Block(4864, 368, "hard", overworldImg, 16, 0),
+        new Block(4864, 336, "hard", overworldImg, 16, 0),
+      
+        new Block(4896, 368, "hard", overworldImg, 16, 0),
+        new Block(4896, 336, "hard", overworldImg, 16, 0),
+        new Block(4896, 304, "hard", overworldImg, 16, 0),
+      
+        new Block(4928, 368, "hard", overworldImg, 16, 0),
+        new Block(4928, 336, "hard", overworldImg, 16, 0),
+        new Block(4928, 304, "hard", overworldImg, 16, 0),
+        new Block(4928, 272, "hard", overworldImg, 16, 0),
+      
+        new Block(4960, 368, "hard", overworldImg, 16, 0),
+        new Block(4960, 336, "hard", overworldImg, 16, 0),
+        new Block(4960, 304, "hard", overworldImg, 16, 0),
+        new Block(4960, 272, "hard", overworldImg, 16, 0),
+      
+        new Block(5056, 368, "hard", overworldImg, 16, 0),
+        new Block(5056, 336, "hard", overworldImg, 16, 0),
+        new Block(5056, 304, "hard", overworldImg, 16, 0),
+        new Block(5056, 272, "hard", overworldImg, 16, 0),
+      
+        new Block(5088, 368, "hard", overworldImg, 16, 0),
+        new Block(5088, 336, "hard", overworldImg, 16, 0),
+        new Block(5088, 304, "hard", overworldImg, 16, 0),
+      
+        new Block(5120, 368, "hard", overworldImg, 16, 0),
+        new Block(5120, 336, "hard", overworldImg, 16, 0),
+      
+        new Block(5152, 368, "hard", overworldImg, 16, 0),
+      
+        new Block(5472, 300, "brick", overworldImg, 48, 0),
+        new Block(5504, 300, "brick", overworldImg, 48, 0),
+        new Block(5536, 300, "mystery", overworldImg, 64, 0),
+        new Block(5568, 300, "brick", overworldImg, 48, 0),
+      
+        new Block(5888, 368, "hard", overworldImg, 16, 0),
+      
+        new Block(5920, 368, "hard", overworldImg, 16, 0),
+        new Block(5920, 336, "hard", overworldImg, 16, 0),
+      
+        new Block(5952, 368, "hard", overworldImg, 16, 0),
+        new Block(5952, 336, "hard", overworldImg, 16, 0),
+        new Block(5952, 304, "hard", overworldImg, 16, 0),
+      
+        new Block(5984, 368, "hard", overworldImg, 16, 0),
+        new Block(5984, 336, "hard", overworldImg, 16, 0),
+        new Block(5984, 304, "hard", overworldImg, 16, 0),
+        new Block(5984, 272, "hard", overworldImg, 16, 0),
+      
+        new Block(6016, 368, "hard", overworldImg, 16, 0),
+        new Block(6016, 336, "hard", overworldImg, 16, 0),
+        new Block(6016, 304, "hard", overworldImg, 16, 0),
+        new Block(6016, 272, "hard", overworldImg, 16, 0),
+        new Block(6016, 240, "hard", overworldImg, 16, 0),
+      
+        new Block(6048, 368, "hard", overworldImg, 16, 0),
+        new Block(6048, 336, "hard", overworldImg, 16, 0),
+        new Block(6048, 304, "hard", overworldImg, 16, 0),
+        new Block(6048, 272, "hard", overworldImg, 16, 0),
+        new Block(6048, 240, "hard", overworldImg, 16, 0),
+        new Block(6048, 208, "hard", overworldImg, 16, 0),
+      
+        new Block(6080, 368, "hard", overworldImg, 16, 0),
+        new Block(6080, 336, "hard", overworldImg, 16, 0),
+        new Block(6080, 304, "hard", overworldImg, 16, 0),
+        new Block(6080, 272, "hard", overworldImg, 16, 0),
+        new Block(6080, 240, "hard", overworldImg, 16, 0),
+        new Block(6080, 208, "hard", overworldImg, 16, 0),
+        new Block(6080, 176, "hard", overworldImg, 16, 0),
+      
+        new Block(6112, 368, "hard", overworldImg, 16, 0),
+        new Block(6112, 336, "hard", overworldImg, 16, 0),
+        new Block(6112, 304, "hard", overworldImg, 16, 0),
+        new Block(6112, 272, "hard", overworldImg, 16, 0),
+        new Block(6112, 240, "hard", overworldImg, 16, 0),
+        new Block(6112, 208, "hard", overworldImg, 16, 0),
+        new Block(6112, 176, "hard", overworldImg, 16, 0),
+        new Block(6112, 144, "hard", overworldImg, 16, 0),
+      
+        new Block(6144, 368, "hard", overworldImg, 16, 0),
+        new Block(6144, 336, "hard", overworldImg, 16, 0),
+        new Block(6144, 304, "hard", overworldImg, 16, 0),
+        new Block(6144, 272, "hard", overworldImg, 16, 0),
+        new Block(6144, 240, "hard", overworldImg, 16, 0),
+        new Block(6144, 208, "hard", overworldImg, 16, 0),
+        new Block(6144, 176, "hard", overworldImg, 16, 0),
+        new Block(6144, 144, "hard", overworldImg, 16, 0),
+      
+        new Block(6432, 368, "hard", overworldImg, 16, 0),
+        
       //new Block(448, 300, "empty", overworldImg, 32, 0),
     
     );
+    
     // ✅ pipe block 獨立管理，避免畫在 blocks 上層被蓋住
     this.pipes = [
       new Block(992, 336, "pipe", overworldImg, 96, 0, 32, 32, 2),
@@ -54,9 +318,25 @@ class MiniGameManager {
       
       new Block(1376, 304, "pipe", overworldImg, 96, 0, 32, 32, 2),
       new Block(1376, 336, "pipeB", overworldImg, 96, 16, 32, 16, 2),
-      new Block(1376, 368, "pipeB", overworldImg, 96, 16, 32, 16, 2)
+      new Block(1376, 368, "pipeB", overworldImg, 96, 16, 32, 16, 2),
+      
+      new Block(1632, 272, "pipe", overworldImg, 96, 0, 32, 32, 2),
+      new Block(1632, 304, "pipeB", overworldImg, 96, 16, 32, 16, 2),
+      new Block(1632, 336, "pipeB", overworldImg, 96, 16, 32, 16, 2),
+      new Block(1632, 368, "pipeB", overworldImg, 96, 16, 32, 16, 2),
+      
+      new Block(1952, 272, "pipe", overworldImg, 96, 0, 32, 32, 2),
+      new Block(1952, 304, "pipeB", overworldImg, 96, 16, 32, 16, 2),
+      new Block(1952, 336, "pipeB", overworldImg, 96, 16, 32, 16, 2),
+      new Block(1952, 368, "pipeB", overworldImg, 96, 16, 32, 16, 2),
+      
+      new Block(5312, 336, "pipe", overworldImg, 96, 0, 32, 32, 2),
+      new Block(5312, 368, "pipeB", overworldImg, 96, 16, 32, 16, 2),
+      
+      new Block(5824, 336, "pipe", overworldImg, 96, 0, 32, 32, 2),
+      new Block(5824, 368, "pipeB", overworldImg, 96, 16, 32, 16, 2),
     ];
-
+    
     // ✅ 自動加入有碰撞的 Block 所對應的平台
     for (let block of this.blocks) {
       const platform = block.getPlatform();
@@ -74,23 +354,7 @@ class MiniGameManager {
     }
 
     // ✅ 裝飾物（純顯示用）
-    this.decorations = [
-      new Decoration(10, 308, overworldImg, 48, 64, 80, 48, 160, 96), // hill
-      new Decoration(352, 368, overworldImg, 8, 96, 32, 16, 64, 32), // bush
-      new Decoration(384, 368, overworldImg, 8, 96, 32, 16, 64, 32), //bush
-      new Decoration(416, 368, overworldImg, 8, 96, 32, 16, 64, 32), //bush
-      new Decoration(448, 338, overworldImg, 48, 64, 80, 48, 160, 96), // hill
-      new Decoration(600, 50, overworldImg, 88, 33, 32, 22, 64, 44), // cloud
-      new Decoration(736, 368, overworldImg, 8, 96, 32, 16, 64, 32), // bush
-      
-      new Decoration(1000, 100, overworldImg, 88, 33, 32, 22, 64, 44), // cloud
-      new Decoration(1050, 100, overworldImg, 88, 33, 32, 22, 64, 44), // cloud
-      new Decoration(1100, 100, overworldImg, 88, 33, 32, 22, 64, 44), // cloud
-      
-      new Decoration(1350, 50, overworldImg, 88, 33, 32, 22, 64, 44), // cloud
-      new Decoration(1400, 50, overworldImg, 88, 33, 32, 22, 64, 44), // cloud
-    
-    ];
+    this.decorations = decorationsData.map(d => createDecoration(d.type, d.x, d.y)).filter(d => d !== null);
     
     // ✅ 將 pipe 放回 blocks 末尾，確保畫在其他磚塊之後
     for (let pipe of this.pipes) {
@@ -118,26 +382,23 @@ class MiniGameManager {
     if (this.state !== "playing" || !this.cat) return;
     
     const cat = this.cat;
-
+    
     // ✅ 相機跟隨邏輯
     const catCenterX = cat.x + cat.width / 2;
     this.cameraOffsetX = catCenterX - width / 2;
     this.cameraOffsetX = constrain(this.cameraOffsetX, 0, this.mapWidth - width);
 
     // ✅ 模擬重力
-    if (!this.cat.isOnPlatform) {
       this.cat.vy += this.gravity;
       this.cat.y += this.cat.vy;
-    } else {
-      this.cat.vy = 0; // ✅ 停止下落速度
-    }
     
+    if (this.cat.isOnPlatform && this.cat.vy > 0) {
+      this.cat.vy = 0;
+     }
+
     // ✅ 更新碰撞框
     cat.hitbox = cat.getHitbox();
 
-    // ✅ 使用正確平台碰撞邏輯（包含落地回調）
-    //this.platformManager.checkCollision(cat);
-    
     // ✅ 封裝：落地與撞擊方塊邏輯已整合
     this.platformManager.checkCollision(cat, [...this.blocks, ...this.pipes]);
 
@@ -161,6 +422,11 @@ class MiniGameManager {
 
     // ✅ 更新角色邏輯（包含動畫）
     cat.update();
+    
+    for (let block of this.blocks) {
+      if (typeof block.update === "function") block.update();
+    }
+
   }
 
   jump() {
@@ -341,18 +607,30 @@ function keyReleasedMiniGame(keyCode) {
 }
 
 function preloadMiniGameAssets() {
-  cloudImg = loadImage("data/minigame/Cloud1.png");
-  hillImg = loadImage("data/minigame/Hill1.png");
-  bushImg = loadImage("data/minigame/Bush1.png");
   overworldImg = loadImage("data/minigame/OverWorld.png");
   minigameBgm = loadSound("data/minigame/001.mp3");
+  mysteryAnimImg = loadImage("data/minigame/mysteryAnim.png");
+
 
 }
-
 
 function stopMinigameBgm() {
   if (minigameBgm && minigameBgm.isPlaying()) {
     minigameBgm.stop();
   }
 }
+
+function createDecoration(type, x, y) {
+  const params = {
+    hill:  [48, 64, 80, 48, 160, 96],
+    bush:  [8, 96, 32, 16, 64, 32],
+    cloud: [88, 33, 32, 22, 64, 44],
+  };
+
+  if (!(type in params)) return null;
+
+  const [sx, sy, sw, sh, dw, dh] = params[type];
+  return new Decoration(x, y, overworldImg, sx, sy, sw, sh, dw, dh);
+}
+
 

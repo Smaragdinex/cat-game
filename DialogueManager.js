@@ -103,15 +103,6 @@ class DialogueManager {
     this.timer = millis();
   }
 
-  moveChoiceUp() {
-    if (!this.choiceVisible) return;
-    this.selectedIndex = (this.selectedIndex - 1 + this.choices.length) % this.choices.length;
-  }
-  
-  moveChoiceDown() {
-    if (!this.choiceVisible) return;
-    this.selectedIndex = (this.selectedIndex + 1) % this.choices.length;
-  }
 
   handleChoiceKey(keyCode) {
     if (!this.choiceVisible) return false;
@@ -169,8 +160,16 @@ class DialogueManager {
       text(this.choices[i], startX + 10, cy); // 稍微往右讓位給圖示
       
     }
-    
+  }
+  
+  moveChoiceUp() {
+    if (!this.choiceVisible) return;
+    this.selectedIndex = (this.selectedIndex - 1 + this.choices.length) % this.choices.length;
+  }
 
+  moveChoiceDown() {
+    if (!this.choiceVisible) return;
+    this.selectedIndex = (this.selectedIndex + 1) % this.choices.length;
   }
 
   drawEdgeHint(cat) {

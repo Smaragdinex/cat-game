@@ -50,9 +50,6 @@ class Game {
     initTouchBindings();
     joystickPositionManager(this.joystick);
     setupNPCDialogs();
-    this.joystick.lastUp = false;
-    this.joystick.lastDown = false;
-
     
     this.updateDynamicPositions();
 
@@ -194,7 +191,7 @@ class Game {
   const dir = this.joystick.getDirection();
   const prevDirection = this.lastDirection || "none";
   let currentDirection = "none";
-
+    
   if (this.controlMode === "cat") {
     
     if (this.dialogue?.choiceVisible) {
