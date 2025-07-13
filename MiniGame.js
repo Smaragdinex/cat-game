@@ -537,16 +537,7 @@ function updateMiniGame() {
   miniGameManager?.update();
   
   // ✅ 搖桿輸入 → 控制貓咪移動
-  const dir = game.joystick.getDirection?.();
-    if (dir && miniGameManager) {
-      if (dir.x < -0.5) {
-        miniGameManager.moveLeft();
-      } else if (dir.x > 0.5) {
-        miniGameManager.moveRight();
-      } else {
-        miniGameManager.stop();
-      }
-    }
+ game?.handleJoystickInput();
 
   checkTouchControls(); // ✅ 每幀持續檢查是否在按右側按鈕
 }
