@@ -42,7 +42,7 @@ class Game {
 
   setup() {
     console.log("Game build version: 20250620-1816");
-    createCanvas(960, 540);
+    createCanvas(960, 544);
     frameRate(10);
     setInputTarget(this.cat);
     this.cat.setupAnimations();

@@ -19,6 +19,18 @@ class Platform {
     pop();
   }
 
+  isItemStandingOn(hitbox) {
+    if (!this.active) return false;
+
+    const feetY = hitbox.y + hitbox.h;
+    const footCenter = hitbox.x + hitbox.w / 2;
+
+    const isWithinX = footCenter >= this.x && footCenter <= this.x + this.w;
+    const isTouchingTop = Math.abs(feetY - this.y) <= 1; // 誤差容許
+
+    return isWithinX && isTouchingTop;
+  }
+
   isStandingOn(hitbox, cat) {
     if (!this.active) return false;
 
@@ -54,6 +66,25 @@ class PlatformManager {
       p.display(debugMode);
     }
   }
+  
+  getStandingPlatform(hitbox) {
+    for (let p of this.platforms) {
+      if (!p.active) continue;
+
+      // 這裡用類似 isStandingOn 的條件，但不需要 cat，只用 hitbox
+      const feetY = hitbox.y + hitbox.h;
+      const footCenter = hitbox.x + hitbox.w / 2;
+
+      const isWithinX = footCenter >= p.x && footCenter <= p.x + p.w;
+      const isAlignedY = Math.abs(feetY - p.y) < 1; // 可調容差值
+
+      if (isWithinX && isAlignedY) {
+        return p;
+      }
+    }
+    return null;
+  }
+
 
   checkCollision(cat, allBlocks = []) {
     cat.isOnPlatform = false;

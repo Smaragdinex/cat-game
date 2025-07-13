@@ -1,93 +1,8 @@
 let miniGameManager;
 let overworldImg, mysteryAnimImg;
 let minigameBgm;
+let coinImgs;
 let playMusic = false; // turn off music
-
-// ✅ 裝飾物（純顯示用）
-   const decorationsData = [
-    { type: "hill", x: 10, y: 308 },
-    { type: "bush", x: 352, y: 368 },
-    { type: "bush", x: 384, y: 368 },
-    { type: "bush", x: 416, y: 368 },
-    { type: "hill", x: 448, y: 338 },
-    { type: "cloud", x: 600, y: 50 },
-    { type: "bush", x: 736, y: 368 },
-
-    { type: "cloud", x: 1000, y: 100 },
-    { type: "cloud", x: 1050, y: 100 },
-    { type: "cloud", x: 1100, y: 100 },
-
-    { type: "cloud", x: 1350, y: 50 },
-    { type: "cloud", x: 1400, y: 50 },
-
-    { type: "bush", x: 1504, y: 368 },
-    { type: "bush", x: 1536, y: 368 },
-
-    { type: "hill", x: 1696, y: 308 },
-
-    { type: "bush", x: 2048, y: 368 },
-    { type: "bush", x: 2080, y: 368 },
-    { type: "bush", x: 2112, y: 368 },
-
-    { type: "cloud", x: 1952, y: 100 },
-
-    { type: "hill", x: 2144, y: 338 },
-    { type: "cloud", x: 2272, y: 50 },
-    { type: "bush", x: 2400, y: 368 },
-
-    { type: "cloud", x: 2560, y: 100 },
-    { type: "cloud", x: 2592, y: 100 },
-    { type: "cloud", x: 2624, y: 100 },
-
-    { type: "cloud", x: 2848, y: 50 },
-    { type: "cloud", x: 2880, y: 50 },
-
-    { type: "bush", x: 2976, y: 368 },
-    { type: "bush", x: 3008, y: 368 },
-
-    { type: "hill", x: 3168, y: 308 },
-
-    { type: "cloud", x: 3424, y: 100 },
-
-    { type: "bush", x: 3552, y: 368 },
-    { type: "bush", x: 3584, y: 368 },
-    { type: "bush", x: 3616, y: 368 },
-    { type: "hill", x: 3648, y: 338 },
-    { type: "cloud", x: 3776, y: 50 },
-
-    { type: "bush", x: 3904, y: 368 },
-
-    { type: "cloud", x: 4064, y: 100 },
-    { type: "cloud", x: 4096, y: 100 },
-    { type: "cloud", x: 4128, y: 100 },
-
-    { type: "cloud", x: 4352, y: 50 },
-    { type: "cloud", x: 4384, y: 50 },
-
-    { type: "bush", x: 4502, y: 368 },
-    { type: "bush", x: 4534, y: 368 },
-
-    { type: "hill", x: 4682, y: 308 },
-
-    { type: "cloud", x: 4992, y: 100 },
-
-    { type: "hill", x: 5184, y: 338 },
-
-    { type: "cloud", x: 5344, y: 50 },
-    { type: "bush", x: 5472, y: 368 },
-
-    { type: "cloud", x: 5600, y: 100 },
-    { type: "cloud", x: 5632, y: 100 },
-    { type: "cloud", x: 5664, y: 100 },
-
-    { type: "cloud", x: 5920, y: 50 },
-    { type: "cloud", x: 5952, y: 50 },
-
-    { type: "hill", x: 6240, y: 308 },
-
-    { type: "cloud", x: 6528, y: 100 },
-    { type: "hill", x: 6752, y: 338 },
-  ];
 
   
 class MiniGameManager {
@@ -119,6 +34,7 @@ class MiniGameManager {
     for (let i = 0; i < 73; i++) {
       let x = i * 32;
       this.blocks.push(new Block(x, 400, "ground", overworldImg, 0, 0));
+      this.blocks.push(new Block(x, 432, "ground", overworldImg, 0, 0));
     }
     
     for (let i = 75; i < 90; i++) {
@@ -135,9 +51,15 @@ class MiniGameManager {
       let x = i * 32;
       this.blocks.push(new Block(x, 400, "ground", overworldImg, 0, 0));
     }
+    
+    this.items = window.getItemsForMiniGame(coinImgs, fishImg, keyImg);
   
+    
+    const b1 = new Block(480, 300, "mystery", overworldImg, 64, 0);
+    b1.itemType = "fish";
+    
     this.blocks.push(
-        new Block(480, 300, "mystery", overworldImg, 64, 0),
+        b1,
         new Block(608, 300, "brick", overworldImg, 48, 0),
         new Block(640, 300, "mystery", overworldImg, 64, 0),
         new Block(672, 300, "brick", overworldImg, 48, 0), // mid
@@ -364,7 +286,7 @@ class MiniGameManager {
     if (game?.cat) {
       this.cat = game.cat;
       this.cat.x = 0;
-      this.cat.y = 300 - this.cat.hitboxHeight - this.cat.hitboxOffsetY;
+      this.cat.y = 340 - this.cat.hitboxHeight - this.cat.hitboxOffsetY;
       this.cat.vx = 0;
       this.cat.vy = 0;
       this.cat.isOnPlatform = false;
@@ -391,10 +313,22 @@ class MiniGameManager {
     // ✅ 模擬重力
       this.cat.vy += this.gravity;
       this.cat.y += this.cat.vy;
-    
-    if (this.cat.isOnPlatform && this.cat.vy > 0) {
-      this.cat.vy = 0;
-     }
+
+      if (this.cat.isOnPlatform) {
+        this.cat.groundStickCounter = (this.cat.groundStickCounter ?? 0) + 1;
+
+        // 連續兩幀都在平台上，才正式停止下墜
+        if (this.cat.groundStickCounter >= 2 && this.cat.vy > 0) {
+          this.cat.vy = 0;
+          
+          const platform = this.platformManager.getStandingPlatform(this.cat.hitbox);
+          if (platform) {
+            this.cat.y = platform.y - this.cat.hitbox.h - this.cat.hitboxOffsetY;
+          }
+        }
+      } else {
+        this.cat.groundStickCounter = 0;
+      }
 
     // ✅ 更新碰撞框
     cat.hitbox = cat.getHitbox();
@@ -426,7 +360,29 @@ class MiniGameManager {
     for (let block of this.blocks) {
       if (typeof block.update === "function") block.update();
     }
+    
+    for (let deco of this.decorations) {
+      if (typeof deco.update === "function") deco.update();
+    }
+    
+    for (let item of this.items) {
+      item.update();
 
+      // ✅ 判斷是否落在平台上
+      if (!item.floating && item.vy >= 0) {
+        for (let platform of this.platformManager.platforms) {
+          const hitbox = item.getHitbox?.();
+          if (platform.isItemStandingOn?.(hitbox)) {
+            item.vy = 0;
+            item.y = platform.y - item.h;
+          }
+        }
+      }
+
+      item.checkCollisionWith(this.cat);
+    }
+
+    
   }
 
   jump() {
@@ -476,6 +432,13 @@ class MiniGameManager {
       for (let block of this.blocks) {
       if (block.x + block.w < visibleLeft || block.x > visibleRight) continue;
       block.display(this.cameraOffsetX);
+    }
+    
+    //item
+    for (let item of this.items) {
+      item.display(this.cameraOffsetX);
+      item.update();                       
+      item.checkCollisionWith(this.cat); 
     }
 
     // ✅ 顯示平台碰撞框
@@ -575,13 +538,15 @@ function updateMiniGame() {
   
   // ✅ 搖桿輸入 → 控制貓咪移動
   const dir = game.joystick.getDirection?.();
-  if (dir && miniGameManager?.cat) {
-    if (dir.x < -0.5) {
-      miniGameManager.cat.moveLeft();
-    } else if (dir.x > 0.5) {
-      miniGameManager.cat.moveRight();
+    if (dir && miniGameManager) {
+      if (dir.x < -0.5) {
+        miniGameManager.moveLeft();
+      } else if (dir.x > 0.5) {
+        miniGameManager.moveRight();
+      } else {
+        miniGameManager.stop();
+      }
     }
-  }
 
   checkTouchControls(); // ✅ 每幀持續檢查是否在按右側按鈕
 }
@@ -610,6 +575,14 @@ function preloadMiniGameAssets() {
   overworldImg = loadImage("data/minigame/OverWorld.png");
   minigameBgm = loadSound("data/minigame/001.mp3");
   mysteryAnimImg = loadImage("data/minigame/mysteryAnim.png");
+  coinImgs = [
+    loadImage("data/minigame/coin01.png"),
+    loadImage("data/minigame/coin02.png"),
+    loadImage("data/minigame/coin03.png"),
+    loadImage("data/minigame/coin04.png")
+  ];
+  fishImg = loadImage("data/minigame/fish.png");
+  keyImg = loadImage("data/minigame/key.png");
 
 
 }
@@ -630,7 +603,7 @@ function createDecoration(type, x, y) {
   if (!(type in params)) return null;
 
   const [sx, sy, sw, sh, dw, dh] = params[type];
-  return new Decoration(x, y, overworldImg, sx, sy, sw, sh, dw, dh);
+  return new Decoration(type,x, y, overworldImg, sx, sy, sw, sh, dw, dh);
 }
 
 

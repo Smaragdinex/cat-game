@@ -13,7 +13,6 @@ const BlockConfig = {
 };
 
 
-
 class Block {
   constructor(x, y, type, sheet, sx, sy, sw = 16, sh = 16, scale = 2) {
     this.x = x;
@@ -43,8 +42,6 @@ class Block {
     this.vy = 0;             
     this.originalY = this.y; 
     
-
-    
     if (this.type === "brick") {
       const key = `${this.x},${this.y}`;
 
@@ -69,7 +66,6 @@ class Block {
       this.totalFrames = 3;
     }
 
-
   }
   
   update() {
@@ -86,7 +82,6 @@ class Block {
           this.platform.y = this.y;
         }
       }
-        console.log("📦 y:", this.y, "vy:", this.vy, "originalY:", this.originalY);
         
         // ✅ 如果是 mystery block，就更新動畫格
         if (this.type === "mystery") {
@@ -148,6 +143,35 @@ class Block {
     return this.platform;
   }
 
+triggerItem(type) {
+  console.log("🟢 triggerItem 呼叫", type, "block type=", this.type);
+
+  if (!type || !miniGameManager) return;
+
+  let sprite;
+
+  switch (type) {
+    case "coin":
+      sprite = coinImgs;  // ✅ 動畫陣列
+      break;
+    case "fish":
+      sprite = fishImg;
+      break;
+    default:
+      return;
+  }
+
+  const item = new Item(type, this.x, this.y - 32, sprite);
+  
+  item.attachedBlock = this;
+  item.spawnOffset = 16; // 往上浮16px
+  item.vy = -1;
+  item.floating = true;
+
+  miniGameManager.items.push(item);
+}
+
+
 
   // ✅ 玩家從下方撞擊 block 時觸發
   onHitFromBelow(cat) {
@@ -172,11 +196,6 @@ class Block {
     } else if (this.type === "brickBreakable") {
       this.break();
     }
-  }
-
-  triggerItem(type) {
-    console.log(`🎁 block triggered item: ${type}`);
-    // ✅ 可擴充 spawn mushroom 等實體
   }
 
   spawnCoin() {
