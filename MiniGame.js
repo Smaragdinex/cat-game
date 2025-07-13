@@ -553,7 +553,8 @@ function updateMiniGame() {
 
 function drawMiniGame() {
   miniGameManager?.draw();
-  
+
+  game.joystick?.update(touches);
   game.joystick?.draw();
   drawTouchButtons();
 }
