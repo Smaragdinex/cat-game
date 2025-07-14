@@ -65,8 +65,8 @@ function drawTouchButtons() {
 }
 
 function checkTouchControls() {
-  let currentTouchKeys = new Set();
-  
+  const newlyDetectedCodes = new Set();
+
   const points = (touches.length > 0)
     ? touches
     : (mouseIsPressed ? [{ x: mouseX, y: mouseY }] : []);
@@ -76,23 +76,23 @@ function checkTouchControls() {
 
     for (let btn of TOUCH_BINDINGS) {
       if (dist(p.x, p.y, btn.x, btn.y) < 30) {
-        currentTouchKeys.add(btn.code);
+        newlyDetectedCodes.add(btn.code);
 
-        // 剛按下
+        // 如果之前沒按下，才觸發按下事件
         if (!touchKeys.has(btn.code)) {
-
           if (game.mode === "minigame") {
+            // minigame 專用
             if (typeof miniGameManager?.keyPressed === "function") {
               miniGameManager.keyPressed(btn.code);
             }
-            continue;
-          }
+          } else {
+            // main game 專用
+            if (btn.code === 88) {
+              if (game.dialogue?.handleChoiceKey?.(88)) return;
+            }
 
-          if (btn.code === 88) {
-            if (game.dialogue?.handleChoiceKey?.(88)) return;
+            handleKeyPressed(game, btn.code);
           }
-
-          handleKeyPressed(game, btn.code);
         }
       }
     }
@@ -100,17 +100,17 @@ function checkTouchControls() {
 
   // 處理釋放
   for (let code of touchKeys) {
-    if (!currentTouchKeys.has(code)) {
+    if (!newlyDetectedCodes.has(code)) {
       if (game.mode === "minigame") {
         if (typeof miniGameManager?.keyReleased === "function") {
           miniGameManager.keyReleased(code);
         }
-        continue;
+      } else {
+        handleKeyReleased(game, code);
       }
-
-      handleKeyReleased(game, code);
     }
   }
 
-  touchKeys = currentTouchKeys;
+  // 更新本幀記錄
+  touchKeys = newlyDetectedCodes;
 }
