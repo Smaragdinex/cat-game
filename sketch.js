@@ -1,4 +1,3 @@
-
 let game;
 let gearX = 0, gearY = 20, gearSize = 40;
 let cat;

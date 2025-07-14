@@ -1,4 +1,3 @@
-
 let transition = new TransitionManager();
 
 class Game {
@@ -26,8 +25,7 @@ class Game {
     this.joystick.lastUp = false;
     this.joystick.lastDown = false;
     this.trainStarted = false;
-
-    
+ 
   }
 
   preload() {

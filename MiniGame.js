@@ -343,7 +343,6 @@ class MiniGameManager {
       cat.vx = 0;
       cat.vy = 0;
       cat.deathTime = millis();
-      console.log("🐱 死亡：掉出畫面");
     }
 
     // ✅ 死亡後 2 秒自動重啟
@@ -457,6 +456,7 @@ class MiniGameManager {
   keyPressed(keyCode) {
     if (this.cat?.isDead) return;
     if (keyCode === 32) this.jump();
+    if (keyCode === 1003) this.cat.keyPressed(1003);
     if (keyCode === LEFT_ARROW || keyCode === 65) this.moveLeft();
     if (keyCode === RIGHT_ARROW || keyCode === 68) this.moveRight();
   }
@@ -464,6 +464,9 @@ class MiniGameManager {
   keyReleased(keyCode) {
     if ([LEFT_ARROW, RIGHT_ARROW, 65, 68].includes(keyCode)) {
       this.stop();
+    }
+    if (keyCode === 1003) {
+    this.cat.keyReleased(1003);
     }
   }
 
@@ -526,6 +529,7 @@ class MiniGameManager {
 }
 
 function startMiniGame() {
+  initTouchBindings("minigame");
   miniGameManager = new MiniGameManager();
   miniGameManager.start();
   game.mode = "minigame";
@@ -536,15 +540,14 @@ function startMiniGame() {
 function updateMiniGame() {
   miniGameManager?.update();
   
-  // ✅ 搖桿輸入 → 控制貓咪移動
- game?.handleJoystickInput();
+   game?.handleJoystickInput();
 
   checkTouchControls(); // ✅ 每幀持續檢查是否在按右側按鈕
 }
 
 function drawMiniGame() {
   miniGameManager?.draw();
-
+  
   if (game?.joystick) {
     game.joystick.update(touches);
     game.joystick.draw();

@@ -50,15 +50,14 @@ class Item {
       this.y += this.vy;
       this.spawnOffset += this.vy;
       if (this.spawnOffset <= 0) {
-        this.floating = false;
-        console.log("🟢 浮動結束，清除 attachedBlock");
+        this.floating = false;        
         this.attachedBlock = null;
-        console.log("🟢 浮動結束，attachedBlock已清空:", this.attachedBlock);
+        
         if (this.type === "fish") {
           this.vx = 2.0;
           this.ay = 0.5;
           this.vy = 0;
-          console.log("🐟 魚浮出完成，開始移動 vx =", this.vx);
+          
         }
       }
       return;
@@ -66,11 +65,11 @@ class Item {
 
     // ✅ 如果還在附著，就繼續跟著block
     if (this.attachedBlock) {
-      console.log("🔍 目前attachedBlock還存在", this.attachedBlock);
+      
       this.y = this.attachedBlock.y - this.h;
       // ⚠️ 如果它已經不應該存在，這裡要立刻清掉
       if (!this.floating && this.type === "fish") {
-        console.warn("⚠️ fish 已經不在浮動但還有attachedBlock，強制清空");
+    
         this.attachedBlock = null;
       }
       return;
@@ -100,9 +99,6 @@ class Item {
 
   }
     
-
-  
-
   display() {
     if (this.collected) return;
     let img = this.sprite;
