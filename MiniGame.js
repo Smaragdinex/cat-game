@@ -2,9 +2,8 @@ let miniGameManager;
 let overworldImg, mysteryAnimImg;
 let minigameBgm;
 let coinImgs;
-let playMusic = false; // turn off music
-
-  
+let playMusic = true; // true == turn on music
+ 
 class MiniGameManager {
   constructor() {
     this.state = "idle";
@@ -17,7 +16,7 @@ class MiniGameManager {
     this.mapWidth = 6912; 
     this.blocks = [];
     this.decorations = [];
-    
+    this.flag = new Flag(6432, 48, poleImg, flagImg); // 6432
     
     this.debugMode = false;
 
@@ -34,7 +33,6 @@ class MiniGameManager {
     for (let i = 0; i < 73; i++) {
       let x = i * 32;
       this.blocks.push(new Block(x, 400, "ground", overworldImg, 0, 0));
-      this.blocks.push(new Block(x, 432, "ground", overworldImg, 0, 0));
     }
     
     for (let i = 75; i < 90; i++) {
@@ -54,14 +52,13 @@ class MiniGameManager {
     
     this.items = window.getItemsForMiniGame(coinImgs, fishImg, keyImg);
   
-    
-    const b1 = new Block(480, 300, "mystery", overworldImg, 64, 0);
+    const b1 = new Block(640, 300, "mystery", overworldImg, 64, 0);
     b1.itemType = "fish";
     
     this.blocks.push(
         b1,
         new Block(608, 300, "brick", overworldImg, 48, 0),
-        new Block(640, 300, "mystery", overworldImg, 64, 0),
+        new Block(480, 300, "mystery", overworldImg, 64, 0),
         new Block(672, 300, "brick", overworldImg, 48, 0), // mid
         new Block(704, 300, "mystery", overworldImg, 64, 0),
         new Block(736, 300, "brick", overworldImg, 48, 0),
@@ -380,8 +377,20 @@ class MiniGameManager {
 
       item.checkCollisionWith(this.cat);
     }
-
     
+    if (this.flag) {
+      this.flag.checkCollision(this.cat, () => {
+          this.enterGoalSequence();
+      });
+    }
+    
+    // ✅ 加上旗子 update
+      this.flag.update();
+
+    if (this.goalStarted) {
+      this.handleGoalSequence();
+    }
+
   }
 
   jump() {
@@ -439,6 +448,8 @@ class MiniGameManager {
       item.update();                       
       item.checkCollisionWith(this.cat); 
     }
+    
+    this.flag.display(); // 不要再給 offsetX
 
     // ✅ 顯示平台碰撞框
     this.platformManager.display(this.debugMode);
@@ -486,6 +497,71 @@ class MiniGameManager {
     text(`VisibleX: ${this.cameraOffsetX} ~ ${this.cameraOffsetX + width}`, this.cameraOffsetX + 10, 10);
   }
 
+handleGoalSequence() {
+  const castleDoorX = 6528;
+  
+  // A. 貓咪跟旗子一起下滑
+  if (this.goalPhase === "sliding") {
+    
+    const progress = this.cat.slideProgress ?? 0;
+
+    if (this.cat.goalSlideStartY == null) {
+       this.cat.goalSlideStartY = this.cat.y;
+    }
+    
+    const startY = this.cat.goalSlideStartY;
+    const targetY = this.flag.y + this.flag.h - 48 - this.cat.height + 10;
+    
+    this.cat.y = lerp(startY, targetY, progress);
+    this.cat.slideProgress = progress + 0.08;
+    
+    this.cat.vx = 0;
+    this.cat.x = this.flag.x + this.flag.w - this.cat.width + 2;
+
+    if (this.cat.slideProgress >= 1) {
+      this.goalPhase = "flagDown";
+      this.flag.startSlideDown?.();
+    }
+  }
+
+  // B. 滑落完成，開始自動行走進城堡
+  if (this.goalPhase === "flagDown") {
+    if (this.flag.slideProgress >= 1) {
+      this.goalPhase = "walking";
+    }
+  }
+
+  // C. 自動走到門口，觸發轉場
+  if (this.goalPhase === "walking") {
+      this.cat.vx = 2.5;
+      this.cat.x += this.cat.vx;
+      this.cat.isMoving = true;
+      this.cat.facing = "right";
+      this.cat.state = "walk";
+
+    if (this.cat.x >= castleDoorX) {
+      this.goalPhase = "done";
+      this.cat.vx = 0;
+      this.cat.isMoving = false;
+    
+        endMiniGame();
+    }
+  }
+}
+
+enterGoalSequence() {
+    if (this.cat.isDead || this.goalStarted) return;
+    
+    this.goalStarted = true;
+    this.goalPhase = "sliding";   
+    this.cat.stop(); // 停止操作
+    this.cat.controlEnabled = false;
+   
+    this.cat.slideProgress = 0;
+    this.cat.goalSlideStartY = null;
+    
+  }
+
   drawPlatformTilesWithDebug() {
     const visibleStart = this.cameraOffsetX;
     const visibleEnd = this.cameraOffsetX + width;
@@ -529,12 +605,48 @@ class MiniGameManager {
 }
 
 function startMiniGame() {
+  
+  // 👉 記錄進入小遊戲前的位置
+  game.savedCatPosition = {
+    x: game.cat.x,
+    y: game.cat.y
+  };
+  
   initTouchBindings("minigame");
   miniGameManager = new MiniGameManager();
   miniGameManager.start();
   game.mode = "minigame";
   stopBgm();
   if (playMusic && minigameBgm) playBgm(minigameBgm);
+}
+
+function endMiniGame() {
+  console.log("🎬 小遊戲結束，返回主遊戲！");
+  
+  game.cat.controlEnabled = true;
+  
+  // 回到主遊戲模式
+  initTouchBindings("main");
+  game.mode = "main";
+  
+  // 清除 minigameManager（視需要）
+  miniGameManager = null;
+  
+  // 切換到場景
+  sceneManager.setScene(1);
+  
+  // 👉 回復記錄的貓咪位置
+  if (game.savedCatPosition) {
+    game.cat.x = game.savedCatPosition.x;
+    game.cat.y = game.savedCatPosition.y;
+  }
+  
+  // 重新播放主場景音樂（假設有設定 sceneManager 與背景音樂）
+  const scene = sceneManager.getCurrentScene?.();
+  const bgmKey = scene?.bgm;
+  if (bgmKey) {
+    playBgm(bgmKey);
+  }
 }
 
 function updateMiniGame() {
@@ -570,7 +682,7 @@ function keyReleasedMiniGame(keyCode) {
 
 function preloadMiniGameAssets() {
   overworldImg = loadImage("data/minigame/OverWorld.png");
-  minigameBgm = loadSound("data/minigame/001.mp3");
+  minigameBgm = loadSound("data/minigame/002.mp3");
   mysteryAnimImg = loadImage("data/minigame/mysteryAnim.png");
   coinImgs = [
     loadImage("data/minigame/coin01.png"),
@@ -580,7 +692,9 @@ function preloadMiniGameAssets() {
   ];
   fishImg = loadImage("data/minigame/fish.png");
   keyImg = loadImage("data/minigame/key.png");
-
+  poleImg = loadImage("data/minigame/FlagPole.png");
+  flagImg = loadImage("data/minigame/Flag.png");
+  castleImg = loadImage("data/minigame/Castle.png");
 
 }
 
@@ -596,6 +710,10 @@ function createDecoration(type, x, y) {
     bush:  [8, 96, 32, 16, 64, 32],
     cloud: [88, 33, 32, 22, 64, 44],
   };
+  
+  if (type === "castle") {
+    return new Decoration(type, x, y, castleImg, 0, 0, 80, 80, 160, 160);
+  }
 
   if (!(type in params)) return null;
 

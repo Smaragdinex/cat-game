@@ -9,6 +9,7 @@ class Cat {
     this.state = 'idle';
     this.direction = 'right';
     
+    this.height = 48;
     this.width = 48;
     this.x = 0;
     this.speed = 5;
@@ -85,6 +86,13 @@ class Cat {
     this.animations[`${name}-left`] = frames.map(f => this.flipImageHorizontally(f));
     }
   }
+  
+  stop() {
+    this.isMoving = false;
+    this.isRunning = false;
+    this.vx = 0;
+    this.vy = 0;
+  }
 
   update() {
     
@@ -112,7 +120,7 @@ class Cat {
     this.updateMiniGameJumpState();
 
   }
-
+  
   display() {
     
     this.debugDrawHitbox(); // 🐾 測試視覺化用
@@ -128,6 +136,9 @@ class Cat {
   }
 
   keyPressed(keyCode) {
+    
+    if (this.controlEnabled === false) return; // 🚫 禁止控制
+    
     this.isSleeping = false;
     this.sleepStartTime = 0;
     
@@ -188,6 +199,9 @@ class Cat {
     
 }
   keyReleased(keyCode) {
+    
+    if (this.controlEnabled === false) return; // 🚫 禁止控制
+    
     if (keyCode === 39 || keyCode === 37) {
       this.isMoving = false;
     }
@@ -313,6 +327,12 @@ class Cat {
     }
 
     handleMovementInput() {
+      
+      if (this.controlEnabled === false) {
+        this.isMoving = false;
+        return;
+      }
+      
       const movingRight = keyIsDown(RIGHT_ARROW) || this.touchMovingRight;
       const movingLeft = keyIsDown(LEFT_ARROW) || this.touchMovingLeft;
       this.isRunning = keyIsDown(SHIFT) || this.touchRunning;
@@ -451,7 +471,4 @@ class Cat {
       return true;
     }
 
-
-  
-    
 }

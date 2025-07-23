@@ -27,6 +27,18 @@ class SceneManager {
     this.scenes = [];
     this.currentIndex = 0;
   }
+  
+  setScene(index) {
+    if (index >= 0 && index < this.scenes.length) {
+      this.currentIndex = index;
+
+      // ✅ 重設平台（如果有 platformManager）
+      if (typeof platformManager !== "undefined") {
+        const sceneName = this.getCurrentScene().name;
+        platformManager.setupPlatformsForScene(sceneName);
+      }
+    }
+  }
 
   addScene(scene) {
     this.scenes.push(scene);
@@ -208,3 +220,6 @@ function drawLoopingBackgroundMasked(img, offsetX, windowX, windowY, windowW, wi
 
   pop();
 }
+
+
+

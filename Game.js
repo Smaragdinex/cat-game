@@ -39,7 +39,7 @@ class Game {
   }
 
   setup() {
-    console.log("Game build version: 20250620-1816");
+    console.log("Game build version: 20250720-1816");
     createCanvas(960, 544);
     frameRate(10);
     setInputTarget(this.cat);
@@ -60,7 +60,8 @@ class Game {
     this.trainDirection = null;
     
   }
-
+  // setting position cat
+  
   updateDynamicPositions() {
     let bgOriginalW = 320, bgOriginalH = 186;
     let bgScale = width / bgOriginalW;
@@ -204,8 +205,7 @@ class Game {
         this.joystick.lastDown = false;
       }
     }
-
-    
+  
     if (dir.x > 0.5) {
       currentDirection = "right";
     } else if (dir.x < -0.5) {
@@ -234,7 +234,5 @@ class Game {
     flashlight.y += dir.y * 4;
   }
 }
-
-
 
 }

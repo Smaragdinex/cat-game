@@ -34,8 +34,7 @@ class Item {
     }
 
   update() {
-    console.log("🟢 update() 有執行, collected=", this.collected, "floating=", this.floating);
-
+    
     if (this.collected) return;
 
     if (this.type === "coin" && this.frames) {
@@ -158,10 +157,8 @@ class Item {
 // item.js
 function getItemsForMiniGame(coinImgs, fishImg, keyImg) {
   return [
-    //new Item("coin", 500, 350, coinImgs),
   ];
 }
-
 
 function handlePipeSideCollision(item, pipes) {
   for (let pipe of pipes) {
@@ -181,7 +178,6 @@ function handlePipeSideCollision(item, pipes) {
       ) {
         item.x = pipe.x - item.w;
         item.vx *= -1;
-        console.log("🟢 從右撞到水管左側，反向");
       }
 
       // 從左撞到右側
@@ -192,7 +188,6 @@ function handlePipeSideCollision(item, pipes) {
       ) {
         item.x = pipe.x + pipe.w;
         item.vx *= -1;
-        console.log("🟢 從左撞到水管右側，反向");
       }
     }
   }

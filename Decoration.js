@@ -4,7 +4,7 @@
     { type: "bush", x: 352, y: 368 },
     { type: "bush", x: 384, y: 368 },
     { type: "bush", x: 416, y: 368 },
-    { type: "hill", x: 448, y: 338 },
+    { type: "hill", x: 448, y: 330 },
     { type: "cloud", x: 600, y: 50 },
     { type: "bush", x: 736, y: 368 },
 
@@ -24,64 +24,35 @@
     { type: "bush", x: 2080, y: 368 },
     { type: "bush", x: 2112, y: 368 },
 
-    { type: "cloud", x: 1952, y: 100 },
-
-    { type: "hill", x: 2144, y: 338 },
-    { type: "cloud", x: 2272, y: 50 },
+    { type: "hill", x: 2144, y: 330 },
     { type: "bush", x: 2400, y: 368 },
-
-    { type: "cloud", x: 2560, y: 100 },
-    { type: "cloud", x: 2592, y: 100 },
-    { type: "cloud", x: 2624, y: 100 },
-
-    { type: "cloud", x: 2848, y: 50 },
-    { type: "cloud", x: 2880, y: 50 },
 
     { type: "bush", x: 2976, y: 368 },
     { type: "bush", x: 3008, y: 368 },
 
     { type: "hill", x: 3168, y: 308 },
 
-    { type: "cloud", x: 3424, y: 100 },
-
     { type: "bush", x: 3552, y: 368 },
     { type: "bush", x: 3584, y: 368 },
     { type: "bush", x: 3616, y: 368 },
-    { type: "hill", x: 3648, y: 338 },
-    { type: "cloud", x: 3776, y: 50 },
+    { type: "hill", x: 3648, y: 330 },
 
     { type: "bush", x: 3904, y: 368 },
-
-    { type: "cloud", x: 4064, y: 100 },
-    { type: "cloud", x: 4096, y: 100 },
-    { type: "cloud", x: 4128, y: 100 },
-
-    { type: "cloud", x: 4352, y: 50 },
-    { type: "cloud", x: 4384, y: 50 },
 
     { type: "bush", x: 4502, y: 368 },
     { type: "bush", x: 4534, y: 368 },
 
     { type: "hill", x: 4682, y: 308 },
 
-    { type: "cloud", x: 4992, y: 100 },
+    { type: "hill", x: 5184, y: 330 },
 
-    { type: "hill", x: 5184, y: 338 },
-
-    { type: "cloud", x: 5344, y: 50 },
     { type: "bush", x: 5472, y: 368 },
-
-    { type: "cloud", x: 5600, y: 100 },
-    { type: "cloud", x: 5632, y: 100 },
-    { type: "cloud", x: 5664, y: 100 },
-
-    { type: "cloud", x: 5920, y: 50 },
-    { type: "cloud", x: 5952, y: 50 },
 
     { type: "hill", x: 6240, y: 308 },
 
-    { type: "cloud", x: 6528, y: 100 },
-    { type: "hill", x: 6752, y: 338 },
+    { type: "hill", x: 6752, y: 330 },
+     
+    { type: "castle", x: 6528, y: 240 }, //6528
   ];
 
 
@@ -113,7 +84,6 @@ class Decoration {
       }
     }
   }
-
 
   display(offsetX = 0) {
     image(

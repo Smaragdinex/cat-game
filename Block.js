@@ -1,9 +1,6 @@
 const BlockConfig = {
   // 會裂開的磚塊（撞一次就爆）
   breakableBricks: new Set([
-    "3872,300",
-    "3968,150",
-    "4288,150"
   ]),
 
   // 撞幾次會變 empty 的磚塊（brick 類）
@@ -11,7 +8,6 @@ const BlockConfig = {
     ["2592,300", 2]
   ])
 };
-
 
 class Block {
   constructor(x, y, type, sheet, sx, sy, sw = 16, sh = 16, scale = 2) {
@@ -144,8 +140,7 @@ class Block {
   }
 
 triggerItem(type) {
-  console.log("🟢 triggerItem 呼叫", type, "block type=", this.type);
-
+  
   if (!type || !miniGameManager) return;
 
   let sprite;
@@ -164,9 +159,12 @@ triggerItem(type) {
   const item = new Item(type, this.x, this.y - 32, sprite);
   
   item.attachedBlock = this;
-  item.spawnOffset = 16; // 往上浮16px
-  item.vy = -1;
-  item.floating = true;
+  
+  if (type === "fish") {
+    item.spawnOffset = 16;     // 要浮出的距離
+    item.vy = -1;              // 浮動速度
+    item.floating = true;      // 開始浮動
+  }
 
   miniGameManager.items.push(item);
 }
@@ -205,13 +203,10 @@ triggerItem(type) {
 
   playBounce() {
     this.vy = -3; // 控制彈跳的初速度，可依喜好調整
-    console.log("🔄 block bounced");
   }
 
   break() {
     this.broken = true;
-    console.log("💥 block broken");
-    // ✅ 可加入爆炸動畫、刪除 block、移除平台
   }
 }
 

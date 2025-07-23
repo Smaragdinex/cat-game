@@ -119,7 +119,6 @@ class PlatformManager {
       if (isBelow && isWithinX && isJumpingUp) {
         const targetBlock = allBlocks.find(b => b.platform === p);
         if (targetBlock) {
-          console.log("👊 撞到 block at:", targetBlock.x, targetBlock.y);
           targetBlock.onHitFromBelow?.(cat);
         cat.vy = 0;
         }
