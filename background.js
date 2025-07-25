@@ -6,7 +6,6 @@ let mountainViewImg;
 let nightOffset = 0;
 let nightScrollSpeed = 1;
 
-
 class Scene {
   constructor({ name, bgKey, entryMap, npcs = [],playDoorSfx = true, canEnterDream = false, windViewImg = null, windOffsetY = 0, windScrollSpeed = 1}) {
     this.name = name;
