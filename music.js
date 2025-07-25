@@ -1,12 +1,15 @@
-let bgmMusic = null;
-let sfxClick = null;
+let bgmMusic;
 let sfxDoorOpen;
 let __GAME_VOL = 1;
+let sceneMusic = {};
 
 function preloadMusic() {
-  bgmMusic = loadSound('data/Sound/backgroundSound.mp3');
-  sfxClick = loadSound('data/Sound/openSound.mp3');
+  
+  bgmMusic = loadSound('data/Sound/backgroundSound.mp3'); 
   sfxDoorOpen = loadSound('data/Sound/openSound.mp3');
+  
+  sceneMusic["train"] = loadSound("data/Sound/backgroundSound.mp3");  
+  sceneMusic["minigame"] = loadSound("data/minigame/minigameBgm.mp3"); 
 }
 
 function playBgm(input, loop = true) {
@@ -22,7 +25,7 @@ function playBgm(input, loop = true) {
   if (bgmMusic && bgmMusic.isPlaying()) {
     bgmMusic.stop();
   }
-
+  
   bgmMusic = newSound;
   bgmMusic.setLoop(loop);
   bgmMusic.setVolume(__GAME_VOL);
@@ -32,26 +35,21 @@ function playBgm(input, loop = true) {
 function stopBgm() {
   if (bgmMusic && bgmMusic.isPlaying()) {
     bgmMusic.stop();
-    bgmMusic = null;
   }
 }
 
 function playDoorSfx() {
-  if (sfxDoorOpen) sfxDoorOpen.play();
-}
-
-
-function playClickSfx() {
-  if (sfxClick) {
-    sfxClick.setVolume(__GAME_VOL);
-    sfxClick.play();
-  }
+  if (sfxDoorOpen) 
+    {
+      sfxDoorOpen.setVolume(__GAME_VOL);
+      sfxDoorOpen.play();     
+    }
 }
 
 function setVolume(vol) {
   __GAME_VOL = constrain(vol, 0, 1);
   if (bgmMusic) bgmMusic.setVolume(__GAME_VOL);
-  if (sfxClick) sfxClick.setVolume(__GAME_VOL);
+  if (sfxDoorOpen) sfxDoorOpen.setVolume(__GAME_VOL);
 }
 
 function getVolume() {

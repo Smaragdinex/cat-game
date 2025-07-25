@@ -1,9 +1,8 @@
 let miniGameManager;
 let overworldImg, mysteryAnimImg;
-let minigameBgm;
 let coinImgs;
-let playMusic = true; // true == turn on music
- 
+let playMusic = true;
+
 class MiniGameManager {
   constructor() {
     this.state = "idle";
@@ -617,19 +616,15 @@ function startMiniGame() {
   miniGameManager.start();
   game.mode = "minigame";
   stopBgm();
-  if (playMusic && minigameBgm) playBgm(minigameBgm);
+  if (playMusic && sceneMusic["minigame"]) playBgm("minigame");
 }
 
 function endMiniGame() {
   console.log("🎬 小遊戲結束，返回主遊戲！");
   
   game.cat.controlEnabled = true;
-  
-  // 回到主遊戲模式
   initTouchBindings("main");
   game.mode = "main";
-  
-  // 清除 minigameManager（視需要）
   miniGameManager = null;
   
   // 切換到場景
@@ -640,19 +635,17 @@ function endMiniGame() {
     game.cat.x = game.savedCatPosition.x;
     game.cat.y = game.savedCatPosition.y;
   }
-  
-  // 重新播放主場景音樂（假設有設定 sceneManager 與背景音樂）
-  const scene = sceneManager.getCurrentScene?.();
-  const bgmKey = scene?.bgm;
-  if (bgmKey) {
-    playBgm(bgmKey);
+   
+  stopBgm();  // 先關閉舊音樂
+  if (playMusic && sceneMusic["train"]) {
+      playBgm("train");
+    }
   }
-}
 
 function updateMiniGame() {
   miniGameManager?.update();
   
-   game?.handleJoystickInput();
+  game?.handleJoystickInput();
 
   checkTouchControls(); // ✅ 每幀持續檢查是否在按右側按鈕
 }
@@ -682,7 +675,6 @@ function keyReleasedMiniGame(keyCode) {
 
 function preloadMiniGameAssets() {
   overworldImg = loadImage("data/minigame/OverWorld.png");
-  minigameBgm = loadSound("data/minigame/002.mp3");
   mysteryAnimImg = loadImage("data/minigame/mysteryAnim.png");
   coinImgs = [
     loadImage("data/minigame/coin01.png"),
