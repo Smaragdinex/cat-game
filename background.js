@@ -150,7 +150,7 @@ function preloadBackgroundImages() {
     windScrollSpeed: 2.0,
     entryMap: {
       left: { to: 2, spawnX: 865, canGo: true },
-      right: { to: 2, spawnX: -25, canGo: true }
+      right: { to: 9, spawnX: -25, canGo: true }
     },
     npcs: [
       new NPC({ name: "未知的女子", x: 720, y: 285, sprite: npcImages.girl, dialogKey: "girl" })
@@ -165,8 +165,92 @@ function preloadBackgroundImages() {
     windViewImg: NightViewImg,
     windOffsetY: -500,
     entryMap: {
-      left: { to: 1, spawnX: 865, canGo: true },
+      left: { to: 3, spawnX: 865, canGo: true },
       right: { to: 1, spawnX: -25, canGo: true }
+    }
+  }));
+  
+  sceneManager.addScene(new Scene({
+    name: "003",
+    bgKey: "train",
+    playDoorSfx: true,
+    windViewImg: NightViewImg,
+    windOffsetY: -500,
+    entryMap: {
+      left: { to: 4, spawnX: 865, canGo: true },
+      right: { to: 2, spawnX: -25, canGo: true }
+    }
+  }));
+  
+  sceneManager.addScene(new Scene({
+    name: "004",
+    bgKey: "train",
+    playDoorSfx: true,
+    windViewImg: NightViewImg,
+    windOffsetY: -500,
+    entryMap: {
+      left: { to: 5, spawnX: 865, canGo: true },
+      right: { to: 3, spawnX: -25, canGo: true }
+    }
+  }));
+  
+  sceneManager.addScene(new Scene({
+    name: "005",
+    bgKey: "train",
+    playDoorSfx: true,
+    windViewImg: NightViewImg,
+    windOffsetY: -500,
+    entryMap: {
+      left: { to: 6, spawnX: 865, canGo: true },
+      right: { to: 4, spawnX: -25, canGo: true }
+    }
+  }));
+  
+  sceneManager.addScene(new Scene({
+    name: "006",
+    bgKey: "train",
+    playDoorSfx: true,
+    windViewImg: NightViewImg,
+    windOffsetY: -500,
+    entryMap: {
+      left: { to: 7, spawnX: 865, canGo: true },
+      right: { to: 5, spawnX: -25, canGo: true }
+    }
+  }));
+  
+  sceneManager.addScene(new Scene({
+    name: "007",
+    bgKey: "train",
+    playDoorSfx: true,
+    windViewImg: NightViewImg,
+    windOffsetY: -500,
+    entryMap: {
+      left: { to: 8, spawnX: 865, canGo: true },
+      right: { to: 6, spawnX: -25, canGo: true }
+    }
+  }));
+  
+  sceneManager.addScene(new Scene({
+    name: "008",
+    bgKey: "train",
+    playDoorSfx: true,
+    windViewImg: NightViewImg,
+    windOffsetY: -500,
+    entryMap: {
+      left: { to: 9, spawnX: 865, canGo: true },
+      right: { to: 7, spawnX: -25, canGo: true }
+    }
+  }));
+  
+  sceneManager.addScene(new Scene({
+    name: "009",
+    bgKey: "train",
+    playDoorSfx: true,
+    windViewImg: NightViewImg,
+    windOffsetY: -500,
+    entryMap: {
+      left: { to: 1, spawnX: 865, canGo: true },
+      right: { to: 8, spawnX: -25, canGo: true }
     }
   }));
 }
