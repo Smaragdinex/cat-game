@@ -52,10 +52,16 @@ class MiniGameManager {
     this.items = window.getItemsForMiniGame(coinImgs, fishImg, keyImg);
   
     const b1 = new Block(640, 300, "mystery", overworldImg, 64, 0);
+    const b2 = new Block(2624, 300, "mystery", overworldImg, 64, 0);
+    const b3 = new Block(3584, 150, "mystery", overworldImg, 64, 0);
     b1.itemType = "fish";
+    b2.itemType = "fish";
+    b3.itemType = "fish";
     
     this.blocks.push(
         b1,
+        b2,
+        b3,
         new Block(608, 300, "brick", overworldImg, 48, 0),
         new Block(480, 300, "mystery", overworldImg, 64, 0),
         new Block(672, 300, "brick", overworldImg, 48, 0), // mid
@@ -64,7 +70,6 @@ class MiniGameManager {
         new Block(672, 200, "mystery", overworldImg, 64, 0),
         
         new Block(2592, 300, "brick", overworldImg, 48, 0),
-        new Block(2624, 300, "mystery", overworldImg, 64, 0),
         new Block(2656, 300, "brick", overworldImg, 48, 0), 
       
         new Block(2688, 150, "brick", overworldImg, 48, 0), 
@@ -87,7 +92,6 @@ class MiniGameManager {
       
         new Block(3488, 300, "mystery", overworldImg, 64, 0),
         new Block(3584, 300, "mystery", overworldImg, 64, 0),
-        new Block(3584, 150, "mystery", overworldImg, 64, 0),
         new Block(3680, 300, "mystery", overworldImg, 64, 0),
       
         new Block(3872, 300, "brick", overworldImg, 48, 0),

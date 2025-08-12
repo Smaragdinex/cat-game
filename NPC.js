@@ -104,10 +104,6 @@ class NPC{
     });
   }
 
-
-  
-  
-  
 }
 
 
@@ -171,5 +167,15 @@ function preloadNPCImages() {
   
   npcImages.grandpa = loadImage("data/NPC/papa.png", img => {
     img.resize(40, 46);  // 👈 同樣縮小老爺爺
+  });
+  
+  npcImages.rabbit = loadImage("data/NPC/rabbit.png", img => {
+    img.resize(30, 40);  // rabbit
+  });
+  npcImages.bearie = loadImage("data/NPC/bearie.png", img => {
+    img.resize(32, 50);  // bear
+  });
+  npcImages.doggie = loadImage("data/NPC/doggie.png", img => {
+    img.resize(32, 40);  // doggie
   });
 }
