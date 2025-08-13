@@ -164,18 +164,19 @@ function preloadNPCImages() {
   npcImages.girl = loadImage("data/NPC/002.png",img => {
     img.resize(0, 42);
    });
-  
   npcImages.grandpa = loadImage("data/NPC/papa.png", img => {
     img.resize(40, 46);  // 👈 同樣縮小老爺爺
   });
-  
   npcImages.rabbit = loadImage("data/NPC/rabbit.png", img => {
     img.resize(30, 40);  // rabbit
   });
   npcImages.bearie = loadImage("data/NPC/bearie.png", img => {
-    img.resize(32, 50);  // bear
+    img.resize(25, 40);  // bear
   });
   npcImages.doggie = loadImage("data/NPC/doggie.png", img => {
-    img.resize(32, 40);  // doggie
+    img.resize(26, 30);  // doggie
+  });
+  npcImages.fox = loadImage("data/NPC/fox.png", img => {
+    img.resize(30, 30);  // fox
   });
 }

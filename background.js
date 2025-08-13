@@ -185,7 +185,7 @@ function preloadBackgroundImages() {
       right: { to: 2, spawnX: -25, canGo: true }
     },
     npcs: [
-      new NPC({ name: "軟糖熊", x: 420, y: 275, sprite: npcImages.bearie, dialogKey: "bear" })
+      new NPC({ name: "軟糖熊", x: 420, y: 295, sprite: npcImages.bearie, dialogKey: "bear" })
     ]
   }));
   
@@ -200,7 +200,7 @@ function preloadBackgroundImages() {
       right: { to: 3, spawnX: -25, canGo: true }
     },
     npcs: [
-      new NPC({ name: "氣球狗", x: 420, y: 335, sprite: npcImages.doggie, dialogKey: "dog" })
+      new NPC({ name: "氣球狗", x: 620, y: 305, sprite: npcImages.doggie, dialogKey: "dog" })
     ]
   }));
   
@@ -213,7 +213,10 @@ function preloadBackgroundImages() {
     entryMap: {
       left: { to: 6, spawnX: 865, canGo: true },
       right: { to: 4, spawnX: -25, canGo: true }
-    }
+    },
+     npcs: [
+      new NPC({ name: "狐狸娃娃", x: 420, y: 300, sprite: npcImages.fox, dialogKey: "fox" })
+    ]
   }));
   
   sceneManager.addScene(new Scene({
