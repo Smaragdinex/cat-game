@@ -54,6 +54,13 @@ class MiniGameManager {
     }
     
     this.items = window.getItemsForMiniGame(coinImgs, fishImg, keyImg);
+    // 敵人:香菇與烏龜(位置沿關卡分布,避開水管與洞)
+    this.enemies = [
+      new Enemy('goomba', 720), new Enemy('koopa', 1180), new Enemy('goomba', 1520), new Enemy('goomba', 2150),
+      new Enemy('koopa', 2700), new Enemy('goomba', 3400), new Enemy('koopa', 3850), new Enemy('goomba', 4480),
+      new Enemy('koopa', 5100), new Enemy('goomba', 5560),
+    ];
+    this.invincibleUntil = 0;
   
     const b1 = new Block(640, 300, "mystery", overworldImg, 64, 0);
     const b2 = new Block(2624, 300, "mystery", overworldImg, 64, 0);
@@ -295,8 +302,10 @@ class MiniGameManager {
       this.cat.vy = 0;
       this.cat.isOnPlatform = false;
       this.cat.isDead = false;
+      this.cat.hurtByEnemy = false;
       this.cat.deathTime = 0;
       this.cat.resetPower?.();          // 每局從小貓開始
+      this.cat.controlEnabled = true;
       this.cat.hitbox = this.cat.getHitbox();
     
       this.cat.onLanded = () => {
@@ -338,8 +347,16 @@ class MiniGameManager {
     // ✅ 更新碰撞框
     cat.hitbox = cat.getHitbox();
 
+    // 被敵人打死:往上彈一下然後掉出畫面(不做碰撞),2 秒後重開
+    if (cat.isDead && cat.hurtByEnemy) {
+      if (millis() - cat.deathTime > 2000) this.start();
+      return;
+    }
+
     // ✅ 封裝：落地與撞擊方塊邏輯已整合
     this.platformManager.checkCollision(cat, [...this.blocks, ...this.pipes]);
+
+    this.updateEnemies();
 
     // coyote time + jump buffer(60fps:6 幀 ≈ 0.1 秒)
     if (cat.isOnPlatform) this.coyote = 6; else if (this.coyote > 0) this.coyote--;
@@ -462,6 +479,12 @@ class MiniGameManager {
       block.display(this.cameraOffsetX);
     }
     
+    // 敵人
+    for (const e of this.enemies || []) {
+      if (e.x + 64 < visibleLeft || e.x - 32 > visibleRight) continue;
+      e.display();
+    }
+
     //item
     for (let item of this.items) {
       item.display(this.cameraOffsetX);
@@ -475,13 +498,61 @@ class MiniGameManager {
     this.platformManager.display(this.debugMode);
 
     // ✅ 顯示角色與碰撞框
-    this.cat.display();
+    if (!(millis() < this.invincibleUntil && Math.floor(frameCount / 4) % 2 === 0)) this.cat.display();   // 受傷無敵時閃爍
     this.cat.debugDrawHitbox(this.debugMode);
 
     // ✅ 顯示平台紅框 tile 編號
     this.drawPlatformTilesWithDebug();
 
     pop();
+  }
+
+  updateEnemies() {
+    const cat = this.cat, solids = [...this.blocks, ...this.pipes];
+    for (const e of this.enemies) {
+      e.update(solids);
+      if (e.dead || cat.isDead) continue;
+
+      // 移動中的龜殼撞到其他敵人 → 對方飛出去
+      if (e.state === 'shell' && e.shellVx !== 0) {
+        for (const o of this.enemies) {
+          if (o === e || o.dead || o.state === 'flying' || o.state === 'squashed') continue;
+          const a = e.hitbox, b = o.hitbox;
+          if (a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y) o.hitByShell();
+        }
+      }
+
+      // 和貓的碰撞
+      const hb = cat.hitbox, eb = e.hitbox;
+      const hit = hb.x < eb.x + eb.w && hb.x + hb.w > eb.x && hb.y < eb.y + eb.h && hb.y + hb.h > eb.y;
+      if (!hit || e.state === 'squashed' || e.state === 'flying') continue;
+      const stomp = cat.vy > 0 && (hb.y + hb.h) - eb.y < 20;        // 從上方踩到(腳底剛過敵人頭頂)
+      const bounce = () => { cat.vy = -9; this.isJumping = true; cat.isOnPlatform = false; };
+
+      if (e.state === 'walk') {
+        if (stomp) { e.stomp(); bounce(); }
+        else this.hurtCat();
+      } else if (e.state === 'shell') {
+        if (e.shellVx === 0) {                                       // 靜止的殼:踢出去(從哪邊碰就往另一邊飛)
+          e.kick(hb.x + hb.w / 2 < eb.x + eb.w / 2 ? 1 : -1);
+          if (stomp) bounce();
+        } else if (stomp) { e.shellVx = 0; bounce(); }              // 踩住移動中的殼 → 停下
+        else if (e.kickCooldown <= 0) this.hurtCat();
+      }
+    }
+    this.enemies = this.enemies.filter(e => !e.dead);
+  }
+
+  hurtCat() {
+    const cat = this.cat;
+    if (millis() < this.invincibleUntil || cat.isDead) return;
+    if ((cat.powerLevel || 0) > 0) {                                 // 有吃過魚:縮小一級 + 1.5 秒無敵
+      cat.powerLevel--; cat.sizeTarget = 1 + 0.25 * cat.powerLevel;
+      this.invincibleUntil = millis() + 1500;
+      return;
+    }
+    cat.isDead = true; cat.hurtByEnemy = true; cat.deathTime = millis();
+    cat.vy = -14; cat.vx = 0; cat.controlEnabled = false; cat.isOnPlatform = false;
   }
 
   keyPressed(keyCode) {
@@ -714,6 +785,7 @@ function preloadMiniGameAssets() {
   poleImg = loadImage("data/minigame/FlagPole.png");
   flagImg = loadImage("data/minigame/Flag.png");
   castleImg = loadImage("data/minigame/Castle.png");
+  enemySheet = loadImage("data/minigame/enemies.png");
 
 }
 
