@@ -61,8 +61,6 @@ class MiniGameManager {
       new Enemy('koopa', 2700), new Enemy('goomba', 3400), new Enemy('koopa', 3850), new Enemy('goomba', 4300),
       new Enemy('koopa', 5450), new Enemy('goomba', 5600),
     ];
-    // 食人花:每根水管一株(用水管頂端方塊的位置)
-    for (const pipe of this.pipes) if (pipe.type === 'pipe') this.enemies.push(new Piranha(pipe.x, pipe.y));
     this.invincibleUntil = 0;
   
     const b1 = new Block(640, 300, "mystery", overworldImg, 64, 0);
@@ -288,6 +286,9 @@ class MiniGameManager {
         this.platformManager.platforms.push(platform);
       }
     }
+
+    // 食人花:每根水管一株(要在 this.pipes 建立之後才能加;之前放在前面 → 一株都沒生出來)
+    for (const pipe of this.pipes) if (pipe.type === 'pipe') this.enemies.push(new Piranha(pipe.x, pipe.y));
 
     // ✅ 裝飾物（純顯示用）
     this.decorations = decorationsData.map(d => createDecoration(d.type, d.x, d.y)).filter(d => d !== null);
