@@ -46,6 +46,27 @@ class Cat {
 
     this.debugMode = false;
 
+    // 吃魚長大(小遊戲用):powerLevel 0~2,顯示尺寸依等級放大,能力(速度、跳躍)也提升
+    this.powerLevel = 0;
+    this.sizeScale = 1;
+    this.sizeTarget = 1;
+  }
+
+  grow() {
+    this.powerLevel = Math.min(2, this.powerLevel + 1);
+    this.sizeTarget = 1 + 0.25 * this.powerLevel;   // 1.25x、1.5x
+    this.speed = 5 + this.powerLevel;                // 走路速度 5 → 6 → 7
+  }
+
+  resetPower() {
+    this.powerLevel = 0; this.sizeScale = 1; this.sizeTarget = 1; this.speed = 5;
+  }
+
+  // 依 sizeScale 畫貓,以腳底中央為錨點(長大時腳還踩在地上)
+  drawSprite(img) {
+    this.sizeScale += (this.sizeTarget - this.sizeScale) * 0.25;   // 平滑放大
+    const S = CAT_DISPLAY_SIZE * this.sizeScale;
+    image(img, this.x - (S - CAT_DISPLAY_SIZE) / 2, this.y - (S - CAT_DISPLAY_SIZE), S, S);
   }
   
   isNearLeftEdge() {
@@ -371,7 +392,7 @@ class Cat {
       const frames = this.animations[key];
       if (frames) {
         const index = Math.floor(this.currentFrame / 20) % frames.length;
-        image(frames[index], this.x, this.y, CAT_DISPLAY_SIZE, CAT_DISPLAY_SIZE);
+        this.drawSprite(frames[index]);
       } else {
         console.warn('Missing sleep frames:', key);
       }
@@ -387,7 +408,7 @@ class Cat {
         let index = this.isSittingDown
           ? this.sitFrameIndex % sitFrames.length
           : sitFrames.length - 1;
-        image(sitFrames[index], this.x, this.y, CAT_DISPLAY_SIZE, CAT_DISPLAY_SIZE);
+        this.drawSprite(sitFrames[index]);
       } else {
         console.warn('Missing sit frames:', sitKey);
       }
@@ -401,7 +422,7 @@ class Cat {
       const frames = this.animations[key];
       if (frames) {
         const index = Math.floor(this.currentFrame / 4) % frames.length;
-        image(frames[index], this.x, this.y, CAT_DISPLAY_SIZE, CAT_DISPLAY_SIZE);
+        this.drawSprite(frames[index]);
       } else {
         console.warn('Missing meow frames:', key);
       }
@@ -416,7 +437,7 @@ class Cat {
       // ✅ 一般動畫播放
       if (frames) {
         const index = this.currentFrame % frames.length;
-        image(frames[index], this.x, this.y, CAT_DISPLAY_SIZE, CAT_DISPLAY_SIZE);
+        this.drawSprite(frames[index]);
       } else {
         console.warn('Missing animation:', key);
       }
@@ -466,7 +487,7 @@ class Cat {
       const index = (this.jumpState === "jumping") ? 3 : 4;
 
       const safeIndex = constrain(index, 0, runFrames.length - 1);
-      image(runFrames[safeIndex], this.x, this.y, CAT_DISPLAY_SIZE, CAT_DISPLAY_SIZE);
+      this.drawSprite(runFrames[safeIndex]);
 
       return true;
     }

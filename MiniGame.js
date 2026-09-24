@@ -294,6 +294,7 @@ class MiniGameManager {
       this.cat.isOnPlatform = false;
       this.cat.isDead = false;
       this.cat.deathTime = 0;
+      this.cat.resetPower?.();          // 每局從小貓開始
       this.cat.hitbox = this.cat.getHitbox();
     
       this.cat.onLanded = () => {
@@ -401,7 +402,8 @@ class MiniGameManager {
   jump() {
     if (!this.isJumping && this.cat?.isOnPlatform) {
       const running = this.cat.isRunning || this.cat.touchRunning || keyIsDown(SHIFT);
-      this.cat.vy = running ? this.jumpStrengthRun : this.jumpStrength;
+      const boost = -1.5 * (this.cat.powerLevel || 0);   // 每吃一條魚跳高一點
+      this.cat.vy = (running ? this.jumpStrengthRun : this.jumpStrength) + boost;
       this.isJumping = true;
     } 
   }
@@ -468,6 +470,15 @@ class MiniGameManager {
     this.drawPlatformTilesWithDebug();
 
     pop();
+
+    // HUD:左上角顯示吃到的魚(= 目前等級)
+    const lv = this.cat.powerLevel || 0;
+    for (let i = 0; i < 2; i++) {
+      push();
+      if (i >= lv) tint(255, 70);
+      if (fishImg) image(fishImg, 14 + i * 34, 12, 28, 28);
+      pop();
+    }
   }
 
   keyPressed(keyCode) {
