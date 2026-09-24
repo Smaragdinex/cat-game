@@ -12,6 +12,8 @@ class MiniGameManager {
     this.jumpStrength = -16;       // 走路時的跳躍力
     this.jumpStrengthRun = -19;    // 跑步(Shift / 肉球鍵)時跳更高
     this.jumpCutVy = -6;           // 早放開跳躍鍵就把上升速度砍到這個值 → 輕點小跳、長按大跳(瑪利歐手感)
+    this.coyote = 0;               // 離開平台後還能起跳的幀數(coyote time)
+    this.jumpBuffer = 0;           // 落地前先按了跳 → 落地瞬間自動起跳(jump buffer)
     this.isJumping = false;
     this.cameraOffsetX = 0;
     this.mapWidth = 6912; 
@@ -339,6 +341,10 @@ class MiniGameManager {
     // ✅ 封裝：落地與撞擊方塊邏輯已整合
     this.platformManager.checkCollision(cat, [...this.blocks, ...this.pipes]);
 
+    // coyote time + jump buffer(60fps:6 幀 ≈ 0.1 秒)
+    if (cat.isOnPlatform) this.coyote = 6; else if (this.coyote > 0) this.coyote--;
+    if (this.jumpBuffer > 0) { this.jumpBuffer--; if (cat.isOnPlatform && !this.isJumping) this.doJump(); }
+
     // ✅ 檢查是否掉出畫面視為死亡
     const feetY = cat.hitbox.y + cat.hitbox.h;
     if (!cat.isOnPlatform && !cat.isDead && feetY > height + 100) {
@@ -400,12 +406,18 @@ class MiniGameManager {
   }
 
   jump() {
-    if (!this.isJumping && this.cat?.isOnPlatform) {
-      const running = this.cat.isRunning || this.cat.touchRunning || keyIsDown(SHIFT);
-      const boost = -1.5 * (this.cat.powerLevel || 0);   // 每吃一條魚跳高一點
-      this.cat.vy = (running ? this.jumpStrengthRun : this.jumpStrength) + boost;
-      this.isJumping = true;
-    } 
+    if (!this.cat) return;
+    if (!this.isJumping && (this.cat.isOnPlatform || this.coyote > 0)) this.doJump();
+    else this.jumpBuffer = 8;                              // 還在空中:記住,落地就跳
+  }
+
+  doJump() {
+    const running = this.cat.isRunning || this.cat.touchRunning || keyIsDown(SHIFT);
+    const boost = -1.5 * (this.cat.powerLevel || 0);       // 每吃一條魚跳高一點
+    this.cat.vy = (running ? this.jumpStrengthRun : this.jumpStrength) + boost;
+    this.isJumping = true;
+    this.cat.isOnPlatform = false;
+    this.coyote = 0; this.jumpBuffer = 0;
   }
 
   moveLeft() {
@@ -633,6 +645,7 @@ function startMiniGame() {
   };
   
   initTouchBindings("minigame");
+  frameRate(60);                 // 小遊戲用 60fps(主場景是 10fps,平台跳躍會很卡)
   miniGameManager = new MiniGameManager();
   miniGameManager.start();
   game.mode = "minigame";
@@ -648,7 +661,7 @@ function endMiniGame() {
     return;
   }
   console.log("🎬 小遊戲結束，返回主遊戲！");
-  
+  frameRate(10);
   game.cat.controlEnabled = true;
   initTouchBindings("main");
   game.mode = "main";

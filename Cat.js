@@ -62,12 +62,17 @@ class Cat {
     this.powerLevel = 0; this.sizeScale = 1; this.sizeTarget = 1; this.speed = 5;
   }
 
-  // 依 sizeScale 畫貓,以腳底中央為錨點(長大時腳還踩在地上)
+  // 依 sizeScale 畫貓,以「碰撞框的腳底中央」為錨點(長大時腳仍精準踩在平台上)
   drawSprite(img) {
-    this.sizeScale += (this.sizeTarget - this.sizeScale) * 0.25;   // 平滑放大
-    const S = CAT_DISPLAY_SIZE * this.sizeScale;
-    image(img, this.x - (S - CAT_DISPLAY_SIZE) / 2, this.y - (S - CAT_DISPLAY_SIZE), S, S);
+    this.sizeScale += (this.sizeTarget - this.sizeScale) * 0.15;   // 平滑放大
+    const k = this.sizeScale, S = CAT_DISPLAY_SIZE * k;
+    const feetY = this.hitboxOffsetY + this.hitboxHeight;           // 腳底在原圖框內的 y(75)
+    const feetX = this.hitboxOffsetX + this.hitboxWidth / 2;        // 腳底中心在原圖框內的 x(60)
+    image(img, this.x + feetX - feetX * k, this.y + feetY - feetY * k, S, S);
   }
+
+  // 小遊戲跑 60fps,精靈動畫每 6 幀換一格;主場景維持 10fps 每幀換一格
+  animStep() { return (typeof game !== 'undefined' && game.mode === 'minigame') ? 6 : 1; }
   
   isNearLeftEdge() {
       return this.getHitboxLeft() <= 30;
@@ -436,7 +441,7 @@ class Cat {
 
       // ✅ 一般動畫播放
       if (frames) {
-        const index = this.currentFrame % frames.length;
+        const index = Math.floor(this.currentFrame / this.animStep()) % frames.length;
         this.drawSprite(frames[index]);
       } else {
         console.warn('Missing animation:', key);
