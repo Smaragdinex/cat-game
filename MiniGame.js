@@ -9,7 +9,9 @@ class MiniGameManager {
     this.cat = null;
     this.platformManager = new PlatformManager();
     this.gravity = 1;
-    this.jumpStrength = -16;
+    this.jumpStrength = -16;       // 走路時的跳躍力
+    this.jumpStrengthRun = -19;    // 跑步(Shift / 肉球鍵)時跳更高
+    this.jumpCutVy = -6;           // 早放開跳躍鍵就把上升速度砍到這個值 → 輕點小跳、長按大跳(瑪利歐手感)
     this.isJumping = false;
     this.cameraOffsetX = 0;
     this.mapWidth = 6912; 
@@ -398,7 +400,8 @@ class MiniGameManager {
 
   jump() {
     if (!this.isJumping && this.cat?.isOnPlatform) {
-      this.cat.vy = this.jumpStrength;
+      const running = this.cat.isRunning || this.cat.touchRunning || keyIsDown(SHIFT);
+      this.cat.vy = running ? this.jumpStrengthRun : this.jumpStrength;
       this.isJumping = true;
     } 
   }
@@ -478,6 +481,9 @@ class MiniGameManager {
   keyReleased(keyCode) {
     if ([LEFT_ARROW, RIGHT_ARROW, 65, 68].includes(keyCode)) {
       this.stop();
+    }
+    if (keyCode === 32 && this.cat && this.cat.vy < this.jumpCutVy) {
+      this.cat.vy = this.jumpCutVy;   // 還在上升就放開 → 小跳
     }
     if (keyCode === 1003) {
     this.cat.keyReleased(1003);
