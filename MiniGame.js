@@ -526,7 +526,8 @@ class MiniGameManager {
       const hb = cat.hitbox, eb = e.hitbox;
       const hit = hb.x < eb.x + eb.w && hb.x + hb.w > eb.x && hb.y < eb.y + eb.h && hb.y + hb.h > eb.y;
       if (!hit || e.state === 'squashed' || e.state === 'flying') continue;
-      const stomp = cat.vy > 0 && (hb.y + hb.h) - eb.y < 20;        // 從上方踩到(腳底剛過敵人頭頂)
+      // 從上方踩到:正在下落,而且「這一幀移動前」腳底還在敵人頭頂附近(用 prevFeetY,不受下落速度影響)
+      const stomp = cat.vy > 0 && cat.prevFeetY <= eb.y + 14;
       const bounce = () => { cat.vy = -9; this.isJumping = true; cat.isOnPlatform = false; };
 
       if (e.state === 'walk') {
