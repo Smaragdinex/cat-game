@@ -35,8 +35,8 @@ class Platform {
     if (!this.active) return false;
 
     const feetY = hitbox.y + hitbox.h;
-    const wasAbove = cat.prevFeetY <= this.y;
-    const nowBelow = feetY >= this.y;
+    const wasAbove = cat.prevFeetY <= this.y + 0.01;
+    const nowBelow = feetY >= this.y - 0.01;      // 容許浮點誤差(324.4 + 0.6 可能算成 399.9999)
     const isCrossing = wasAbove && nowBelow;
 
     const footCenter = hitbox.x + hitbox.w / 2;
@@ -107,6 +107,10 @@ class PlatformManager {
       }
     }
 
+    // ⚠️ 落地已經把 y 修正過了,碰撞框要重算;不然下面的重疊修正會用「落地前」的舊框再把貓往上推一次
+    //    → 落地後懸空十幾 px、再掉下來第二次落地(之前「落地兩三次」的原因)
+    cat.hitbox = cat.getHitbox();
+
     for (let p of this.platforms) {
       if (!p.active) continue;
 
@@ -132,7 +136,7 @@ class PlatformManager {
       const b = p;
 
       const horizontalOverlap = a.x < b.x + b.w && a.x + a.w > b.x;
-      const verticalOverlap = a.y < b.y + b.h && a.y + a.h > b.y;
+      const verticalOverlap = a.y < b.y + b.h && a.y + a.h > b.y + 0.01;   // 剛好站在平台上(腳底 = 平台頂)不算重疊
 
       if (horizontalOverlap && verticalOverlap) {
         const overlapX = (a.x + a.w / 2 < b.x + b.w / 2)
