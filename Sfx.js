@@ -10,13 +10,18 @@ const Sfx = (() => {
     return ctx;
   };
   const tone = (freq, dur, { type = 'square', vol = 0.12, slide = 0, delay = 0 } = {}) => {
-    const c = ac(); if (!c) return;
-    const t0 = c.currentTime + delay;
-    const o = c.createOscillator(), g = c.createGain();
-    o.type = type; o.frequency.setValueAtTime(freq, t0);
-    if (slide) o.frequency.exponentialRampToValueAtTime(Math.max(30, freq + slide), t0 + dur);
-    g.gain.setValueAtTime(vol, t0); g.gain.exponentialRampToValueAtTime(0.001, t0 + dur);
-    o.connect(g).connect(c.destination); o.start(t0); o.stop(t0 + dur + 0.02);
+    try {
+      const c = ac(); if (!c) return;
+      const t0 = c.currentTime + delay;
+      const o = c.createOscillator(), g = c.createGain();
+      o.type = type; o.frequency.setValueAtTime(freq, t0);
+      if (slide) o.frequency.exponentialRampToValueAtTime(Math.max(30, freq + slide), t0 + dur);
+      g.gain.setValueAtTime(vol, t0); g.gain.exponentialRampToValueAtTime(0.001, t0 + dur);
+      // ⚠️ 不能寫 o.connect(g).connect(...):p5.sound 把 AudioNode.connect 改寫成不回傳值,鏈式呼叫會炸掉
+      //    (之前這個例外發生在 draw/update 裡,整個遊戲就卡住了)
+      o.connect(g); g.connect(c.destination);
+      o.start(t0); o.stop(t0 + dur + 0.02);
+    } catch (e) { /* 音效失敗絕不影響遊戲 */ }
   };
   const api = {
     unlock() { ac(); },

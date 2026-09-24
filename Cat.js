@@ -51,7 +51,7 @@ class Cat {
     this.sizeScale = 1;
     this.sizeTarget = 1;
     this.growFrom = 1;
-    this.growAnim = 0;
+    this.growAnim = 0; this.growDur = 40;
   }
 
   grow() {
@@ -60,14 +60,14 @@ class Cat {
     this.powerLevel = Math.min(2, this.powerLevel + 1);
     this.sizeTarget = 1 + 0.25 * this.powerLevel;   // 1.25x、1.5x
     this.speed = 5 + this.powerLevel;                // 走路速度 5 → 6 → 7
-    this.growAnim = 54;                              // 長大動畫:0.9 秒內小/大交替閃(遊戲暫停),像瑪利歐吃香菇
+    this.growAnim = this.growDur = 40;               // 長大動畫:0.65 秒平滑放大、稍微彈一下(不暫停遊戲)
   }
 
   shrinkTo(level) {
     this.growFrom = this.sizeTarget;
     this.powerLevel = level;
     this.sizeTarget = 1 + 0.25 * level;
-    this.growAnim = 36;                              // 縮小也閃一下
+    this.growAnim = this.growDur = 24;               // 縮小:0.4 秒平滑縮回
   }
 
   resetPower() {
@@ -76,9 +76,12 @@ class Cat {
 
   // 依 sizeScale 畫貓,以「碰撞框的腳底中央」為錨點(長大時腳仍精準踩在平台上)
   drawSprite(img) {
-    if (this.growAnim > 0) {                                        // 長大/縮小動畫:每 6 幀在舊尺寸和新尺寸間切換
+    if (this.growAnim > 0) {                                        // 長大/縮小動畫:easeOutBack(先衝過頭一點再回彈)
       this.growAnim--;
-      this.sizeScale = (Math.floor(this.growAnim / 6) % 2 === 0) ? this.sizeTarget : this.growFrom;
+      const p = 1 - this.growAnim / this.growDur;
+      const c1 = 1.9, c3 = c1 + 1;
+      const e = 1 + c3 * Math.pow(p - 1, 3) + c1 * Math.pow(p - 1, 2);
+      this.sizeScale = this.growFrom + (this.sizeTarget - this.growFrom) * e;
       if (this.growAnim === 0) this.sizeScale = this.sizeTarget;
     } else {
       this.sizeScale = this.sizeTarget;

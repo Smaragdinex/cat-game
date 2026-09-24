@@ -320,7 +320,6 @@ class MiniGameManager {
 
   update() {
     if (this.state !== "playing" || !this.cat) return;
-    if (this.cat.growAnim > 0) return;                 // 長大/縮小動畫期間全部暫停(瑪利歐吃香菇時也會停)
     
     const cat = this.cat;
     
