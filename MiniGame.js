@@ -624,6 +624,12 @@ function startMiniGame() {
 }
 
 function endMiniGame() {
+  // 街機模式:沒有捷運場景可回,通知外層頁面後直接重開一局
+  if (window.ARCADE_MODE) {
+    try { window.parent.postMessage({ type: "catgame-finished" }, "*"); } catch (e) {}
+    startMiniGame();
+    return;
+  }
   console.log("🎬 小遊戲結束，返回主遊戲！");
   
   game.cat.controlEnabled = true;

@@ -15,10 +15,13 @@ function preload() {
 
 function setup() {
   game.setup();
-  
-  // ✅ 強制進入 minigame 模式
-  //game.mode = "minigame";
-  //startMiniGame();             
+
+  // 網址帶 ?minigame=1(例如嵌在 xarts.games 的 3D 房間街機裡):直接進瑪利歐小遊戲,跳過捷運場景
+  window.ARCADE_MODE = new URLSearchParams(location.search).get("minigame") === "1";
+  if (window.ARCADE_MODE) {
+    game.mode = "minigame";
+    startMiniGame();
+  }
 }
 
 function draw() {
