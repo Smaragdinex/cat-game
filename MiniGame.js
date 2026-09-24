@@ -61,6 +61,8 @@ class MiniGameManager {
       new Enemy('koopa', 2700), new Enemy('goomba', 3400), new Enemy('koopa', 3850), new Enemy('goomba', 4300),
       new Enemy('koopa', 5450), new Enemy('goomba', 5600),
     ];
+    // 食人花:每根水管一株(用水管頂端方塊的位置)
+    for (const pipe of this.pipes) if (pipe.type === 'pipe') this.enemies.push(new Piranha(pipe.x, pipe.y));
     this.invincibleUntil = 0;
   
     const b1 = new Block(640, 300, "mystery", overworldImg, 64, 0);
@@ -468,6 +470,12 @@ class MiniGameManager {
       deco.display(0); // ✅ 讓裝飾也改用 translate 控制畫面位置
     }
     
+    // 食人花先畫,再畫水管蓋在上面(躲進去時就被遮住)
+    for (const e of this.enemies || []) {
+      if (e.type !== 'piranha' || e.x + 64 < visibleLeft || e.x - 32 > visibleRight) continue;
+      e.display();
+    }
+
     // ✅ 再畫 pipe block（畫在上層）
     for (let pipe of this.pipes) {
       if (pipe.x + pipe.w < visibleLeft || pipe.x > visibleRight) continue;
@@ -482,7 +490,7 @@ class MiniGameManager {
     
     // 敵人
     for (const e of this.enemies || []) {
-      if (e.x + 64 < visibleLeft || e.x - 32 > visibleRight) continue;
+      if (e.type === 'piranha' || e.x + 64 < visibleLeft || e.x - 32 > visibleRight) continue;
       e.display();
     }
 
@@ -511,13 +519,15 @@ class MiniGameManager {
   updateEnemies() {
     const cat = this.cat, solids = [...this.blocks, ...this.pipes];
     for (const e of this.enemies) {
-      e.update(solids);
+      e.update(solids, cat);
       if (e.dead || cat.isDead) continue;
+      if (e.type === 'piranha' && !e.isOut) continue;             // 躲在水管裡的食人花不碰撞
 
       // 移動中的龜殼撞到其他敵人 → 對方飛出去
       if (e.state === 'shell' && e.shellVx !== 0) {
         for (const o of this.enemies) {
           if (o === e || o.dead || o.state === 'flying' || o.state === 'squashed') continue;
+          if (o.type === 'piranha' && !o.isOut) continue;
           const a = e.hitbox, b = o.hitbox;
           if (a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y) o.hitByShell();
         }
@@ -531,7 +541,9 @@ class MiniGameManager {
       const stomp = cat.vy > 0 && cat.prevFeetY <= eb.y + 14;
       const bounce = () => { cat.vy = -7; this.isJumping = true; cat.isOnPlatform = false; };
 
-      if (e.state === 'walk') {
+      if (e.type === 'piranha') {                                 // 食人花不能踩,碰到就受傷
+        this.hurtCat();
+      } else if (e.state === 'walk') {
         if (stomp) { e.stomp(); bounce(); }
         else this.hurtCat();
       } else if (e.state === 'shell') {

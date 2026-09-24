@@ -93,3 +93,64 @@ class Enemy {
     pop();
   }
 }
+
+// 食人花:住在水管裡,週期性探出來再縮回去;貓站在水管附近時不會出來(瑪利歐規則)。不能踩,碰到就受傷,龜殼可以打掉
+// 精靈格 7、8(嘴巴開/合),原圖 20×26 → 畫成 2x
+class Piranha {
+  constructor(pipeX, pipeTopY) {
+    this.type = 'piranha';
+    this.w = 40; this.h = 52;
+    this.x = pipeX + 32 - this.w / 2;       // 水管寬 64,置中
+    this.topY = pipeTopY - this.h;          // 完全探出來時的 y
+    this.hideY = pipeTopY + 4;              // 完全躲進去時的 y(被水管蓋住)
+    this.y = this.hideY;
+    this.state = 'hidden';                  // hidden | rising | out | sinking | flying
+    this.timer = 90 + Math.floor(Math.random() * 60);   // 各水管錯開
+    this.frame = 0; this.vy = 0; this.dead = false;
+    this.shellVx = 0; this.kickCooldown = 0;
+    this.catNear = false;
+  }
+
+  get hitbox() { return { x: this.x + 6, y: this.y + 6, w: this.w - 12, h: this.h - 6 }; }
+  get isOut() { return this.state !== 'hidden' && this.y < this.hideY - 12; }
+
+  hitByShell() { this.state = 'flying'; this.vy = -8; }
+
+  update(solids, cat) {
+    if (this.dead) return;
+    this.frame++;
+    if (this.state === 'flying') { this.vy += 0.6; this.y += this.vy; if (this.y > 800) this.dead = true; return; }
+
+    // 貓在水管正上方附近(左右 80px 內)就不探頭
+    const catCx = cat ? cat.hitbox.x + cat.hitbox.w / 2 : -9999;
+    this.catNear = Math.abs(catCx - (this.x + this.w / 2)) < 80;
+
+    const RISE = 1.2;
+    switch (this.state) {
+      case 'hidden':
+        if (--this.timer <= 0 && !this.catNear) this.state = 'rising';
+        break;
+      case 'rising':
+        this.y -= RISE;
+        if (this.y <= this.topY) { this.y = this.topY; this.state = 'out'; this.timer = 90; }
+        break;
+      case 'out':
+        if (--this.timer <= 0) this.state = 'sinking';
+        break;
+      case 'sinking':
+        this.y += RISE;
+        if (this.y >= this.hideY) { this.y = this.hideY; this.state = 'hidden'; this.timer = 120; }
+        break;
+    }
+  }
+
+  display() {
+    if (this.dead || !enemySheet) return;
+    const cell = 7 + Math.floor(this.frame / 12) % 2;   // 嘴巴開合
+    const cx = this.x + this.w / 2, cy = this.y + this.h / 2;
+    push();
+    if (this.state === 'flying') { translate(cx, cy); scale(1, -1); translate(-cx, -cy); }
+    image(enemySheet, this.x - 12, this.y + this.h - 64, 64, 64, cell * 32, 0, 32, 32);
+    pop();
+  }
+}
