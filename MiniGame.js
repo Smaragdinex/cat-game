@@ -8,10 +8,11 @@ class MiniGameManager {
     this.state = "idle";
     this.cat = null;
     this.platformManager = new PlatformManager();
-    this.gravity = 1;
-    this.jumpStrength = -16;       // 走路時的跳躍力
-    this.jumpStrengthRun = -19;    // 跑步(Shift / 肉球鍵)時跳更高
-    this.jumpCutVy = -6;           // 早放開跳躍鍵就把上升速度砍到這個值 → 輕點小跳、長按大跳(瑪利歐手感)
+    // 跳躍手感:重力調輕、起跳速度等比例調低 → 跳一樣高但滯空約 0.7 秒(原本 0.53 秒太快)
+    this.gravity = 0.6;
+    this.jumpStrength = -12.4;     // 走路時的跳躍力(高度 ≈ 128px,四格磚)
+    this.jumpStrengthRun = -14.7;  // 跑步(Shift / 肉球鍵)時跳更高(≈ 180px)
+    this.jumpCutVy = -4.6;         // 早放開跳躍鍵就把上升速度砍到這個值 → 輕點小跳、長按大跳(瑪利歐手感)
     this.coyote = 0;               // 離開平台後還能起跳的幀數(coyote time)
     this.jumpBuffer = 0;           // 落地前先按了跳 → 落地瞬間自動起跳(jump buffer)
     this.isJumping = false;
@@ -57,8 +58,8 @@ class MiniGameManager {
     // 敵人:香菇與烏龜(位置沿關卡分布,避開水管與洞)
     this.enemies = [
       new Enemy('goomba', 720), new Enemy('koopa', 1180), new Enemy('goomba', 1520), new Enemy('goomba', 2150),
-      new Enemy('koopa', 2700), new Enemy('goomba', 3400), new Enemy('koopa', 3850), new Enemy('goomba', 4480),
-      new Enemy('koopa', 5100), new Enemy('goomba', 5560),
+      new Enemy('koopa', 2700), new Enemy('goomba', 3400), new Enemy('koopa', 3850), new Enemy('goomba', 4300),
+      new Enemy('koopa', 5450), new Enemy('goomba', 5600),
     ];
     this.invincibleUntil = 0;
   
@@ -430,7 +431,7 @@ class MiniGameManager {
 
   doJump() {
     const running = this.cat.isRunning || this.cat.touchRunning || keyIsDown(SHIFT);
-    const boost = -1.5 * (this.cat.powerLevel || 0);       // 每吃一條魚跳高一點
+    const boost = -1.2 * (this.cat.powerLevel || 0);       // 每吃一條魚跳高一點
     this.cat.vy = (running ? this.jumpStrengthRun : this.jumpStrength) + boost;
     this.isJumping = true;
     this.cat.isOnPlatform = false;
@@ -528,7 +529,7 @@ class MiniGameManager {
       if (!hit || e.state === 'squashed' || e.state === 'flying') continue;
       // 從上方踩到:正在下落,而且「這一幀移動前」腳底還在敵人頭頂附近(用 prevFeetY,不受下落速度影響)
       const stomp = cat.vy > 0 && cat.prevFeetY <= eb.y + 14;
-      const bounce = () => { cat.vy = -9; this.isJumping = true; cat.isOnPlatform = false; };
+      const bounce = () => { cat.vy = -7; this.isJumping = true; cat.isOnPlatform = false; };
 
       if (e.state === 'walk') {
         if (stomp) { e.stomp(); bounce(); }
@@ -553,7 +554,7 @@ class MiniGameManager {
       return;
     }
     cat.isDead = true; cat.hurtByEnemy = true; cat.deathTime = millis();
-    cat.vy = -14; cat.vx = 0; cat.controlEnabled = false; cat.isOnPlatform = false;
+    cat.vy = -11; cat.vx = 0; cat.controlEnabled = false; cat.isOnPlatform = false;
   }
 
   keyPressed(keyCode) {
