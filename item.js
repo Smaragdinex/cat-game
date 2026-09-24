@@ -144,10 +144,11 @@ class Item {
   onCollected(cat) {
     if (this.type === "coin") {
       console.log("🪙 貓咪吃到金幣！");
+      if (typeof Sfx !== "undefined") Sfx.coin();
       // 增加分數、播放音效...
     } else if (this.type === "fish") {
       console.log("🐟 貓咪吃到魚了！");
-      if (typeof cat.grow === "function") cat.grow();   // 長大 + 能力提升
+      if (typeof cat.grow === "function") { cat.grow(); if (typeof Sfx !== "undefined") Sfx.grow(); }   // 長大 + 能力提升
     } else if (this.type === "key") {
       console.log("🗝️ 貓咪撿到鑰匙！");
       cat.hasKey = true;

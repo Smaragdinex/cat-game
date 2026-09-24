@@ -175,6 +175,7 @@ triggerItem(type) {
   onHitFromBelow(cat) {
     if (this.broken) return;
 
+    if (typeof Sfx !== "undefined") { if (this.type === "mystery" && this.itemType === "coin") Sfx.coin(); else Sfx.bump(); }
     if (this.type === "mystery") {
       this.triggerItem(this.itemType);
       this.type = "empty";
@@ -198,6 +199,7 @@ triggerItem(type) {
 
   spawnCoin() {
     console.log("🪙 block spawned coin");
+    if (typeof Sfx !== "undefined") Sfx.coin();
     // ✅ 可加音效動畫等
   }
 

@@ -50,21 +50,39 @@ class Cat {
     this.powerLevel = 0;
     this.sizeScale = 1;
     this.sizeTarget = 1;
+    this.growFrom = 1;
+    this.growAnim = 0;
   }
 
   grow() {
+    if (this.powerLevel >= 2) return;
+    this.growFrom = this.sizeTarget;
     this.powerLevel = Math.min(2, this.powerLevel + 1);
     this.sizeTarget = 1 + 0.25 * this.powerLevel;   // 1.25x、1.5x
     this.speed = 5 + this.powerLevel;                // 走路速度 5 → 6 → 7
+    this.growAnim = 54;                              // 長大動畫:0.9 秒內小/大交替閃(遊戲暫停),像瑪利歐吃香菇
+  }
+
+  shrinkTo(level) {
+    this.growFrom = this.sizeTarget;
+    this.powerLevel = level;
+    this.sizeTarget = 1 + 0.25 * level;
+    this.growAnim = 36;                              // 縮小也閃一下
   }
 
   resetPower() {
-    this.powerLevel = 0; this.sizeScale = 1; this.sizeTarget = 1; this.speed = 5;
+    this.powerLevel = 0; this.sizeScale = 1; this.sizeTarget = 1; this.speed = 5; this.growAnim = 0;
   }
 
   // 依 sizeScale 畫貓,以「碰撞框的腳底中央」為錨點(長大時腳仍精準踩在平台上)
   drawSprite(img) {
-    this.sizeScale += (this.sizeTarget - this.sizeScale) * 0.15;   // 平滑放大
+    if (this.growAnim > 0) {                                        // 長大/縮小動畫:每 6 幀在舊尺寸和新尺寸間切換
+      this.growAnim--;
+      this.sizeScale = (Math.floor(this.growAnim / 6) % 2 === 0) ? this.sizeTarget : this.growFrom;
+      if (this.growAnim === 0) this.sizeScale = this.sizeTarget;
+    } else {
+      this.sizeScale = this.sizeTarget;
+    }
     const k = this.sizeScale, S = CAT_DISPLAY_SIZE * k;
     const feetY = this.hitboxOffsetY + this.hitboxHeight;           // 腳底在原圖框內的 y(75)
     const feetX = this.hitboxOffsetX + this.hitboxWidth / 2;        // 腳底中心在原圖框內的 x(60)
@@ -287,12 +305,14 @@ class Cat {
     }
   }
 
+    // 碰撞框跟著長大(寬高 × sizeScale),但腳底線與中心 x 不變 → 變大後撞磚、落地的位置才會和圖對得上
     getHitbox() {
+      const k = this.sizeScale || 1;
+      const w = this.hitboxWidth * k, h = this.hitboxHeight * k;
       return {
-        x: this.x + this.hitboxOffsetX,
-        y: this.y + this.hitboxOffsetY,
-        w: this.hitboxWidth,
-        h: this.hitboxHeight
+        x: this.x + this.hitboxOffsetX + this.hitboxWidth / 2 - w / 2,
+        y: this.y + this.hitboxOffsetY + this.hitboxHeight - h,
+        w, h
       };
     }
 
@@ -462,8 +482,8 @@ class Cat {
     }
       
     adjustToPlatformY(platformY) {
-      const offsetY = this.hitbox.y - this.y;
-      this.y = platformY - this.hitboxHeight - offsetY;
+      // 腳底線 = y + hitboxOffsetY + hitboxHeight(不受 sizeScale 影響)
+      this.y = platformY - this.hitboxOffsetY - this.hitboxHeight;
     }
 
     updateMiniGameJumpState() {

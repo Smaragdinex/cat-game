@@ -320,6 +320,7 @@ class MiniGameManager {
 
   update() {
     if (this.state !== "playing" || !this.cat) return;
+    if (this.cat.growAnim > 0) return;                 // 長大/縮小動畫期間全部暫停(瑪利歐吃香菇時也會停)
     
     const cat = this.cat;
     
@@ -341,7 +342,7 @@ class MiniGameManager {
           
           const platform = this.platformManager.getStandingPlatform(this.cat.hitbox);
           if (platform) {
-            this.cat.y = platform.y - this.cat.hitbox.h - this.cat.hitboxOffsetY;
+            this.cat.y = platform.y - this.cat.hitboxHeight - this.cat.hitboxOffsetY;   // 腳底線,不受碰撞框縮放影響
           }
         }
       } else {
@@ -545,13 +546,13 @@ class MiniGameManager {
       if (e.type === 'piranha') {                                 // 食人花不能踩,碰到就受傷
         this.hurtCat();
       } else if (e.state === 'walk') {
-        if (stomp) { e.stomp(); bounce(); }
+        if (stomp) { e.stomp(); bounce(); Sfx.stomp(); }
         else this.hurtCat();
       } else if (e.state === 'shell') {
         if (e.shellVx === 0) {                                       // 靜止的殼:踢出去(從哪邊碰就往另一邊飛)
-          e.kick(hb.x + hb.w / 2 < eb.x + eb.w / 2 ? 1 : -1);
+          e.kick(hb.x + hb.w / 2 < eb.x + eb.w / 2 ? 1 : -1); Sfx.kick();
           if (stomp) bounce();
-        } else if (stomp) { e.shellVx = 0; bounce(); }              // 踩住移動中的殼 → 停下
+        } else if (stomp) { e.shellVx = 0; bounce(); Sfx.stomp(); }              // 踩住移動中的殼 → 停下
         else if (e.kickCooldown <= 0) this.hurtCat();
       }
     }
@@ -562,10 +563,11 @@ class MiniGameManager {
     const cat = this.cat;
     if (millis() < this.invincibleUntil || cat.isDead) return;
     if ((cat.powerLevel || 0) > 0) {                                 // 有吃過魚:縮小一級 + 1.5 秒無敵
-      cat.powerLevel--; cat.sizeTarget = 1 + 0.25 * cat.powerLevel;
+      cat.shrinkTo(cat.powerLevel - 1); Sfx.shrink();
       this.invincibleUntil = millis() + 1500;
       return;
     }
+    Sfx.hurt();
     cat.isDead = true; cat.hurtByEnemy = true; cat.deathTime = millis();
     cat.vy = -11; cat.vx = 0; cat.controlEnabled = false; cat.isOnPlatform = false;
   }
