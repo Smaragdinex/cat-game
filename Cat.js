@@ -376,7 +376,10 @@ class Cat {
 
     applyMovement() {
       if (this.isMoving) {
-        const moveSpeed = this.isRunning ? this.speed * 2 : this.speed;
+        // 小遊戲(60fps):走 3.2 px/幀、跑 ×1.75,每吃一條魚 +0.4;主場景(10fps)維持原本 speed / ×2
+        const mini = typeof game !== 'undefined' && game.mode === 'minigame';
+        const base = mini ? (3.2 + 0.4 * (this.powerLevel || 0)) : this.speed;
+        const moveSpeed = this.isRunning ? base * (mini ? 1.75 : 2) : base;
         this.x += this.direction === 'right' ? moveSpeed : -moveSpeed;
         this.state = this.isRunning ? 'run' : 'walk';
       } else {
