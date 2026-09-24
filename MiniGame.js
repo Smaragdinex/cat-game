@@ -785,7 +785,7 @@ function preloadMiniGameAssets() {
   poleImg = loadImage("data/minigame/FlagPole.png");
   flagImg = loadImage("data/minigame/Flag.png");
   castleImg = loadImage("data/minigame/Castle.png");
-  enemySheet = loadImage("data/minigame/enemies.png");
+  enemySheet = loadImage("data/minigame/Enemies.png");   // 注意大小寫:GitHub Pages 分大小寫
 
 }
 
