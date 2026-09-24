@@ -482,15 +482,6 @@ class MiniGameManager {
     this.drawPlatformTilesWithDebug();
 
     pop();
-
-    // HUD:左上角顯示吃到的魚(= 目前等級)
-    const lv = this.cat.powerLevel || 0;
-    for (let i = 0; i < 2; i++) {
-      push();
-      if (i >= lv) tint(255, 70);
-      if (fishImg) image(fishImg, 14 + i * 34, 12, 28, 28);
-      pop();
-    }
   }
 
   keyPressed(keyCode) {
