@@ -672,11 +672,7 @@ function drawMiniGame() {
 
 function keyPressedMiniGame(keyCode) {
   miniGameManager?.keyPressed(keyCode);
-  if (keyCode === 68) {
-    if (miniGameManager) {
-      miniGameManager.debugMode = !miniGameManager.debugMode;
-    }
-  }
+  // (原本按 D 會切換 debug 顯示,但 D 同時也是「往右走」,玩家一按就跑出 debug 框線,已移除)
 }
 
 function keyReleasedMiniGame(keyCode) {
